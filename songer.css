@@ -1,0 +1,5 @@
+body { font-family: Times, serif; font-size: 10px; background-color: #FFFFE0; }
+.title { font-size: 120%; margin-bottom: 10px; }
+.verse { margin-top: 10px; margin-bottom: 10px; }
+.chord { color: red; font-weight: bold; vertical-align: super; }
+.invchord { color: blue; font-weight: bold; vertical-align: super; }
