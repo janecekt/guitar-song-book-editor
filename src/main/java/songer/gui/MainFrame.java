@@ -480,8 +480,8 @@ public class MainFrame extends javax.swing.JFrame {
 		try {
 			FileIO.writeStringToFile(songFileName, getEncoding(), songName + "\n\nVerse 1");
 			Logger.getLogger("songer").log(Level.INFO, "New file was created " + songFileName);
-			fileList.rebuild(new FileList.TxtFileFilter(), new FileList.FileNameComparator());
-			fileList.setCurrent(songFileName);
+			//fileList.rebuild(new FileList.TxtFileFilter(), new FileList.FileNameComparator());
+			//fileList.setCurrent(songFileName);
 			Logger.getLogger("songer").log(Level.INFO, "File list was updated " + songFileName);
 			setViewMode(false);
             reloadCurrentFile();//GEN-LAST:event_newBTActionPerformed

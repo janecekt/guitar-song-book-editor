@@ -17,15 +17,7 @@
  */
 package songer.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 /**
  * Wrapper class of static methods implementing File <-> String IO-operations.
@@ -76,4 +68,26 @@ public class FileIO {
 			}
 		}
 	}
+    
+    
+    public static String readResourceToString(String resourceName) {
+        StringBuilder sb = new StringBuilder();
+        BufferedInputStream inStream = new BufferedInputStream(FileIO.class.getResourceAsStream(resourceName));
+        try {
+            byte[] chars = new byte[1024];
+            int bytesRead = 0;
+            while( (bytesRead = inStream.read(chars)) > -1){
+                sb.append(new String(chars, 0, bytesRead));
+            }
+            return sb.toString();
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource " + resourceName, ex);
+        } finally {
+            try {
+                inStream.close();
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to close resource " + resourceName, ex);
+            }
+        }
+    }
 }

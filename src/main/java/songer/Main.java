@@ -17,8 +17,15 @@
  */
 package songer;
 
+import songer.ui.UIDialog;
+import songer.ui.presentationmodel.MainFormPresentationModel;
+import songer.ui.view.MainFormView;
+import songer.ui.view.TextDialog;
 import songer.util.FileList;
-import songer.gui.MainFrame;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.regex.Pattern;
 
 /** 
  * Wrapper class for main function.
@@ -37,8 +44,26 @@ public class Main {
 				System.exit(1);
 			}
 
+            // Build objects (could use DI container but the project is too small for that)
+
+            // Dialog provider
+            UIDialog<String> newNextFileDialog = new UIDialog<String>() {
+                @Override
+                public String runDialog(Frame ownerFrame) {
+                    TextDialog textDialog = new TextDialog(
+                            ownerFrame,
+                            Pattern.compile("([A-Za-z]+-)?[A-Z][A-Za-z ]*[A-Za-z]"),
+                            "Enter song name",
+                            "Enter new song name:");
+                    return textDialog.runDialog();
+                }
+            };
+
+            // File list
 			FileList fileList = new FileList(args[0], new FileList.TxtFileFilter(), new FileList.FileNameComparator());
-			MainFrame mainFrame = new MainFrame(args[0]+"/songer.css", fileList);
+
+            //MainFrame mainFrame = new MainFrame(args[0]+"/songer.css", fileList);
+            JFrame mainFrame = new MainFormView( new MainFormPresentationModel(fileList, newNextFileDialog) );
 			mainFrame.setVisible(true);
 		} catch (Exception ex) {
 			System.err.println("Exception occured during initialization :" + ex.getMessage());

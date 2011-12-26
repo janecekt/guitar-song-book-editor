@@ -18,17 +18,25 @@
 package songer.util;
 
 import songer.*;
-import java.io.File;
-import java.io.FileFilter;
+import songer.parser.InputSys;
+import songer.parser.LexAn;
+import songer.parser.SyntaxAn;
+import songer.parser.nodes.SongNode;
+
+import java.io.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class implementing the two-way iteration over the files in a given directory.
  * @author Tomas Janecek
  */
 public class FileList implements Iterable<File> {
+    private static final Logger logger = Logger.getLogger("songer");
+    
 	/** Class representing the Base-Directory */
 	protected File baseDir;
 	
@@ -37,6 +45,9 @@ public class FileList implements Iterable<File> {
 	
 	/** Current index in the array of files */
 	protected int curIndex;
+    
+    private FileFilter fileFilter;
+    private Comparator<File> fileComparator;
 
 	
 	
@@ -65,33 +76,47 @@ public class FileList implements Iterable<File> {
 	 */
 	public FileList(String baseDir, FileFilter fileFilter, Comparator<File> fileComparator) {
 		this.baseDir = new File(baseDir);
-		rebuild(fileFilter, fileComparator);
+        this.fileFilter = fileFilter;
+        this.fileComparator = fileComparator;
+		rebuild();
 	}
+
+
+    public File getBaseDir() {
+        return baseDir;
+    }
+
+    public void addNewFile(String songName, String encoding) {
+        String fileName = baseDir.getAbsolutePath() + "/" + songName.replaceAll(" ", "_") + ".txt";
+        try {
+            FileIO.writeStringToFile(fileName, encoding, songName + "\n\nVerse1");
+            logger.info("New file written " + fileName);
+            rebuild();
+            setCurrent(fileName);
+            logger.info("FileList reloaded.");
+        } catch (UnsupportedEncodingException ex) {
+            logger.severe("Unsupported encoding.");
+        } catch (FileNotFoundException e) {
+            logger.severe("Failed to write file " + fileName);
+        } catch (IOException e) {
+            logger.severe("Failed to write file " + fileName);
+        }
+    }
 
 	
 	
-	/** Rebuilds and updates the FileList, current file is chaned to the first file in list.
-	 *  @param fileFilter     Specifies which files form the baseDir will be added to the fileList.
-	 *  @param fileComparator Comparator (for File classes) based on which the enteries will be sorted.
+	/**
+     * Rebuilds and updates the FileList, current file is chaned to the first file in list.
 	 */
-	public void rebuild(FileFilter fileFilter, Comparator<File> fileComparator) {
+	private void rebuild() {
 		fileArray = baseDir.listFiles(fileFilter);
 		Arrays.sort(fileArray, fileComparator);
 		curIndex = 0;
 	}
 
-	
-	
-	/** Returns the base-directory for which this FileList was costructed. */
-	public File getBaseDir() {
-		return baseDir;
-	}
-
-	
-	
 	/** Sets the file whose absolute path matches curAbsoltePath as current file, 
 	 *  if not found the curent file is not changed. */
-	public void setCurrent(String curAbsolutePath) {
+	private void setCurrent(String curAbsolutePath) {
 		for (int i = 0; i < fileArray.length; i++) {
 			if (fileArray[i].getAbsolutePath().equals(curAbsolutePath)) {
 				curIndex = i;
@@ -107,7 +132,15 @@ public class FileList implements Iterable<File> {
 		return fileArray[curIndex];
 	}
 
-	
+
+    public String getCurrentFileContent(String encoding) {
+        try {
+            return FileIO.readFileToString(getCurrent().getAbsolutePath(), encoding);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to load current file - " + getCurrent().getAbsolutePath(), ex);
+        }
+    }
+
 	
 	/** Returns true if there exits a next file in the list. */
 	public boolean hasNext() {
