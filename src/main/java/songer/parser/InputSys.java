@@ -33,9 +33,9 @@ public class InputSys {
 	 */
 	public static class Token {
 		/** Declaration of possible types of input tokens. */
-		public enum Type { I_UNDEF, I_CHAR, I_LPAR, I_RPAR, I_SLASH, I_EOL, I_EOI };
-		
-		/** Type of the input-token. */
+		public enum Type { I_UNDEF, I_CHAR, I_LPAR, I_RPAR, I_SLASH, I_EOL, I_EOI }
+
+        /** Type of the input-token. */
 		protected Token.Type type; 
 		
 		/** Character of the input-token. */		     
@@ -57,17 +57,17 @@ public class InputSys {
 			this.position = position;
 		}
 
-		/** Returns the type of the input token. */
+		/** @return the type of the input token. */
 		public Token.Type getType() { 
 			return type; 
 		}
 	
-		/** Returns the character of the input token. */
+		/** @return the character of the input token. */
 		public char getCharacter() { 
 			return character; 
 		}
 	
-		/** Returns the position of the input token. */
+		/** @return the position of the input token. */
 		public Position getPosition() { 
 			return position; 
 		}
@@ -86,46 +86,31 @@ public class InputSys {
 		/** Line number in the input stream. */
 		protected int line;
 	
-		/** Collumn number in the current line of the stream. */
-		protected int collumn;
+		/** Column number in the current line of the stream. */
+		protected int column;
 
 		
 		
-		/** Costructor - Creates a new instance of position.
+		/** Constructor - Creates a new instance of position.
 		 * @param position  Position in the input stream (number of characters from the beginning).  
 		 * @param line      Line number in the input stream.
-		 * @param collumn   Collumn number in the current line of the stream. 
+		 * @param column   Column number in the current line of the stream.
 		 */
-		public Position(int position, int line, int collumn) {
+		public Position(int position, int line, int column) {
 			this.position = position;
 			this.line = line;
-			this.collumn = collumn;
-		}
-
-		/** Returns the position in the input stream ((number of characters from the beginning). */
-		public int getPosition() {
-			return position;
-		}
-
-		/** Retruns the line number in the input stream. */
-		public int getLine() {
-			return line;
-		}
-
-		/** Returns the collumn number in the current line. */
-		public int getCollumn() {
-			return collumn;
+			this.column = column;
 		}
 	
-		/** Returns the String representation of Possition suitable for insertion into an information message. */
+		/** @return the String representation of position suitable for insertion into an information message. */
 		public String toInfoString(){
-			return "line:" + line + " col:" + collumn + " (position=" + position + ")";
+			return "line:" + line + " col:" + column + " (position=" + position + ")";
 		}
 
 		/** @see Object#toString() */
 		@Override
 		public String toString() {
-			return "Position[line=" + line + ", col=" + collumn + ", position=" + position + "]";
+			return "Position[line=" + line + ", col=" + column + ", position=" + position + "]";
 		}
 	}
 	
@@ -134,7 +119,7 @@ public class InputSys {
 	/** Current line. */
 	private int curLine;
 	
-	/** Current collumn. */
+	/** Current column. */
 	private int curCol;
 	
 	/** Current position */
@@ -148,7 +133,10 @@ public class InputSys {
 
 	
 	
-	/** Constructor - Creates the new instance of InputSys reading the input form the reader specified be the parameter. */
+	/**
+     * Constructor - Creates the new instance of InputSys reading the input form the reader specified be the parameter.
+     * @param reader Reader from which the input is parsed.
+     */
 	public InputSys(Reader reader) {
 		curLine = 1;
 		curCol = 1;
@@ -168,7 +156,7 @@ public class InputSys {
 		getNextChar();
 
 		// analyze nextChar
-		Token.Type tokenType = Token.Type.I_UNDEF;
+		Token.Type tokenType;
 		switch (curChar) {
 			case '[':
 				tokenType = Token.Type.I_LPAR;

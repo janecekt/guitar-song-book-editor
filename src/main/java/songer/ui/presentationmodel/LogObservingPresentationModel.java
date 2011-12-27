@@ -1,10 +1,7 @@
 package songer.ui.presentationmodel;
 
-import com.jgoodies.binding.beans.PropertyAdapter;
-import com.jgoodies.binding.beans.PropertyConnector;
 import com.jgoodies.binding.value.ValueHolder;
 import com.jgoodies.binding.value.ValueModel;
-import songer.gui.JTextAreaLogHandler;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;

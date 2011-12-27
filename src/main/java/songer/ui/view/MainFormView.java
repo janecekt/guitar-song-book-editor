@@ -21,6 +21,7 @@ public class MainFormView extends JFrame {
     private JButton saveButton;
     private JButton exportHtmlButton;
     private JButton exportLatexButton;
+    private JButton exportPDFButton;
     private JComboBox encodingComboBox;
 
     private JEditorPane editorPane;
@@ -30,6 +31,8 @@ public class MainFormView extends JFrame {
     
     public MainFormView(MainFormPresentationModel presentationModel) {
         presentationModel.setFrame(this);
+
+        PropertyConnector.connectAndUpdate(presentationModel.getTitleModel(), this, "title");
 
         // == LEFT TOOLBAR ==
         previousButton = new JButton( presentationModel.getPreviousAction() );
@@ -43,7 +46,9 @@ public class MainFormView extends JFrame {
         saveButton = new JButton( presentationModel.getSaveAction() );
         exportHtmlButton = new JButton( presentationModel.getExportHtmlAction() );
         exportLatexButton = new JButton( presentationModel.getExportLatexAction() );
+        exportPDFButton = new JButton( presentationModel.getExportPdfAction() );
         encodingComboBox = BasicComponentFactory.createComboBox( presentationModel.getEncodingModel() );
+        
 
         // == MODEL ==
         editorPane = createEditorPane();
@@ -88,11 +93,12 @@ public class MainFormView extends JFrame {
         toolbarPanel.add( saveButton );
         toolbarPanel.add( exportHtmlButton );
         toolbarPanel.add( exportLatexButton );
+        toolbarPanel.add( exportPDFButton );
         toolbarPanel.add( encodingComboBox );
         
              
         JSplitPane mainPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
-        mainPane.setDividerLocation(400);
+        mainPane.setDividerLocation(450);
         mainPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPane.setTopComponent( new JScrollPane(editorPane) );
         mainPane.setBottomComponent( new JScrollPane(logTextArea) );
@@ -102,7 +108,7 @@ public class MainFormView extends JFrame {
         contentPanel.add(toolbarPanel);
         contentPanel.add( Box.createRigidArea(new Dimension(10,10)) );
         contentPanel.add(mainPane);
-        this.setMinimumSize(new Dimension(800, 600));
+        this.setMinimumSize(new Dimension(900, 600));
 
         setContentPane(contentPanel);
     }

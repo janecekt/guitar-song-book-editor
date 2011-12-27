@@ -18,7 +18,7 @@
 package songer.parser.nodes;
 
 
-/** 
+/**
  * Class representing one text fragment in the line.
  * @author Tomas Janecek
  */
@@ -26,8 +26,6 @@ public class TextNode implements Node {
 	/** Text represented by this class. */
 	private String text;
 
-	
-	
 	/**
 	 * Constructor - Creates an instance of TextNode.
 	 * @param text   Text to be represented by this node.
@@ -36,36 +34,28 @@ public class TextNode implements Node {
 		this.text = text;
 	}
 
-	
-	
-	/** See Node.getAsText */
-	public String getAsText(int trans) {
+    
+    /** @return Text of this node. */
+    public String getText() {
+        return text;
+    }
+
+
+    /** {@inheritDoc} */
+	@Override
+	public String getAsText(int transposition) {
 		return text;
 	}
 
-	
-	
-	/** See Node.getAsHTML */
-	public String getAsHTML(int trans) {
+
+    /** {@inheritDoc} */
+	@Override
+	public String getAsHTML(int transposition) {
 		return text;
 	}
 
-	
-	
-	/** See Node.getAsExportHTML */
-	public String getAsExportHTML(int trans) {
-		return text;
-	}
 
-	
-	
-	/** See Node.getAsLaTex */
-	public String getAsLaTex(int trans) {
-		return text;
-	}
-
-	
-	/** See Object.toString */
+    /** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return "TextNode[" + text + "]";

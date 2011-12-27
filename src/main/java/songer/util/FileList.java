@@ -17,18 +17,25 @@
  */
 package songer.util;
 
-import songer.*;
-import songer.parser.InputSys;
-import songer.parser.LexAn;
-import songer.parser.SyntaxAn;
-import songer.parser.nodes.SongNode;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.logging.Level;
+import java.util.List;
 import java.util.logging.Logger;
+
+import songer.parser.InputSys;
+import songer.parser.LexAn;
+import songer.parser.SyntaxAn;
+import songer.parser.nodes.SongBook;
+import songer.parser.nodes.SongNode;
 
 /**
  * Class implementing the two-way iteration over the files in a given directory.
@@ -60,7 +67,7 @@ public class FileList implements Iterable<File> {
 
 	
 	
-	/** Comparator comparing two files lexicographicaly based on their file-name (comparison is case insensitive). */
+	/** Comparator comparing two files lexicographically based on their file-name (comparison is case insensitive). */
 	public static class FileNameComparator implements Comparator<File> {
 		public int compare(File f1, File f2) {
 			return f1.getName().compareToIgnoreCase(f2.getName());
@@ -80,6 +87,24 @@ public class FileList implements Iterable<File> {
         this.fileComparator = fileComparator;
 		rebuild();
 	}
+    
+    public SongBook buildSongBook(String encoding) {
+        List<SongNode> songNodeList = new ArrayList<SongNode>();
+        for (File file : fileArray) {
+            try {
+                InputSys inputSys = new InputSys(new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding));
+                SyntaxAn syntaxAn = new SyntaxAn(new LexAn(inputSys));
+                SongNode tmpSongNode = syntaxAn.parse();
+                tmpSongNode.setSourceFile(file);
+                songNodeList.add(tmpSongNode);
+            } catch (SyntaxAn.SyntaxErrorException ex) {
+                logger.severe("LOADING FAILED - SyntaxError : " + file.getName() + " : " + ex.getMessage());
+            } catch (Exception ex) {
+                logger.severe("LOADING FAILED - IO Error : " + file.getName() + " : " + ex.getMessage());
+            }
+        }
+        return new SongBook(songNodeList);
+    }
 
 
     public File getBaseDir() {
@@ -114,8 +139,10 @@ public class FileList implements Iterable<File> {
 		curIndex = 0;
 	}
 
-	/** Sets the file whose absolute path matches curAbsoltePath as current file, 
-	 *  if not found the curent file is not changed. */
+	/**
+     * Sets the file whose absolute path matches curAbsolutePath as current file,
+	 * if not found the current file is not changed.
+     */
 	private void setCurrent(String curAbsolutePath) {
 		for (int i = 0; i < fileArray.length; i++) {
 			if (fileArray[i].getAbsolutePath().equals(curAbsolutePath)) {
@@ -127,12 +154,13 @@ public class FileList implements Iterable<File> {
 
 	
 	
-	/** Returns the current file. */
+	/** @return the current file. */
 	public File getCurrent() {
 		return fileArray[curIndex];
 	}
 
 
+    /** @return Content of the current file. */
     public String getCurrentFileContent(String encoding) {
         try {
             return FileIO.readFileToString(getCurrent().getAbsolutePath(), encoding);
@@ -142,12 +170,11 @@ public class FileList implements Iterable<File> {
     }
 
 	
-	/** Returns true if there exits a next file in the list. */
+	/** @return true if there exits a next file in the list. */
 	public boolean hasNext() {
 		return ((curIndex + 1) < fileArray.length);
 	}
 
-	
 	
 	/** Moves to the next file in the list (if it exists). */
 	public void gotoNext() {
@@ -156,25 +183,22 @@ public class FileList implements Iterable<File> {
 		}
 	}
 
-	
-	
-	/** Retruns true if there exists a previous file in the list. */
+
+	/** @retrun true if there exists a previous file in the list. */
 	public boolean hasPrevious() {
 		return (curIndex > 0);
 	}
 
-	
-	
-	/** Moves to the previos file in the list (if it exists). */
+
+	/** Moves to the previous file in the list (if it exists). */
 	public void gotoPrevious() {
 		if (hasPrevious()) {
 			curIndex--;
 		}
 	}
 
-	
-	
-	/** Returns the itrerator iterating over all files in this list. */
+
+	/** Returns the iterator iterating over all files in this list. */
 	public Iterator<File> iterator() {
 		return new ObjectArrayIterator<File>(fileArray);
 	}

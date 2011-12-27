@@ -17,13 +17,12 @@
  */
 package songer.parser.nodes;
 
-
+import java.io.File;
 import java.text.Collator;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-
-
 
 /** 
  * Class representing the Song.
@@ -47,17 +46,17 @@ public class SongNode implements Node {
 			return collator.compare(o1.getTitle(), o2.getTitle());
 		}
 	}
-	
-	
-	
+
 	/** Title of the Song. */
 	private String title;
 	
 	/** List of Verses of the song (represented by VerseNode classes). */
 	private List<VerseNode> verseList;
 
-	
-	
+    /** Source file (may be null). */
+    private File sourceFile;
+
+
 	/** 
 	 * Constructor - creates an instance of SongNode.
 	 * @param title      Title of the song.
@@ -65,92 +64,67 @@ public class SongNode implements Node {
 	 */
 	public SongNode(String title, List<VerseNode> verseList) {
 		this.title = title;
-		this.verseList = verseList;
+		this.verseList = Collections.unmodifiableList(verseList);
 	}
 
-	
-	
-	/** Returns the title of the song. */
+
+    /** @return Source file. */
+    public File getSourceFile() {
+        return sourceFile;
+    }
+
+
+    /**
+     * Sets the source file.
+     * @param sourceFile Source file from which this node was created.
+     */
+    public void setSourceFile(File sourceFile) {
+        this.sourceFile = sourceFile;
+    }
+
+
+    /** @return the title of the song. */
 	public String getTitle() {
 		return title;
 	}
 
-	
-	
-	/** See - Node.getAsText. */
-	public String getAsText(int trans) {
+
+    /** @return List of VerseNodes of the song. */
+    public List<VerseNode> getVerseList() {
+        return verseList;
+    }
+
+
+    /** {@inheritDoc} */
+	@Override
+	public String getAsText(int transposition) {
 		String out = title;
 		out += "\n\n\n";
 
 		for (VerseNode verseNode : verseList) {
-			out += verseNode.getAsText(trans);
+			out += verseNode.getAsText(transposition);
 			out += "\n\n";
 		}
 
 		return out;
 	}
 
-	
-	
-	/** See - Node.getAsHTML. */
-	public String getAsHTML(int trans) {
+
+    /** {@inheritDoc} */
+	@Override
+	public String getAsHTML(int transposition) {
 		String out = "<DIV class=\"title\">" + title + "</DIV>\n";
 
 		for (VerseNode verseNode : verseList) {
-			out += verseNode.getAsHTML(trans) + "\n\n";
+			out += verseNode.getAsHTML(transposition) + "\n\n";
 		}
 
 		return out;
 	}
 
-	
-	
-	/** See - Node.getAsExportHTML. */
-	public String getAsExportHTML(int trans) {
-		String out = "<HTML>\n";
-		out += "<HEAD>\n";
-		out += "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf8\">\n";
-		out += "  <link href=\"song.css\" rel=\"stylesheet\" type=\"text/css\">\n";
-		out += "  <SCRIPT src=\"song.js\" type=\"text/javascript\"></SCRIPT>\n";
-		out += "  <TITLE>" + title + "</TITLE>\n";
-		out += "</HEAD>\n";
-		out += "<BODY>\n\n";
 
-		out += "<DIV class=\"title\">" + title + "</DIV>\n\n";
-
-		out += "<DIV class=\"transpose\">\n";
-		out += "Transpozice: <SPAN id=\"totaltranspose\">0</SPAN>\n";
-		out += "[<a href=\"javascript:transpose(1)\">+1</a>]\n";
-		out += "[<a href=\"javascript:transpose(-1)\">-1</a>]\n";
-		out += "</DIV>\n\n";
-
-		for (VerseNode verseNode : verseList) {
-			out += verseNode.getAsExportHTML(trans) + "\n\n";
-		}
-
-		out += "</BODY>\n";
-		out += "</HTML>\n";
-
-		return out;
-	}
-
-	
-	
-	/** See - Node.getAsLaTex. */
-	public String getAsLaTex(int trans) {
-		String out = "\n\n\n\\begin{song}{" + title + "}\n";
-
-		for (VerseNode verseNode : verseList) {
-			out += verseNode.getAsLaTex(trans) + "\n\n";
-		}
-		out += "\\end{song}\n\n\n";
-		return out;
-	}
-
-	
-	
-	/** See - Object.toString. */
-	@Override
+    /** {@inheritDoc} */
+    @Override
 	public String toString() {
 		String out = "SongNode[" + "title=" + title + ",\n";
 

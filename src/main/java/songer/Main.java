@@ -17,6 +17,9 @@
  */
 package songer;
 
+import songer.exporter.HtmlExporter;
+import songer.exporter.LaTexExporter;
+import songer.exporter.PdfExporter;
 import songer.ui.UIDialog;
 import songer.ui.presentationmodel.MainFormPresentationModel;
 import songer.ui.view.MainFormView;
@@ -59,11 +62,16 @@ public class Main {
                 }
             };
 
-            // File list
-			FileList fileList = new FileList(args[0], new FileList.TxtFileFilter(), new FileList.FileNameComparator());
+            // Main Presentation Model
+            MainFormPresentationModel mainPM = new MainFormPresentationModel(
+                    new FileList(args[0], new FileList.TxtFileFilter(), new FileList.FileNameComparator()),
+                    newNextFileDialog,
+                    new HtmlExporter(),
+                    new LaTexExporter(),
+                    new PdfExporter()  );
 
-            //MainFrame mainFrame = new MainFrame(args[0]+"/songer.css", fileList);
-            JFrame mainFrame = new MainFormView( new MainFormPresentationModel(fileList, newNextFileDialog) );
+            // Main View
+            JFrame mainFrame = new MainFormView( mainPM );
 			mainFrame.setVisible(true);
 		} catch (Exception ex) {
 			System.err.println("Exception occured during initialization :" + ex.getMessage());

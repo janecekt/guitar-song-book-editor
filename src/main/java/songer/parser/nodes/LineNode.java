@@ -17,7 +17,7 @@
  */
 package songer.parser.nodes;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 /** 
@@ -25,20 +25,18 @@ import java.util.List;
  * @author Tomas Janecek
  */
 public class LineNode implements Node {
-	/** List of fragments contained on the line (ChorNode or TextNode classes). */
-	private List<Node> contentList;
-	
-	/** True if the line has chords. */
-	private boolean hasChords;
+    /** True if the line has chords. */
+    private boolean hasChords;
 
-	
-	
+	/** List of fragments contained on the line (ChordNode or TextNode classes). */
+	private List<Node> contentList;
+
 	/** 
 	 * Constructor - Creates the new instance of LineNode.
 	 * @param contentList List of fragments contained on the line (ChorNode or TextNode classes).
 	 */
 	public LineNode(List<Node> contentList) {
-		this.contentList = contentList;
+		this.contentList = Collections.unmodifiableList(contentList);
 
 		hasChords = false;
 		for (Node node : contentList) {
@@ -49,65 +47,45 @@ public class LineNode implements Node {
 		}
 	}
 
-	
-	
-	/** Returns true it the line hasChord; false otherwise. */
+
+	/** @return true it the line hasChord; false otherwise. */
 	public boolean hasChords() {
 		return hasChords;
 	}
 
-	
-	
-	/** See - Node.getAsText. */
-	public String getAsText(int trans) {
-		String out = "";
 
-		for (Node node : contentList) {
-			out += node.getAsText(trans);
-		}
+    /** @return list of content nodes. */
+    public List<Node> getContentList() {
+        return contentList;
+    }
 
-		return out;
-	}
 
-	
-	
-	/** See - Node.getAsHTML. */
-	public String getAsHTML(int trans) {
-		String out = "";
-		for (Iterator<Node> it = contentList.iterator(); it.hasNext();) {
-			Node node = it.next();
-			out += node.getAsHTML(trans);
-		}
-		return out;
-	}
-
-	
-	
-	/** See - Node.getAsExportHTML. */
-	public String getAsExportHTML(int trans) {
-		String out = "";
-		for (Node node : contentList) {
-			out += node.getAsExportHTML(trans);
-		}
-		return out;
-
-	}
-
-	
-	
-	/** See - Node.getAsLaText. */
-	public String getAsLaTex(int trans) {
-		String out = "\t\t";
-		for (Node node : contentList) {
-			out += node.getAsLaTex(trans);
-		}
-		return out;
-	}
-
-	
-	
-	/** See - Object.toString. */
+    /** {@inheritDoc} */
 	@Override
+	public String getAsText(int transposition) {
+		String out = "";
+
+		for (Node node : contentList) {
+			out += node.getAsText(transposition);
+		}
+
+		return out;
+	}
+
+
+    /** {@inheritDoc} */
+	@Override
+	public String getAsHTML(int transposition) {
+		String out = "";
+		for (Node node : contentList) {
+			out += node.getAsHTML(transposition);
+		}
+		return out;
+	}
+
+
+    /** {@inheritDoc} */
+    @Override
 	public String toString() {
 		String out = "\t\t" + "LineNode[\n";
 		for (Node node : contentList) {

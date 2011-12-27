@@ -17,7 +17,7 @@
  */
 package songer.parser.nodes;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 /** 
@@ -28,17 +28,16 @@ public class VerseNode implements Node {
 	/** List of lines in a verse */
 	protected List<LineNode> lines;
 	
-	/** Bollean flag indicating whether the song contains any chords. */
+	/** Boolean flag indicating whether the song contains any chords. */
 	private boolean containsChords;
 
-	
-	
+
 	/** 
 	 * Constructor - Creates a new instance of verseNode representing a Verse.
 	 * @param lines  List of lines in the verse (represented by LineNode classes).
 	 */
 	public VerseNode(List<LineNode> lines) {
-		this.lines = lines;
+		this.lines = Collections.unmodifiableList(lines);
 
 		this.containsChords = false;
 		for (LineNode lineNode : lines) {
@@ -49,14 +48,20 @@ public class VerseNode implements Node {
 
 		}
 	}
+    
+    
+    /** @return List of LineNodes. */
+    public List<LineNode> getLineNodes() {
+        return lines;
+    }
 
-	
-	
-	/** See Node.getAsText */
-	public String getAsText(int trans) {
+
+    /** {@inheritDoc} */
+	@Override
+	public String getAsText(int transposition) {
 		String out = "";
 		for (LineNode lineNode : lines) {
-			out += lineNode.getAsText(trans) + "\n";
+			out += lineNode.getAsText(transposition) + "\n";
 			if (containsChords) {
 				out += "\n";
 			}
@@ -65,54 +70,23 @@ public class VerseNode implements Node {
 		return out;
 	}
 
-	
-	
-	/** See Node.getAsHTML */
-	public String getAsHTML(int trans) {
-		String out = "<DIV class=\"verse\">\n";
 
-		for (LineNode lineNode : lines) {
-			out += lineNode.getAsHTML(trans) + "<BR />\n";
-		}
-
-		out += "</DIV>";
-		return out;
-	}
-
-	
-	
-	/** See Node.getAsExportHTML */
-	public String getAsExportHTML(int trans) {
-		String out = "<DIV class=\"verse\">\n";
-
-		for (LineNode lineNode : lines) {
-			out += lineNode.getAsExportHTML(trans) + "<BR />\n";
-		}
-
-		out += "</DIV>";
-		return out;
-	}
-
-	
-	
-	/** See Node.getLaTex() */
-	public String getAsLaTex(int trans) {
-		String out = "\t\\begin{songverse}\n";
-
-		for (Iterator<LineNode> it = lines.iterator(); it.hasNext();) {
-			LineNode lineNode = it.next();
-			out += lineNode.getAsLaTex(trans);
-			out += (it.hasNext()) ? "\\\\ \n" : "\n";
-		}
-
-		out += "\t\\end{songverse}\n";
-		return out;
-	}
-
-	
-	
-	/** Override - see Object.toString(). */
+    /** {@inheritDoc} */
 	@Override
+	public String getAsHTML(int transposition) {
+		String out = "<DIV class=\"verse\">\n";
+
+		for (LineNode lineNode : lines) {
+			out += lineNode.getAsHTML(transposition) + "<BR />\n";
+		}
+
+		out += "</DIV>";
+		return out;
+	}
+
+
+    /** {@inheritDoc} */
+    @Override
 	public String toString() {
 		String out = "\t" + "VerseNode[\n";
 		for (LineNode lineNode : lines) {

@@ -89,12 +89,12 @@ public class SyntaxAn {
 			this.position = position;
 		}
 
-		/** Retruns the position of the syntax error. */
+		/** @return the position of the syntax error. */
 		public InputSys.Position getPosition() {
 			return position;
 		}
 
-		/** Override - See Throwable.getMessage() */
+		/** @see Throwable#getMessage() */
 		@Override
 		public String getMessage() {
 			return "SyntaxError: " + super.getMessage() + " ... at " + position.toInfoString();
@@ -121,9 +121,10 @@ public class SyntaxAn {
 
 	
 	
-	/** Parses the input returning internal tree-representation whose root is SongNode.
-	 *  @return SongNode representing this song. 
-	 *  @throws SyntaxErrorException if a syntax-error is encountered during syntax analysis. 
+	/**
+     * Parses the input returning internal tree-representation whose root is SongNode.
+	 * @return SongNode representing this song.
+	 * @throws SyntaxErrorException if a syntax-error is encountered during syntax analysis.
 	 */
 	public SongNode parse() throws SyntaxErrorException {
 		return S();
@@ -426,7 +427,8 @@ public class SyntaxAn {
 
 	
 	
-	/** INTERNAL: Parses the non-terminal symbol ZbAK.
+	/**
+     * INTERNAL: Parses the non-terminal symbol ZbAK.
 	 * <PRE>
 	 * ( / )        ZbAk -> slash string
 	 * ( ] )        ZbAk -> eps     

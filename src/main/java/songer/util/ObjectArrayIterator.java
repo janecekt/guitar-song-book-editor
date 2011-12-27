@@ -21,8 +21,8 @@ import java.util.Iterator;
 
 /**
  * Implements the generic Iterator over the array of elements of type T.
+ * @param <T> Type of array elements.
  * @author Tomas Janecek
- * @param T Type of array elements.
  */
 public class ObjectArrayIterator<T> implements Iterator<T> {
 

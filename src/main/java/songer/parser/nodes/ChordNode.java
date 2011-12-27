@@ -15,26 +15,25 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package songer.parser.nodes;
 
 import java.util.HashMap;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 /** 
  * Class representing the Chord in the Song.
  * @author Tomas Janecek.
  */
 public class ChordNode implements Node {
-	
+	private static final Logger logger = Logger.getLogger("songer");
+
 	/** Exception thrown when an exception occurs during Trnasposition. */
 	public static class TransposeException extends Exception {
 		public TransposeException(String msg) {
 			super(msg);
 		}
 	}
-	
-	
+
 	/** Main chord */
 	public String chord1;
 	
@@ -45,108 +44,67 @@ public class ChordNode implements Node {
 	/** 
 	 * Constructor - Creates a new instance of ChordNode.
 	 * @param chord1	Main chord
-	 * @param chord2    Additiona bass chord (optional)
+	 * @param chord2    Additional bass chord (optional)
 	 */
 	public ChordNode(String chord1, String chord2) {
 		this.chord1 = chord1;
 		this.chord2 = chord2;
 	}
+    
+    
+    /** @return Text representation of the chord. */
+    public String getText() {
+        return (chord2.isEmpty()) ? chord1 : chord2 + "/" + chord1;
+    }
 
 
-	/** See - Node.getAsText. */
-	public String getAsText(int trans) {
+    /**
+     * @param  transposition Required transposition.
+     * @return Transposed main chord.
+     */
+    public String getChord1(int transposition) {
+        return transposeChordWithFailBack(chord1, transposition);
+    }
+
+
+    /**
+     * @param transposition Required transposition
+     * @return Transposed bass chord - or empty string if no bass chord specified.
+     */
+    public String getChord2(int transposition) {
+        return chord2.isEmpty() ? "" : transposeChordWithFailBack(chord2, transposition);
+    }
+
+
+    /** {@inheritDoc} */
+	@Override
+	public String getAsText(int transposition) {
 		if (chord2.isEmpty()) {
-			try {
-				return "[" + transposeChord(chord1, trans) + "]";
-			} catch (TransposeException ex) {
-				Logger.getLogger("songer").log(Level.SEVERE, ex.getMessage(), ex);
-				return "[" + chord1 + "]";
-			}
+            return "[" + transposeChordWithFailBack(chord1, transposition) + "]";
 		} else {
-			try {
-				return "[" + transposeChord(chord1, trans) + "/" + transposeChord(chord2, trans) + "]";
-			} catch (TransposeException ex) {
-				Logger.getLogger("songer").log(Level.SEVERE, ex.getMessage(), ex);
-				return "[" + chord1 + "/" + chord2 + "]";
-			}
+            return "[" + transposeChordWithFailBack(chord1, transposition) + "/" + transposeChordWithFailBack(chord2, transposition) + "]";
 		}
 	}
 
-	
-	
-	/** See - Node.getAsHTML. */
-	public String getAsHTML(int trans) {
-		try {
-			String out = "<SPAN class=\"chord\">";
 
-			out += transposeChord(chord1, trans);
+    /** {@inheritDoc} */
+	@Override
+	public String getAsHTML(int transposition) {
+		String out = "<SPAN class=\"chord\">";
 
-			if (!chord2.isEmpty()) {
-				out += "/" + transposeChord(chord2, trans);
-			}
+        out += transposeChordWithFailBack(chord1, transposition);
 
-			out += "</SPAN>";
+        if (!chord2.isEmpty()) {
+            out += "/" + transposeChordWithFailBack(chord2, transposition);
+        }
 
-			return out;
-		} catch (TransposeException ex) {
-			Logger.getLogger("songer").log(Level.SEVERE, ex.getMessage(), ex);
-			String out = "<SPAN class=\"invchord\">" + chord1;
-			if (!chord2.isEmpty()) {
-				out += "/" + chord2;
-			}
-			out += "</SPAN>";
-			return out;
-		}
+        out += "</SPAN>";
+
+		return out;
 	}
 
-	
-	/** See - Node.getAsExportHTML. */
-	public String getAsExportHTML(int trans) {
-		try {
-			String out = "<SPAN class=\"chord\">";
-			out += "<SPAN title=\"chord\">" + transposeChord(chord1, trans) + "</SPAN>";
 
-			if (!chord2.isEmpty()) {
-				out += "/" + "<SPAN title=\"chord\">" + transposeChord(chord2, trans) + "</SPAN>";
-			}
-
-			out += "</SPAN>";
-
-			return out;
-		} catch (TransposeException ex) {
-			Logger.getLogger("songer").log(Level.SEVERE, ex.getMessage(), ex);
-			return null;
-		}
-	}
-
-	
-	
-	/** See - Node.getAsLaTex. */
-	public String getAsLaTex(int trans) {
-		String out = "";
-
-		if (chord2.isEmpty()) {
-			try {
-				out = "\\chord{" + transposeChord(chord1, trans) + "}";
-			} catch (TransposeException ex) {
-				Logger.getLogger("songer").log(Level.SEVERE, ex.getMessage(), ex);
-				return null;
-			}
-		} else {
-			try {
-				out = "\\chord{" + transposeChord(chord1, trans) + "/" + transposeChord(chord2, trans) + "}";
-			} catch (TransposeException ex) {
-				Logger.getLogger("songer").log(Level.SEVERE, ex.getMessage(), ex);
-				return null;
-			}
-		}
-
-		return out.replaceAll("#", "\\\\#");
-	}
-
-	
-	
-	/** See - Object.toString. */
+    /** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return "ChordNode[ chord1=" + chord1 + " , chord2=" + chord2 + "]";
@@ -201,6 +159,15 @@ public class ChordNode implements Node {
 			throw new TransposeException("Chord " + chord + " is not known !");
 		}
 
-		return idxToChord.get((chordIdx.intValue() + 12 + (trans % 12)) % 12) + suffix;
+		return idxToChord.get((chordIdx + 12 + (trans % 12)) % 12) + suffix;
 	}
+    
+    public static String transposeChordWithFailBack(String chord, int trans) {
+        try {
+            return transposeChord(chord, trans);
+        } catch (TransposeException ex) {
+            logger.severe(ex.getMessage());
+            return chord;
+        }
+    }
 }

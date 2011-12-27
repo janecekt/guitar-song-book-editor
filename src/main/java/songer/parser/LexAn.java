@@ -31,9 +31,9 @@ public class LexAn {
 	 */
 	public static class LexElement {
 		/** Declaration of possible types of lexical elements. */
-		public enum Type { L_UNDEF, L_STRING, L_LPAR, L_RPAR, L_SLASH, L_EOL, L_EOI };
-		
-		/** Type of lexical-element. */
+		public enum Type { L_UNDEF, L_STRING, L_LPAR, L_RPAR, L_SLASH, L_EOL, L_EOI }
+
+        /** Type of lexical-element. */
 		protected  LexElement.Type type;
 
 		/** String representation of the lexical-element. */
@@ -50,23 +50,23 @@ public class LexAn {
 		 * @param text String representation of the lexical element.
 		 * @param position Position of the beginning of the lexical element in the input.
 		 */
-		public  LexElement ( LexElement.Type type, String text , InputSys.Position  position ){
+		public  LexElement(LexElement.Type type, String text , InputSys.Position  position){
 			this.type  = type;
-			this   .text = text;
+			this.text = text;
 			this.position = position;
 		}
 
-		/** Returns the type of the lexical-element. */
+		/** @return the type of the lexical-element. */
 		public LexElement.Type getType() { 
 			return type; 
 		}
 	
-		/** Returns the string representation of the lexical element. */
+		/** @return the string representation of the lexical element. */
 		public String getText() { 
 			return text; 
 		}
 	
-		/** Returns the position of the beginning of the lexical element. */
+		/** @return the position of the beginning of the lexical element. */
 		public InputSys.Position getPosition(){ 
 			return position; 
 		}
@@ -94,9 +94,9 @@ public class LexAn {
      
     
     
-    /** Retruns the next lexical element. */
+    /** @return the next lexical element. */
     public LexElement getNextElement(){
-		LexElement.Type lexType = LexElement.Type.L_UNDEF;
+		LexElement.Type lexType;
 		String lexText = "";
 		InputSys.Position lexPosition = nextToken.getPosition();
 

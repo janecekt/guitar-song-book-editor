@@ -1,25 +1,26 @@
 package songer.ui.presentationmodel;
 
 
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Logger;
+import javax.swing.*;
+
 import com.jgoodies.binding.list.SelectionInList;
 import com.jgoodies.binding.value.ValueHolder;
 import com.jgoodies.binding.value.ValueModel;
 import songer.parser.InputSys;
 import songer.parser.LexAn;
 import songer.parser.SyntaxAn;
+import songer.exporter.Exporter;
 import songer.parser.nodes.SongNode;
 import songer.ui.UIDialog;
 import songer.util.FileIO;
 import songer.util.FileList;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.logging.Logger;
 
 public class MainFormPresentationModel extends BasePresentationModel {
     private static final Logger logger = Logger.getLogger("songer");
@@ -28,32 +29,52 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private Action editAction;
     private ValueHolder transposeModel = new ValueHolder(0);
     private ValueHolder viewModeModel = new ValueHolder(true);
+    private ValueHolder titleModel = new ValueHolder("Songer (no song loaded)");
     private Action newAction;
     private Action saveAction;
     private Action exportHtmlAction;
     private Action exportLatexAction;
+    private Action exportPdfAction;
     private SelectionInList<String> encodingModel = new SelectionInList<String>(new String[]{"CP1250", "UTF8"});
     private EditorPanePresentationModel editorModel = new EditorPanePresentationModel();
     private LogObservingPresentationModel logObservingPresentationModel;
 
-    private FileList fileList;
     private SongNode songNode;
+    private FileList fileList;
     private UIDialog<String> newFilenameDialog;
+    private Exporter htmlExporter;
+    private Exporter latexExpoter;
+    private Exporter pdfExporter;
 
 
-    public MainFormPresentationModel(FileList fileList, UIDialog<String> newFilenameDialog) {
+    public MainFormPresentationModel(
+            FileList fileList, 
+            UIDialog<String> newFilenameDialog,
+            Exporter htmlExporter,
+            Exporter latexExporter,
+            Exporter pdfExporter) {
         this.fileList = fileList;
         this.newFilenameDialog = newFilenameDialog;
+        this.htmlExporter = htmlExporter;
+        this.latexExpoter = latexExporter;
+        this.pdfExporter = pdfExporter;
+
+        // Initialize
         encodingModel.setSelectionIndex(0);
         logObservingPresentationModel = new LogObservingPresentationModel();
         initActions();
         initDependencies();
         
         // Initialize contents
-        rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
+        rebuildSongNodeFromCurrentFile();
         refreshContent();
     }
 
+
+    private void rebuildSongNodeFromCurrentFile() {
+        rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
+        titleModel.setValue( "Songer - " + fileList.getCurrent().getAbsolutePath() );
+    }
     
     private void rebuildSongNode(String content) {
         // Rebuild song node
@@ -92,7 +113,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
         logger.info("Next Pressed");
         try {
             fileList.gotoNext();
-            rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
+            rebuildSongNodeFromCurrentFile();
             refreshContent();
             transposeModel.setValue(0);
         } catch (RuntimeException ex) {
@@ -105,7 +126,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
         logger.info("Previous Pressed");
         try {
             fileList.gotoPrevious();
-            rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
+            rebuildSongNodeFromCurrentFile();
             refreshContent();
             transposeModel.setValue(0);
         } catch (RuntimeException ex) {
@@ -120,8 +141,6 @@ public class MainFormPresentationModel extends BasePresentationModel {
             if (viewModeModel.booleanValue()) {
                 // View mode - switching to edit mode
                 viewModeModel.setValue(false);
-                //refreshContent();
-                //transposeModel.setValue(0);
             } else {
                 // Edit mode - switching to view mode
                 rebuildSongNode(editorModel.getTextModel().getString());
@@ -141,7 +160,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
         if (newFilename != null) {
             fileList.addNewFile(newFilename, encodingModel.getValue());
         }
-        rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
+        rebuildSongNodeFromCurrentFile();
         refreshContent();
     }
 
@@ -160,7 +179,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
                     songNode.getAsText(transposeModel.intValue()) );
 
             // Set transpose to 0 and refresh
-            rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
+            rebuildSongNodeFromCurrentFile();
             refreshContent();
             transposeModel.setValue(0);
         } catch (UnsupportedEncodingException ex) {
@@ -173,73 +192,56 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private void onExportHtmlActionPerformed() {
         logger.info("Export HTML Pressed");
 
-        // Allow save only in view mode.
-        if (!viewModeModel.booleanValue()) {
-            logger.severe("Exporting is only supported in VIEW MODE !");
-            return;
-        }
-
-        // Iterate over all songs in list - foreach : pase, convert-to-html, write-it-to-file
-        for (File file : fileList) {
-            try {
-                InputSys inputSys = new InputSys(new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encodingModel.getValue()));
-                SyntaxAn syntaxAn = new SyntaxAn(new LexAn(inputSys));
-                SongNode tmpSongNode = syntaxAn.parse();
-                String content = tmpSongNode.getAsExportHTML(0);
-                String targetFileName = fileList.getBaseDir() + "/html/" + file.getName().replace(".txt", "") + ".html";
-                FileIO.writeStringToFile(targetFileName, "utf8", content);
-                logger.info("Export OK: " + file.getName());
-            } catch (SyntaxAn.SyntaxErrorException ex) {
-                logger.severe("Export FAILED - SyntaxError : " + file.getName() + " : " + ex.getMessage());
-            } catch (Exception ex) {
-                logger.severe("Export FAILED - IO Error : " + file.getName() + " : " + ex.getMessage());
+        try {
+            // Allow save only in view mode.
+            if (!viewModeModel.booleanValue()) {
+                logger.severe("Exporting is only supported in VIEW MODE !");
+                return;
             }
+
+            // Iterate over all songs in list - foreach : pase, convert-to-html, write-it-to-file
+            htmlExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
+        } catch (Exception ex) {
+            logger.severe(ex.getMessage());
         }
     }
 
     private void onExportLatexActionPerformed() {
         logger.info("Export-Latex Pressed");
 
-        // Allow save only in view mode.
-        if (!viewModeModel.booleanValue()) {
-            logger.severe("Exporting is only supported in VIEW MODE !");
-            return;
-        }
-
-        // Read and parse all songs
-        ArrayList<SongNode> list = new ArrayList<SongNode>();
-        for (File file : fileList) {
-            try {
-                InputSys inputSys = new InputSys(new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encodingModel.getValue()));
-                SyntaxAn syntaxAn = new SyntaxAn(new LexAn(inputSys));
-                SongNode tmpSongNode = syntaxAn.parse();
-                list.add(tmpSongNode);
-                logger.info("Export OK: Successfully parsed " + file.getName());
-            } catch (SyntaxAn.SyntaxErrorException ex) {
-                logger.info("Export FAILED - SyntaxError : " + file.getName() + " : " + ex.getMessage());
-            } catch (Exception ex) {
-                logger.info("Export FAILED - IO Error : " + file.getName() + " : " + ex.getMessage());
-            }
-        }
-
-        // Sort and output songs
-        String documentBody = "";
-        Collections.sort(list, new SongNode.TitleComparator());
-        for (SongNode tmpSongNode : list) {
-            documentBody += tmpSongNode.getAsLaTex(0);
-            logger.info("Export OK: Exported " + tmpSongNode.getTitle());
-        }
-
-        // Write back
-        String targetFileName = fileList.getBaseDir() + "/tex/allsongs.tex";
         try {
-            FileIO.writeStringToFile(targetFileName, "utf8", documentBody);
-            logger.info("Export COMPLETED : Wrote output to " + targetFileName);
+            // Allow save only in view mode.
+            if (!viewModeModel.booleanValue()) {
+                logger.severe("Exporting is only supported in VIEW MODE !");
+                return;
+            }
+            
+            latexExpoter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
+        } catch (RuntimeException ex) {    
+            logger.severe("EXPORT TO LATEX FAILED - " + ex.getMessage());        
+        }    
+    }
+
+    private void onExportPdfActionPerformed() {
+        logger.info("Export PDF pressed !");
+        try {
+            // Allow save only in view mode.
+            if (!viewModeModel.booleanValue()) {
+                logger.severe("Exporting is only supported in VIEW MODE !");
+                return;
+            }
+            
+            pdfExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
         } catch (Exception ex) {
-            logger.severe("Export FAILED - IO Error : Failed to write to " + targetFileName + " : " + ex.getMessage());
+            logger.severe("EXPORT TO PDF FAILED - " + ex.getMessage());
         }
     }
 
+
+
+    public ValueModel getTitleModel() {
+        return titleModel;
+    }
 
 
     public Action getPreviousAction() {
@@ -272,6 +274,10 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
     public Action getExportLatexAction() {
         return exportLatexAction;
+    }
+
+    public Action getExportPdfAction() {
+        return exportPdfAction;
     }
 
     public SelectionInList<String> getEncodingModel() {
@@ -342,6 +348,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 onExportLatexActionPerformed();
+            }
+        };
+        
+        exportPdfAction = new AbstractAction("Export PDF") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onExportPdfActionPerformed();
             }
         };
     }
