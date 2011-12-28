@@ -1,13 +1,30 @@
 package songer.exporter;
 
-import com.lowagie.text.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.lowagie.text.Chapter;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
-import songer.parser.nodes.*;
-
-import java.io.*;
-import java.util.*;
-import java.util.List;
+import songer.parser.nodes.ChordNode;
+import songer.parser.nodes.LineNode;
+import songer.parser.nodes.Node;
+import songer.parser.nodes.SongBook;
+import songer.parser.nodes.SongNode;
+import songer.parser.nodes.TextNode;
+import songer.parser.nodes.VerseNode;
 
 
 
@@ -18,7 +35,8 @@ public class PdfExporter implements Exporter {
     private final Font textFont;
     private final Font chordFont;
     private final Paragraph verseSpacing;
-    
+
+
     public PdfExporter() {
         FontFactory.registerDirectories();
         songTitleFont = FontFactory.getFont(FontFactory.TIMES, BaseFont.CP1250, 14f, Font.BOLD);
@@ -49,10 +67,25 @@ public class PdfExporter implements Exporter {
 
             document.open();
 
+            // Build TOC
+            Chunk tocTitle = new Chunk("SONG BOOK - TABLE OF CONTENTS", songTitleFont);
+            tocTitle.setLocalDestination("TOC");
+
+            document.add(new Paragraph(tocTitle));
+            for (int i=0; i<sortedArrayList.size(); i++) {
+                SongNode songNode = sortedArrayList.get(i);
+                int chapterNumber = i+1;
+                Chunk tocEntry = new Chunk(chapterNumber+". " + songNode.getTitle(), textFont);
+                tocEntry.setLocalGoto("SONG::"+chapterNumber);
+                document.add(new Paragraph(tocEntry));
+            }
+            document.newPage();
+
             // Build document
             for (int i=0; i<sortedArrayList.size(); i++) {
                 // Build chapter
-                document.add( buildChapter(sortedArrayList.get(i), i+1) );
+                SongNode songNode = sortedArrayList.get(i);
+                document.add( buildChapter(songNode, i+1) );
                 document.newPage();
             }
             
@@ -66,9 +99,11 @@ public class PdfExporter implements Exporter {
     
     private Chapter buildChapter(SongNode songNode, int chapterNumber) {
         // Title
-        Chapter chapter = new Chapter(
-                new Paragraph(songNode.getTitle(), songTitleFont),
-                chapterNumber);
+        Chunk chapterTitle = new Chunk(songNode.getTitle(), songTitleFont);
+        chapterTitle.setLocalDestination("SONG::" + chapterNumber);
+        chapterTitle.setLocalGoto("TOC");
+        
+        Chapter chapter = new Chapter(new Paragraph(chapterTitle), chapterNumber);
         for (VerseNode verseNode : songNode.getVerseList()) {
             processVerse(verseNode, chapter);
         }

@@ -1,10 +1,16 @@
 package songer.exporter;
 
-import songer.parser.nodes.*;
-import songer.util.FileIO;
-
 import java.io.File;
 import java.util.logging.Logger;
+
+import songer.parser.nodes.ChordNode;
+import songer.parser.nodes.LineNode;
+import songer.parser.nodes.Node;
+import songer.parser.nodes.SongBook;
+import songer.parser.nodes.SongNode;
+import songer.parser.nodes.TextNode;
+import songer.parser.nodes.VerseNode;
+import songer.util.FileIO;
 
 public class HtmlExporter implements Exporter {
     private static final Logger logger = Logger.getLogger("songer");
