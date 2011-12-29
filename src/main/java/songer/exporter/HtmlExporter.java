@@ -1,8 +1,26 @@
+/*
+ *  Copyright (c) 2008 - Tomas Janecek.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package songer.exporter;
 
 import java.io.File;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import songer.parser.nodes.ChordNode;
 import songer.parser.nodes.LineNode;
 import songer.parser.nodes.Node;
@@ -13,20 +31,25 @@ import songer.parser.nodes.VerseNode;
 import songer.util.FileIO;
 
 public class HtmlExporter implements Exporter {
-    private static final Logger logger = Logger.getLogger("songer");
+    private static final Logger logger = LoggerFactory.getLogger(HtmlExporter.class);
     
     @Override
     public void export(File baseDir, SongBook songBook) {
+        logger.info("Starting export to HTML.");
+
         for (SongNode songNode : songBook.getSongNodeList()) {
             try {
                 String htmlFileName = songNode.getSourceFile().getName().replace(".txt", "") + ".html";
                 File outputFileName = new File(baseDir + "/html/" + htmlFileName);
+                FileIO.createDirectoryIfRequired(outputFileName);
 
                 FileIO.writeStringToFile(outputFileName.getAbsolutePath(), "utf8", buildSongNode(songNode) );
             } catch (Exception ex) {
-                logger.severe("EXPORT FAILED: " + ex.getMessage());
+                logger.error("... FAILED to export song - " + songNode.getTitle(), ex);
             }
         }
+
+        logger.info("COMPLETED export to HTML");
     }
 
     private String buildSongNode(SongNode songNode) {
@@ -44,7 +67,7 @@ public class HtmlExporter implements Exporter {
         builder.append("<DIV class=\"title\">").append(songNode.getTitle()).append("</DIV>\n\n");
 
         builder.append("<DIV class=\"transpose\">\n");
-        builder.append("Transpozice: <SPAN id=\"totaltranspose\">0</SPAN>\n");
+        builder.append("Transposition: <SPAN id=\"totaltranspose\">0</SPAN>\n");
         builder.append("[<a href=\"javascript:transpose(1)\">+1</a>]\n");
         builder.append("[<a href=\"javascript:transpose(-1)\">-1</a>]\n");
         builder.append("</DIV>");

@@ -1,3 +1,20 @@
+/*
+ *  Copyright (c) 2008 - Tomas Janecek.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package songer.ui.view;
 
 import com.jgoodies.binding.adapter.BasicComponentFactory;
@@ -12,6 +29,10 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 
+
+/**
+ * View for the MainForm (implementation of the Model-View-PresentationModel).
+ */
 public class MainFormView extends JFrame {
     private JButton nextButton;
     private JButton previousButton;
@@ -27,8 +48,11 @@ public class MainFormView extends JFrame {
     private JEditorPane editorPane;
     private JTextArea logTextArea;
 
-    
-    
+
+    /**
+     * Constructor - creates the MainFormView.
+     * @param presentationModel Presentation model for the view.
+     */
     public MainFormView(MainFormPresentationModel presentationModel) {
         presentationModel.setFrame(this);
 
@@ -70,17 +94,20 @@ public class MainFormView extends JFrame {
     }
 
 
+    /** @return New HTML-enabled editor pane. */
     private JEditorPane createEditorPane() {
         JEditorPane editorPane = new JEditorPane();
         HTMLEditorKit kit = new HTMLEditorKit();
         editorPane.setEditorKitForContentType("text/html", kit);
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule( FileIO.readResourceToString("/css/songer.css"));
+        styleSheet.addRule( FileIO.readResourceToString("/css/editorPane.css"));
         Document doc = kit.createDefaultDocument();
         editorPane.setDocument(doc);
         return editorPane;
     }
 
+
+    /** Initialize layout */
     private void initLayout() {
         Box toolbarPanel = Box.createHorizontalBox();
         toolbarPanel.setAlignmentX(Component.LEFT_ALIGNMENT);

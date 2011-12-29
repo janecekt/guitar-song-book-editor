@@ -189,8 +189,7 @@ public class SyntaxAn {
 
 			// (jinak)      N -> eps	//
 			default:
-				return;
-		}
+        }
 	}
 
 	

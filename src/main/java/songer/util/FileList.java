@@ -29,8 +29,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import songer.parser.InputSys;
 import songer.parser.LexAn;
 import songer.parser.SyntaxAn;
@@ -42,7 +43,7 @@ import songer.parser.nodes.SongNode;
  * @author Tomas Janecek
  */
 public class FileList implements Iterable<File> {
-    private static final Logger logger = Logger.getLogger("songer");
+    private static final Logger logger = LoggerFactory.getLogger("songer");
     
 	/** Class representing the Base-Directory */
 	protected File baseDir;
@@ -98,9 +99,9 @@ public class FileList implements Iterable<File> {
                 tmpSongNode.setSourceFile(file);
                 songNodeList.add(tmpSongNode);
             } catch (SyntaxAn.SyntaxErrorException ex) {
-                logger.severe("LOADING FAILED - SyntaxError : " + file.getName() + " : " + ex.getMessage());
+                logger.error("LOADING FAILED - SyntaxError : " + file.getName() + " : " + ex.getMessage(), ex);
             } catch (Exception ex) {
-                logger.severe("LOADING FAILED - IO Error : " + file.getName() + " : " + ex.getMessage());
+                logger.error("LOADING FAILED - IO Error : " + file.getName() + " : " + ex.getMessage(), ex);
             }
         }
         return new SongBook(songNodeList);
@@ -120,11 +121,11 @@ public class FileList implements Iterable<File> {
             setCurrent(fileName);
             logger.info("FileList reloaded.");
         } catch (UnsupportedEncodingException ex) {
-            logger.severe("Unsupported encoding.");
-        } catch (FileNotFoundException e) {
-            logger.severe("Failed to write file " + fileName);
-        } catch (IOException e) {
-            logger.severe("Failed to write file " + fileName);
+            logger.error("Unsupported encoding.", ex);
+        } catch (FileNotFoundException ex) {
+            logger.error("Failed to write file " + fileName, ex);
+        } catch (IOException ex) {
+            logger.error("Failed to write file " + fileName, ex);
         }
     }
 

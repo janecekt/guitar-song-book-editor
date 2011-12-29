@@ -18,16 +18,18 @@
 package songer.parser.nodes;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** 
  * Class representing the Chord in the Song.
  * @author Tomas Janecek.
  */
 public class ChordNode implements Node {
-	private static final Logger logger = Logger.getLogger("songer");
+	private static final Logger logger = LoggerFactory.getLogger(ChordNode.class);
 
-	/** Exception thrown when an exception occurs during Trnasposition. */
+	/** Exception thrown when an exception occurs during transposition. */
 	public static class TransposeException extends Exception {
 		public TransposeException(String msg) {
 			super(msg);
@@ -35,10 +37,10 @@ public class ChordNode implements Node {
 	}
 
 	/** Main chord */
-	public String chord1;
+	private String chord1;
 	
 	/** Addition bass chord (optional) */
-	public String chord2;
+	private String chord2;
 	
 	
 	/** 
@@ -113,13 +115,13 @@ public class ChordNode implements Node {
 	
 	// === STATIC CONTEXT === //
 	/** Chord to Idx conversion map. */
-	public static HashMap<String, Integer> chordToIdx;
+	private static HashMap<String, Integer> chordToIdx;
 	
 	/** Idx to Chord converstion map. */
-	public static HashMap<Integer, String> idxToChord;
+	private static HashMap<Integer, String> idxToChord;
 	
 	
-	public static String transposeChord(String chord, int trans) throws TransposeException {
+	private static String transposeChord(String chord, int trans) throws TransposeException {
 		// Initialize hashMaps if necessary
 		if (chordToIdx == null) {
 			chordToIdx = new HashMap<String, Integer>();
@@ -162,11 +164,11 @@ public class ChordNode implements Node {
 		return idxToChord.get((chordIdx + 12 + (trans % 12)) % 12) + suffix;
 	}
     
-    public static String transposeChordWithFailBack(String chord, int trans) {
+    private static String transposeChordWithFailBack(String chord, int trans) {
         try {
             return transposeChord(chord, trans);
         } catch (TransposeException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
             return chord;
         }
     }

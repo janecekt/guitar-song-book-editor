@@ -19,11 +19,15 @@ package songer.util;
 
 import java.io.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Wrapper class of static methods implementing File <-> String IO-operations.
  * @author Tomas Janecek
  */
 public class FileIO {
+    private static final Logger logger = LoggerFactory.getLogger(FileIO.class.getSimpleName());
 	
 	/** 
 	 * Writes the string content to file path using the specified encoding.
@@ -31,7 +35,7 @@ public class FileIO {
 	 * @param encoding Encoding to be used.
 	 * @param content String to be written to the file.
 	 */
-	public static void writeStringToFile(String path, String encoding, String content) throws FileNotFoundException, UnsupportedEncodingException, IOException {
+	public static void writeStringToFile(String path, String encoding, String content) throws IOException {
 		BufferedWriter bw = null;
 		try {
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), encoding));
@@ -86,7 +90,24 @@ public class FileIO {
             try {
                 inStream.close();
             } catch (IOException ex) {
-                throw new RuntimeException("Failed to close resource " + resourceName, ex);
+                logger.error("Failed to close resource " + resourceName, ex);
+            }
+        }
+    }
+    
+    
+    public static void createDirectoryIfRequired(File pathToTargetFile) {
+        if (pathToTargetFile.exists()) {
+            // Path exists - nothing to do
+            return;
+        }
+        
+        File parentDir = pathToTargetFile.getParentFile();
+        if ((parentDir != null) &&!parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                logger.error("Directory {} created.", parentDir.getAbsolutePath());
+            } else {
+                logger.error("Directory {} does not exist and was not created.", parentDir.getAbsolutePath());
             }
         }
     }

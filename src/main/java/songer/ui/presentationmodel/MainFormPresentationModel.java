@@ -1,5 +1,21 @@
+/*
+ *  Copyright (c) 2008 - Tomas Janecek.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package songer.ui.presentationmodel;
-
 
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -7,12 +23,13 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 import com.jgoodies.binding.list.SelectionInList;
 import com.jgoodies.binding.value.ValueHolder;
 import com.jgoodies.binding.value.ValueModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import songer.parser.InputSys;
 import songer.parser.LexAn;
 import songer.parser.SyntaxAn;
@@ -22,8 +39,9 @@ import songer.ui.UIDialog;
 import songer.util.FileIO;
 import songer.util.FileList;
 
+
 public class MainFormPresentationModel extends BasePresentationModel {
-    private static final Logger logger = Logger.getLogger("songer");
+    private static final Logger logger = LoggerFactory.getLogger(MainFormPresentationModel.class);
     private Action nextAction;
     private Action previousAction;
     private Action editAction;
@@ -104,12 +122,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
             }
             refreshContent();
         } catch (RuntimeException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
     }
 
 
     private void onNextActionPerformed() {
+        logger.info("");
         logger.info("Next Pressed");
         try {
             fileList.gotoNext();
@@ -117,12 +136,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
             refreshContent();
             transposeModel.setValue(0);
         } catch (RuntimeException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage(), ex);
         }
     }
 
 
     private void onPreviousActionPerformed() {
+        logger.info("");
         logger.info("Previous Pressed");
         try {
             fileList.gotoPrevious();
@@ -130,12 +150,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
             refreshContent();
             transposeModel.setValue(0);
         } catch (RuntimeException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage(), ex);
         }
     }
 
 
     private void onEditActionPerformed() {
+        logger.info("");
         logger.info("Edit Pressed");
         try {
             if (viewModeModel.booleanValue()) {
@@ -149,12 +170,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
             }
             refreshContent();
         } catch (RuntimeException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
     }
 
 
     private void onNewActionPerformed() {
+        logger.info("");
         logger.info("New Pressed");
         String newFilename = newFilenameDialog.runDialog(getOwnerFrame());
         if (newFilename != null) {
@@ -165,6 +187,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
     }
 
     private void onSaveActionPerformed() {
+        logger.info("");
         logger.info("Save Pressed");
 
         try {
@@ -183,57 +206,60 @@ public class MainFormPresentationModel extends BasePresentationModel {
             refreshContent();
             transposeModel.setValue(0);
         } catch (UnsupportedEncodingException ex) {
-            logger.severe("Save FAILED - unsupported encoding.");
+            logger.error("Save FAILED - unsupported encoding.");
         } catch (IOException ex) {
-            logger.severe("Save FAILED - cannot write to file.");
+            logger.error("Save FAILED - cannot write to file.");
         }
     }
 
     private void onExportHtmlActionPerformed() {
+        logger.info("");
         logger.info("Export HTML Pressed");
 
         try {
             // Allow save only in view mode.
             if (!viewModeModel.booleanValue()) {
-                logger.severe("Exporting is only supported in VIEW MODE !");
+                logger.error("Exporting is only supported in VIEW MODE !");
                 return;
             }
 
             // Iterate over all songs in list - foreach : pase, convert-to-html, write-it-to-file
             htmlExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
         } catch (Exception ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
     }
 
     private void onExportLatexActionPerformed() {
+        logger.info("");
         logger.info("Export-Latex Pressed");
 
         try {
             // Allow save only in view mode.
             if (!viewModeModel.booleanValue()) {
-                logger.severe("Exporting is only supported in VIEW MODE !");
+                logger.error("Exporting is only supported in VIEW MODE !");
                 return;
             }
             
             latexExpoter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
         } catch (RuntimeException ex) {    
-            logger.severe("EXPORT TO LATEX FAILED - " + ex.getMessage());        
+            logger.error("EXPORT TO LATEX FAILED - " + ex.getMessage());
         }    
     }
 
     private void onExportPdfActionPerformed() {
+        logger.info("");
         logger.info("Export PDF pressed !");
         try {
             // Allow save only in view mode.
             if (!viewModeModel.booleanValue()) {
-                logger.severe("Exporting is only supported in VIEW MODE !");
+                logger.error("Exporting is only supported in VIEW MODE !");
                 return;
             }
             
             pdfExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
         } catch (Exception ex) {
-            logger.severe("EXPORT TO PDF FAILED - " + ex.getMessage());
+            logger.error("EXPORT TO PDF FAILED !", ex);
         }
     }
 
