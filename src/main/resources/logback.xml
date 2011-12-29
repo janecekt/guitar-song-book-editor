@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="UI-APPENDER" class="songer.logback.EventAppender">
+    <appender name="UI-APPENDER" class="com.songbook.logback.EventAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
@@ -16,7 +16,7 @@
     </appender>
 
     <root level="debug">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="UI-APPENDER" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="UI-APPENDER"/>
     </root>
 </configuration>

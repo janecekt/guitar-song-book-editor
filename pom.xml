@@ -5,11 +5,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>songer</groupId>
-    <artifactId>songer</artifactId>
+    <groupId>com.songbook</groupId>
+    <artifactId>songbook</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>Songer</name>
+    <name>Guitar Song Book Editor</name>
 
     <build>
         <plugins>
@@ -21,7 +21,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>songer.Main</mainClass>
+                            <mainClass>com.songbook.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

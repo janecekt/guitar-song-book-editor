@@ -1,8 +1,4 @@
 *.iml
 *.ipr
 *.iws
-nbproject
-dist
-build
-out
 target
