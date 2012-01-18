@@ -92,7 +92,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
     private void rebuildSongNodeFromCurrentFile() {
         rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
-        titleModel.setValue( "Guitar Song Book Editor - " + fileList.getCurrent().getAbsolutePath() );
+        titleModel.setValue( "Guitar Song Book Editor - " + fileList.getCurrent().getName() );
     }
 
     private void rebuildSongNode(String content) {
