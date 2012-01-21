@@ -52,6 +52,7 @@ public class MainFormView extends JFrame {
 
     /**
      * Constructor - creates the MainFormView.
+     *
      * @param presentationModel Presentation model for the view.
      */
     public MainFormView(MainFormPresentationModel presentationModel) {
@@ -138,6 +139,7 @@ public class MainFormView extends JFrame {
 
         JSplitPane mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         mainPane.setDividerLocation(450);
+        mainPane.setResizeWeight(1);
         mainPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPane.setTopComponent(new JScrollPane(editorPane));
         mainPane.setBottomComponent(new JScrollPane(logTextArea));
