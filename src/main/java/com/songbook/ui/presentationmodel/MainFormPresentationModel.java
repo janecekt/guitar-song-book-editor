@@ -20,10 +20,10 @@ package com.songbook.ui.presentationmodel;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import javax.swing.*;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 import com.jgoodies.binding.list.SelectionInList;
 import com.jgoodies.binding.value.ValueHolder;
@@ -57,13 +57,16 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private final EditorPanePresentationModel editorModel = new EditorPanePresentationModel();
     private final LogObservingPresentationModel logObservingPresentationModel;
 
+    // Dependencies (services)
     private final UIDialog<String> newFilenameDialog;
     private final Exporter htmlExporter;
     private final Exporter latexExporter;
     private final Exporter pdfExporter;
-
     private final FileList fileList;
+
+    // State
     private SongNode songNode;
+    private int songNodeTransposition = 0;
 
 
     public MainFormPresentationModel(
@@ -91,15 +94,17 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
 
     private void rebuildSongNodeFromCurrentFile() {
-        rebuildSongNode( fileList.getCurrentFileContent(encodingModel.getValue()) );
-        titleModel.setValue( "Guitar Song Book Editor - " + fileList.getCurrent().getName() );
+        rebuildSongNode(fileList.getCurrentFileContent(encodingModel.getValue()), 0);
+        titleModel.setValue("Guitar Song Book Editor - " + fileList.getCurrent().getName());
     }
 
-    private void rebuildSongNode(String content) {
+
+    private void rebuildSongNode(String content, int songTranspose) {
         // Rebuild song node
         try {
             SyntaxAn syntaxAn = new SyntaxAn(new LexAn(new InputSys(new StringReader(content))));
             songNode = syntaxAn.parse();
+            songNodeTransposition = songTranspose;
         } catch (SyntaxAn.SyntaxErrorException ex) {
             throw new RuntimeException("Syntax analysis failed - " + ex.getMessage());
         }
@@ -109,55 +114,52 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private void refreshContent() {
         // Update view
         if (viewModeModel.booleanValue()) {
-            getEditorModel().setHtmlText(songNode.getAsHTML(transposeModel.intValue()));
+            getEditorModel().setHtmlText(songNode.getAsHTML(transposeModel.intValue() - songNodeTransposition));
         } else {
-            getEditorModel().setPlainText(songNode.getAsText(transposeModel.intValue()));
+            getEditorModel().setPlainText(songNode.getAsText(transposeModel.intValue() - songNodeTransposition));
         }
     }
 
 
-    private void onTransposeValueChanged() {
+    private void onTransposeValueChanged(int oldValue) {
         try {
             if (!viewModeModel.booleanValue()) {
-                rebuildSongNode(editorModel.getTextModel().getString());
+                rebuildSongNode(editorModel.getTextModel().getString(), oldValue);
             }
             refreshContent();
         } catch (RuntimeException ex) {
-            logger.error(ex.getMessage());
+            handleError("Transposition failed !", ex);
         }
     }
 
 
     private void onNextActionPerformed() {
-        logger.info("");
         logger.info("Next Pressed");
         try {
             fileList.gotoNext();
+            transposeModel.setValue(0);
             rebuildSongNodeFromCurrentFile();
             refreshContent();
-            transposeModel.setValue(0);
         } catch (RuntimeException ex) {
-            logger.error(ex.getMessage(), ex);
+            handleError("Switching to next song failed !", ex);
         }
     }
 
 
     private void onPreviousActionPerformed() {
-        logger.info("");
         logger.info("Previous Pressed");
         try {
             fileList.gotoPrevious();
+            transposeModel.setValue(0);
             rebuildSongNodeFromCurrentFile();
             refreshContent();
-            transposeModel.setValue(0);
         } catch (RuntimeException ex) {
-            logger.error(ex.getMessage(), ex);
+            handleError("Switching to previous song failed !", ex);
         }
     }
 
 
-    private void onEditActionPerformed() {
-        logger.info("");
+    private void onEditActionPerformed(boolean handleExceptions) {
         logger.info("Edit Pressed");
         try {
             if (viewModeModel.booleanValue()) {
@@ -165,56 +167,60 @@ public class MainFormPresentationModel extends BasePresentationModel {
                 viewModeModel.setValue(false);
             } else {
                 // Edit mode - switching to view mode
-                rebuildSongNode(editorModel.getTextModel().getString());
+                rebuildSongNode(editorModel.getTextModel().getString(), transposeModel.intValue());
                 viewModeModel.setValue(true);
-                transposeModel.setValue(0);
             }
             refreshContent();
         } catch (RuntimeException ex) {
-            logger.error(ex.getMessage());
+            if (handleExceptions) {
+                handleError("Switching to EDIT mode failed !", ex);
+            } else {
+                throw ex;
+            }
         }
     }
 
 
     private void onNewActionPerformed() {
-        logger.info("");
         logger.info("New Pressed");
-        String newFilename = newFilenameDialog.runDialog(getOwnerFrame());
-        if (newFilename != null) {
-            fileList.addNewFile(newFilename, encodingModel.getValue());
+        try {
+            String newFilename = newFilenameDialog.runDialog(getOwnerFrame());
+            if (newFilename != null) {
+                fileList.addNewFile(newFilename, encodingModel.getValue());
+            }
+            rebuildSongNodeFromCurrentFile();
+            refreshContent();
+        } catch (RuntimeException ex) {
+            handleError("Creation of new song failed !", ex);
         }
-        rebuildSongNodeFromCurrentFile();
-        refreshContent();
     }
 
+
     private void onSaveActionPerformed() {
-        logger.info("");
         logger.info("Save Pressed");
 
         try {
             // Save current state
             if (!viewModeModel.booleanValue()) {
-                onEditActionPerformed();
+                onEditActionPerformed(false);
             }
 
             // Save file
             FileIO.writeStringToFile(fileList.getCurrent().getAbsolutePath(),
                     encodingModel.getValue(),
-                    songNode.getAsText(transposeModel.intValue()));
+                    songNode.getAsText(transposeModel.intValue() - songNodeTransposition));
 
             // Set transpose to 0 and refresh
+            transposeModel.setValue(0);
             rebuildSongNodeFromCurrentFile();
             refreshContent();
-            transposeModel.setValue(0);
-        } catch (UnsupportedEncodingException ex) {
-            logger.error("Save FAILED - unsupported encoding.");
-        } catch (IOException ex) {
-            logger.error("Save FAILED - cannot write to file.");
+        } catch (RuntimeException ex) {
+            handleError("Saving of a song failed -" + songNode.getTitle(), ex);
         }
     }
 
+
     private void onExportHtmlActionPerformed() {
-        logger.info("");
         logger.info("Export HTML Pressed");
 
         try {
@@ -226,13 +232,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
             // Export to HTML files
             htmlExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
+        } catch (RuntimeException ex) {
+            handleError("EXPORT TO HTML FAILED !", ex);
         }
     }
 
+
     private void onExportLatexActionPerformed() {
-        logger.info("");
         logger.info("Export-Latex Pressed");
 
         try {
@@ -244,12 +250,12 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
             latexExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
         } catch (RuntimeException ex) {
-            logger.error("EXPORT TO LATEX FAILED - " + ex.getMessage());
+            handleError("EXPORT TO LATEX FAILED !", ex);
         }
     }
 
+
     private void onExportPdfActionPerformed() {
-        logger.info("");
         logger.info("Export PDF pressed !");
         try {
             // Allow save only in view mode.
@@ -260,7 +266,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
             pdfExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
         } catch (Exception ex) {
-            logger.error("EXPORT TO PDF FAILED !", ex);
+            handleError("EXPORT TO PDF FAILED !", ex);
         }
     }
 
@@ -274,58 +280,77 @@ public class MainFormPresentationModel extends BasePresentationModel {
         return previousAction;
     }
 
+
     public Action getNextAction() {
         return nextAction;
     }
+
 
     public Action getEditAction() {
         return editAction;
     }
 
+
     public ValueModel getTransposeModel() {
         return transposeModel;
     }
+
 
     public Action getNewAction() {
         return newAction;
     }
 
+
     public Action getSaveAction() {
         return saveAction;
     }
+
 
     public Action getExportHtmlAction() {
         return exportHtmlAction;
     }
 
+
     public Action getExportLatexAction() {
         return exportLatexAction;
     }
+
 
     public Action getExportPdfAction() {
         return exportPdfAction;
     }
 
+
     public SelectionInList<String> getEncodingModel() {
         return encodingModel;
     }
+
 
     public EditorPanePresentationModel getEditorModel() {
         return editorModel;
     }
 
+
+    @Override
+    protected Logger getLogger() {
+        return logger;
+    }
+
+
     public LogObservingPresentationModel getLogObservingModel() {
         return logObservingPresentationModel;
     }
+
 
     private void initDependencies() {
         transposeModel.addValueChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                onTransposeValueChanged();
+                onTransposeValueChanged((Integer) evt.getOldValue());
             }
         });
     }
+
 
     private void initActions() {
         previousAction = new AbstractAction("Previous") {
@@ -345,7 +370,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
         editAction = new AbstractAction("Edit/View") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onEditActionPerformed();
+                onEditActionPerformed(true);
             }
         };
 

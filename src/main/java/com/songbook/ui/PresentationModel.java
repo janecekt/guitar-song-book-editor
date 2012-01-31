@@ -17,9 +17,11 @@
  */
 package com.songbook.ui;
 
-import java.awt.*;
+import java.awt.Frame;
 
 /** Marker interface */
 public interface PresentationModel {
     void setFrame(Frame ownerFrame);
+
+    void setPropagateErrors(boolean handleErrors);
 }

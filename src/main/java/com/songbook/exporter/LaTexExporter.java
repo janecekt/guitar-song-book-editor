@@ -18,7 +18,6 @@
 package com.songbook.exporter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -39,35 +38,36 @@ import org.slf4j.LoggerFactory;
 public class LaTexExporter implements Exporter {
     private static final Logger logger = LoggerFactory.getLogger(LaTexExporter.class);
 
+
     @Override
     public void export(File baseDir, SongBook songBook) {
         // Output
-        File outputFile = new File(baseDir.getAbsoluteFile(), "/tex/allsongs.tex");
+        File outputDir = new File(baseDir, "tex");
+        File outputFile = new File(outputDir, "allsongs.tex");
         logger.info("Starting export to latex file {}.", outputFile.getAbsolutePath());
-        FileIO.createDirectoryIfRequired(outputFile);
 
-        try {
-            // Sort songs
-            List<SongNode> sortedArrayList = new ArrayList<SongNode>(songBook.getSongNodeList());
-            Collections.sort(sortedArrayList, new SongNode.TitleComparator());
+        // Create directory
+        FileIO.createDirectory(outputDir);
 
-            // Initialize exporter
-            StringBuilder builder = new StringBuilder();
+        // Sort songs
+        List<SongNode> sortedArrayList = new ArrayList<SongNode>(songBook.getSongNodeList());
+        Collections.sort(sortedArrayList, new SongNode.TitleComparator());
 
-            // Build document
-            for (SongNode songNode : songBook.getSongNodeList()) {
-                // Build chapter
-                appendSongNode(builder, songNode);
-            }
+        // Initialize exporter
+        StringBuilder builder = new StringBuilder();
 
-            // Write to file
-            FileIO.writeStringToFile(outputFile.getAbsolutePath(), "utf8", builder.toString());
-
-            logger.info("COMPLETED export to latex file {}.", outputFile.getAbsolutePath());
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to write to file " + outputFile.getName(), ex);
+        // Build document
+        for (SongNode songNode : songBook.getSongNodeList()) {
+            // Build chapter
+            appendSongNode(builder, songNode);
         }
+
+        // Write to file
+        FileIO.writeStringToFile(outputFile.getAbsolutePath(), "utf8", builder.toString());
+
+        logger.info("COMPLETED export to latex file {}.", outputFile.getAbsolutePath());
     }
+
 
     private void appendSongNode(StringBuilder builder, SongNode songNode) {
         builder.append("\n\n\n\\begin{song}{").append(songNode.getTitle()).append("}\n");
@@ -98,7 +98,7 @@ public class LaTexExporter implements Exporter {
         builder.append("\t\t");
         for (Node node : lineNode.getContentList()) {
             if (node instanceof TextNode) {
-                builder.append( ((TextNode) node).getText() );
+                builder.append(((TextNode) node).getText());
             } else if (node instanceof ChordNode) {
                 ChordNode chordNode = (ChordNode) node;
                 String chord2 = chordNode.getChord2(0).replaceAll("#", "\\\\#");

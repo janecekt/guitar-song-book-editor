@@ -1,0 +1,27 @@
+body {
+    font-family: Times, serif;
+    font-size: 10px;
+    background-color: white;
+}
+
+.ERROR {
+    color: red;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.WARNING {
+    color: yellow;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.INFO {
+    color: black;
+    font-size: 9px;
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 0;
+}

@@ -17,20 +17,41 @@
  */
 package com.songbook.ui.presentationmodel;
 
-import java.awt.*;
+import java.awt.Frame;
 
 import com.songbook.ui.PresentationModel;
+import org.slf4j.Logger;
 
 
-public class BasePresentationModel implements PresentationModel {
+public abstract class BasePresentationModel implements PresentationModel {
     private Frame ownerFrame;
+    private boolean propagateErrors = false;
+
+
+    protected abstract Logger getLogger();
+
+
+    protected void handleError(String description, Exception exception) {
+        getLogger().error(description.toUpperCase(), exception);
+        if (!propagateErrors) {
+            throw new RuntimeException(description, exception);
+        }
+    }
+
 
     protected Frame getOwnerFrame() {
         return ownerFrame;
     }
 
+
     @Override
     public void setFrame(Frame ownerFrame) {
         this.ownerFrame = ownerFrame;
+    }
+
+
+    @Override
+    public void setPropagateErrors(boolean propagateErrors) {
+        this.propagateErrors = propagateErrors;
     }
 }

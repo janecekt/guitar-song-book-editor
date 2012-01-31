@@ -18,6 +18,7 @@
 package com.songbook.parser.nodes;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -60,9 +61,10 @@ public class VerseNode implements Node {
     @Override
     public String getAsText(int transposition) {
         String out = "";
-        for (LineNode lineNode : lines) {
+        for (Iterator<LineNode> it = lines.iterator(); it.hasNext(); ) {
+            LineNode lineNode = it.next();
             out += lineNode.getAsText(transposition) + "\n";
-            if (containsChords) {
+            if (it.hasNext() && containsChords) {
                 out += "\n";
             }
         }
@@ -74,7 +76,7 @@ public class VerseNode implements Node {
     /** {@inheritDoc} */
     @Override
     public String getAsHTML(int transposition) {
-        String out = "<DIV class=\"verse\">\n";
+        String out = "<DIV class=\"verse\">";
 
         for (LineNode lineNode : lines) {
             out += lineNode.getAsHTML(transposition) + "<BR />\n";

@@ -33,17 +33,24 @@ import org.slf4j.LoggerFactory;
 public class HtmlExporter implements Exporter {
     private static final Logger logger = LoggerFactory.getLogger(HtmlExporter.class);
 
+
     @Override
     public void export(File baseDir, SongBook songBook) {
         logger.info("Starting export to HTML.");
 
+        // Create directory
+        File outputDir = new File(baseDir, "html");
+        FileIO.createDirectory(outputDir);
+
         for (SongNode songNode : songBook.getSongNodeList()) {
             try {
+                // Determine target filename
                 String htmlFileName = songNode.getSourceFile().getName().replace(".txt", "") + ".html";
-                File outputFileName = new File(baseDir + "/html/" + htmlFileName);
-                FileIO.createDirectoryIfRequired(outputFileName);
+                File outputFileName = new File(outputDir, htmlFileName);
 
-                FileIO.writeStringToFile(outputFileName.getAbsolutePath(), "utf8", buildSongNode(songNode));
+                // Write content to HTML
+                String htmlContent = buildHtmlForSongNode(songNode);
+                FileIO.writeStringToFile(outputFileName.getAbsolutePath(), "utf8", htmlContent);
             } catch (Exception ex) {
                 logger.error("... FAILED to export song - " + songNode.getTitle(), ex);
             }
@@ -52,13 +59,14 @@ public class HtmlExporter implements Exporter {
         logger.info("COMPLETED export to HTML");
     }
 
-    private String buildSongNode(SongNode songNode) {
+
+    private String buildHtmlForSongNode(SongNode songNode) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<HTML>\n");
         builder.append("<HEAD>\n");
-        builder.append("  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf8\">\n");
-        builder.append("  <link href=\"song.css\" rel=\"stylesheet\" type=\"text/css\">\n");
+        builder.append("  <META http-equiv=\"Content-Type\" content=\"text/html; charset=utf8\" />\n");
+        builder.append("  <LINK href=\"song.css\" rel=\"stylesheet\" type=\"text/css\" />\n");
         builder.append("  <SCRIPT src=\"song.js\" type=\"text/javascript\"></SCRIPT>\n");
         builder.append("  <TITLE>").append(songNode.getTitle()).append("</TITLE>\n");
         builder.append("</HEAD>\n");
@@ -68,8 +76,8 @@ public class HtmlExporter implements Exporter {
 
         builder.append("<DIV class=\"transpose\">\n");
         builder.append("Transposition: <SPAN id=\"totaltranspose\">0</SPAN>\n");
-        builder.append("[<a href=\"javascript:transpose(1)\">+1</a>]\n");
-        builder.append("[<a href=\"javascript:transpose(-1)\">-1</a>]\n");
+        builder.append("[<A href=\"javascript:transpose(1)\">+1</A>]\n");
+        builder.append("[<A href=\"javascript:transpose(-1)\">-1</A>]\n");
         builder.append("</DIV>");
 
         for (VerseNode verseNode : songNode.getVerseList()) {
@@ -97,7 +105,7 @@ public class HtmlExporter implements Exporter {
     private void appendLine(LineNode lineNode, StringBuilder builder) {
         for (Node node : lineNode.getContentList()) {
             if (node instanceof TextNode) {
-                builder.append( ((TextNode) node).getText() );
+                builder.append(((TextNode) node).getText());
             } else if (node instanceof ChordNode) {
                 ChordNode chordNode = (ChordNode) node;
 

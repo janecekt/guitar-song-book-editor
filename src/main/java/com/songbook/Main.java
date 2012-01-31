@@ -17,18 +17,18 @@
  */
 package com.songbook;
 
-import java.awt.*;
+import java.awt.Frame;
 import java.util.regex.Pattern;
-import javax.swing.*;
 
 import com.songbook.exporter.HtmlExporter;
 import com.songbook.exporter.LaTexExporter;
 import com.songbook.exporter.PdfExporter;
 import com.songbook.ui.UIDialog;
 import com.songbook.ui.presentationmodel.MainFormPresentationModel;
+import com.songbook.ui.presentationmodel.TextDialogPresentationModel;
 import com.songbook.ui.view.MainFormView;
-import com.songbook.ui.view.TextDialog;
-import com.songbook.util.FileList;
+import com.songbook.ui.view.TextDialogView;
+import com.songbook.util.FileListImpl;
 
 /**
  * Wrapper class for main function.
@@ -53,26 +53,25 @@ public class Main {
             UIDialog<String> newNextFileDialog = new UIDialog<String>() {
                 @Override
                 public String runDialog(Frame ownerFrame) {
-                    TextDialog textDialog = new TextDialog(
-                            ownerFrame,
+                    TextDialogPresentationModel textDialogPM = new TextDialogPresentationModel(
                             Pattern.compile("([A-Za-z]+-)?[A-Z][A-Za-z ]*[A-Za-z]"),
                             "Enter song name",
                             "Enter new song name:");
-                    return textDialog.runDialog();
+                    new TextDialogView(ownerFrame, textDialogPM);
+                    return textDialogPM.runDialog();
                 }
             };
 
             // Main Presentation Model
             MainFormPresentationModel mainPM = new MainFormPresentationModel(
-                    new FileList(args[0], new FileList.TxtFileFilter(), new FileList.FileNameComparator()),
+                    new FileListImpl(args[0], new FileListImpl.TxtFileFilter(), new FileListImpl.FileNameComparator()),
                     newNextFileDialog,
                     new HtmlExporter(),
                     new LaTexExporter(),
-                    new PdfExporter()  );
+                    new PdfExporter());
 
-            // Main View
-            JFrame mainFrame = new MainFormView(mainPM);
-            mainFrame.setVisible(true);
+            MainFormView mainFormView = new MainFormView(mainPM);
+            mainFormView.setVisible(true);
         } catch (Exception ex) {
             System.err.println("Exception occurred during initialization :" + ex.getMessage());
             ex.printStackTrace();

@@ -21,6 +21,7 @@ import java.io.File;
 import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,10 +37,12 @@ public class SongNode implements Node {
         /** Collator class used for Locale-aware string comparisons. */
         private final Collator collator;
 
+
         /** Constructor - Creates the instance of TitleComparator. */
         public TitleComparator() {
             collator = Collator.getInstance(Locale.getDefault());
         }
+
 
         /** Compare method - see Comparator.compare. */
         public int compare(SongNode o1, SongNode o2) {
@@ -101,9 +104,12 @@ public class SongNode implements Node {
         String out = title;
         out += "\n\n\n";
 
-        for (VerseNode verseNode : verseList) {
+        for (Iterator<VerseNode> it = verseList.iterator(); it.hasNext(); ) {
+            VerseNode verseNode = it.next();
             out += verseNode.getAsText(transposition);
-            out += "\n\n";
+            if (it.hasNext()) {
+                out += "\n\n";
+            }
         }
 
         return out;

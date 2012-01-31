@@ -76,8 +76,9 @@ public class PdfExporter implements Exporter {
     @Override
     public void export(File baseDir, SongBook songBook) {
         // Output
-        File outputFile = new File(baseDir.getAbsoluteFile(), "/pdf/song-book.pdf");
-        FileIO.createDirectoryIfRequired(outputFile);
+        File outputDir = new File(baseDir, "pdf");
+        File outputFile = new File(outputDir, "song-book.pdf");
+        FileIO.createDirectory(outputDir);
 
         try {
             // Sort songs alphabetically
@@ -86,10 +87,10 @@ public class PdfExporter implements Exporter {
 
             // Generate PDF - pass 1 (collect page stats)
             PageStats pageStats = generatePDF(alphabeticalList, outputFile);
-            
+
             // Reorder songs so that 2-page song always starts on even page number
             List<SongNode> reorderedList = reorderList(alphabeticalList, pageStats);
-            
+
             // Generate PDF - pass 2
             generatePDF(reorderedList, outputFile);
 
@@ -103,7 +104,6 @@ public class PdfExporter implements Exporter {
     }
 
 
-    
     private PageStats generatePDF(List<SongNode> songList, File outputFile) throws FileNotFoundException, DocumentException {
         logger.info("Starting export to PDF file {}.", outputFile.getAbsolutePath());
 
@@ -138,7 +138,7 @@ public class PdfExporter implements Exporter {
         for (int i = 0; i < songList.size(); i++) {
             // Get song node
             SongNode songNode = songList.get(i);
-            
+
             // Mark song start
             int songStartPage = pageStats.getCurrentPage();
 
@@ -169,7 +169,7 @@ public class PdfExporter implements Exporter {
             SongNode nextSongNode = null;
 
             // Find the next song to with length = 1 or any song we are on an even page
-            for (Iterator<SongNode> iterator = songQueue.iterator(); iterator.hasNext();) {
+            for (Iterator<SongNode> iterator = songQueue.iterator(); iterator.hasNext(); ) {
                 SongNode songNode = iterator.next();
 
                 if ((pageStats.getSectionLength(songNode.getTitle()) == 1) || (currentPage % 2 == 0)) {
@@ -188,11 +188,11 @@ public class PdfExporter implements Exporter {
             reorderedList.add(nextSongNode);
             currentPage += pageStats.getSectionLength(nextSongNode.getTitle());
         }
-        
+
         return reorderedList;
     }
-    
-    
+
+
     private void openPDF(File outputFile) {
         logger.info("OPENING PDF ...");
         String osName = System.getProperty("os.name");
@@ -221,20 +221,22 @@ public class PdfExporter implements Exporter {
         return chapter;
     }
 
+
     private void processVerse(VerseNode verseNode, Chapter chapter) {
         chapter.add(verseSpacing);
         for (LineNode lineNode : verseNode.getLineNodes()) {
-            chapter.add( buildLine(lineNode) );
+            chapter.add(buildLine(lineNode));
         }
 
     }
+
 
     private Paragraph buildLine(LineNode lineNode) {
         Paragraph paragraph = new Paragraph();
         for (Node node : lineNode.getContentList()) {
             if (node instanceof TextNode) {
                 TextNode textNode = (TextNode) node;
-                paragraph.add( new Chunk(textNode.getText(), textFont) );
+                paragraph.add(new Chunk(textNode.getText(), textFont));
             } else if (node instanceof ChordNode) {
                 ChordNode chordNode = (ChordNode) node;
                 Chunk chunk = new Chunk(" " + chordNode.getText() + " ", chordFont);
@@ -245,23 +247,27 @@ public class PdfExporter implements Exporter {
         }
         return paragraph;
     }
-    
-    
+
+
     private static class PageStats extends PdfPageEventHelper {
-        private int currentPage = 1;        
-        private Map<String,Integer> map = new HashMap<String,Integer>(); 
+        private int currentPage = 1;
+        private Map<String, Integer> map = new HashMap<String, Integer>();
+
 
         public int getCurrentPage() {
             return currentPage;
         }
-        
+
+
         public void setSectionLength(String songName, int length) {
             map.put(songName, length);
         }
-        
+
+
         public int getSectionLength(String songName) {
             return map.get(songName);
         }
+
 
         @Override
         public void onEndPage(PdfWriter pdfWriter, Document document) {

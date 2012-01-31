@@ -33,9 +33,10 @@ public class LogObservingPresentationModel {
     //    so that it is not garbage-collected.
     private final EventAppender.LogEventListener listener = new EventAppender.LogEventListener() {
         @Override
-        public void onLogEvent(String logMessage) {
-            textModel.setValue( textModel.getString() + logMessage );
-            caretPositionModel.setValue( textModel.getString().length() );
+        public void onLogEvent(Severity severity, String logMessage) {
+            String htmlMessage = "<DIV class=\"entry\"><PRE class=\"" + severity.name() + "\">" + logMessage.trim() + "</PRE></DIV>";
+            textModel.setValue(textModel.getString() + htmlMessage);
+            caretPositionModel.setValue(caretPositionModel.intValue() + logMessage.length());
         }
     };
 

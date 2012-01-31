@@ -17,13 +17,22 @@
  */
 package com.songbook.ui.view;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import javax.swing.*;
-import javax.swing.text.Document;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
 
 import com.jgoodies.binding.adapter.BasicComponentFactory;
 import com.jgoodies.binding.adapter.SpinnerToValueModelConnector;
@@ -47,15 +56,14 @@ public class MainFormView extends JFrame {
     private final JComboBox encodingComboBox;
 
     private final JEditorPane editorPane;
-    private final JTextArea logTextArea;
+    private final JEditorPane logPane;
 
 
     /**
      * Constructor - creates the MainFormView.
-     *
      * @param presentationModel Presentation model for the view.
      */
-    public MainFormView(MainFormPresentationModel presentationModel) {
+    public MainFormView(final MainFormPresentationModel presentationModel) {
         presentationModel.setFrame(this);
 
         PropertyConnector.connectAndUpdate(presentationModel.getTitleModel(), this, "title");
@@ -75,18 +83,27 @@ public class MainFormView extends JFrame {
         exportPDFButton = new JButton(presentationModel.getExportPdfAction());
         encodingComboBox = BasicComponentFactory.createComboBox(presentationModel.getEncodingModel());
 
-
         // == MODEL ==
-        editorPane = createEditorPane(presentationModel.getEditorModel().getTextModel());
+        editorPane = createEditorPane(presentationModel.getEditorModel().getTextModel(),
+                "/css/editorPane.css");
         PropertyConnector.connectAndUpdate(presentationModel.getEditorModel().getEditableModel(), editorPane, "editable");
         PropertyConnector.connectAndUpdate(presentationModel.getEditorModel().getContentTypeModel(), editorPane, "contentType");
         PropertyConnector.connectAndUpdate(presentationModel.getEditorModel().getTextModel(), editorPane, "text");
         PropertyConnector.connectAndUpdate(presentationModel.getEditorModel().getCaretPositionModel(), editorPane, "caretPosition");
 
         // == BOTTOM TOOLBAR ==
-        logTextArea = BasicComponentFactory.createTextArea(presentationModel.getLogObservingModel().getTextModel());
-        logTextArea.setEditable(false);
-        PropertyConnector.connectAndUpdate(presentationModel.getLogObservingModel().getCaretPositionModel(), logTextArea, "caretPosition");
+        logPane = createEditorPane(null, "/css/logPane.css");
+        logPane.setContentType("text/html");
+        logPane.setEditable(false);
+        // One-Way binding of text property
+        logPane.setText((String) presentationModel.getLogObservingModel().getTextModel().getValue());
+        presentationModel.getLogObservingModel().getTextModel().addValueChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                logPane.setText((String) presentationModel.getLogObservingModel().getTextModel().getValue());
+            }
+        });
+        PropertyConnector.connectAndUpdate(presentationModel.getLogObservingModel().getCaretPositionModel(), logPane, "caretPosition");
 
         // == DO LAYOUT ==
         initLayout();
@@ -97,25 +114,29 @@ public class MainFormView extends JFrame {
 
 
     /**
-     * @param textModel ValueModel used to initialization and setup of 2-way binding
+     * @param textModel   ValueModel used to initialization and setup of 2-way binding (if null no binding is set up)
+     * @param cssResource Resource path of the CSS resource
      * @return New HTML-enabled editor pane.
      */
-    private JEditorPane createEditorPane(final ValueModel textModel) {
+    private JEditorPane createEditorPane(final ValueModel textModel, final String cssResource) {
+        // HTML Editor Kit
+        final HTMLEditorKit kit = new HTMLEditorKit();
+        kit.getStyleSheet().addRule(FileIO.readResourceToString(cssResource));
+
+        // Init JEditor Pane
         final JEditorPane editorPane = new JEditorPane();
-        HTMLEditorKit kit = new HTMLEditorKit();
         editorPane.setEditorKitForContentType("text/html", kit);
-        StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule(FileIO.readResourceToString("/css/editorPane.css"));
-        Document doc = kit.createDefaultDocument();
-        editorPane.setDocument(doc);
+        editorPane.setDocument(kit.createDefaultDocument());
 
         // Set up 2-way binding
-        editorPane.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                textModel.setValue(editorPane.getText());
-            }
-        });
+        if (textModel != null) {
+            editorPane.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e) {
+                    textModel.setValue(editorPane.getText());
+                }
+            });
+        }
         return editorPane;
     }
 
@@ -142,7 +163,7 @@ public class MainFormView extends JFrame {
         mainPane.setResizeWeight(1);
         mainPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPane.setTopComponent(new JScrollPane(editorPane));
-        mainPane.setBottomComponent(new JScrollPane(logTextArea));
+        mainPane.setBottomComponent(new JScrollPane(logPane));
 
         Box contentPanel = Box.createVerticalBox();
         contentPanel.add(Box.createRigidArea(new Dimension(10, 10)));

@@ -37,20 +37,29 @@ import org.slf4j.LoggerFactory;
 public class FileIO {
     private static final Logger logger = LoggerFactory.getLogger(FileIO.class.getSimpleName());
 
+
     /**
      * Writes the string content to file path using the specified encoding.
      * @param path     Path to file where the string should be written.
      * @param encoding Encoding to be used.
      * @param content  String to be written to the file.
      */
-    public static void writeStringToFile(String path, String encoding, String content) throws IOException {
+    public static void writeStringToFile(String path, String encoding, String content) {
         BufferedWriter bw = null;
         try {
-            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), encoding));
-            bw.write(content);
+            try {
+                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), encoding));
+                bw.write(content);
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to write to file " + path, ex);
+            }
         } finally {
-            if (bw != null) {
-                bw.close();
+            try {
+                if (bw != null) {
+                    bw.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Failed to close file " + path, ex);
             }
         }
     }
@@ -62,34 +71,40 @@ public class FileIO {
      * @param encoding Encoding to be used.
      * @return The content of the file as String.
      */
-    public static String readFileToString(String path, String encoding) throws IOException {
+    public static String readFileToString(String path, String encoding) {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(path), encoding));
-            String out = "";
+            StringBuilder builder = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
-                out += line + "\n";
+                builder.append(line).append("\n");
             }
-            return out;
+            return builder.toString();
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read file into string - " + path, ex);
         } finally {
-            if (br != null) {
-                br.close();
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Failed to close file " + path, ex);
             }
         }
     }
 
 
     public static String readResourceToString(String resourceName) {
-        StringBuilder sb = new StringBuilder();
         BufferedInputStream inStream = new BufferedInputStream(FileIO.class.getResourceAsStream(resourceName));
         try {
+            StringBuilder builder = new StringBuilder();
             byte[] chars = new byte[1024];
             int bytesRead;
-            while( (bytesRead = inStream.read(chars)) > -1){
-                sb.append(new String(chars, 0, bytesRead));
+            while ((bytesRead = inStream.read(chars)) > -1) {
+                builder.append(new String(chars, 0, bytesRead));
             }
-            return sb.toString();
+            return builder.toString();
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read resource " + resourceName, ex);
         } finally {
@@ -102,19 +117,37 @@ public class FileIO {
     }
 
 
-    public static void createDirectoryIfRequired(File pathToTargetFile) {
-        if (pathToTargetFile.exists()) {
-            // Path exists - nothing to do
+    public static void createDirectory(File directory) {
+        // Path exists - nothing to do
+        if (directory.exists()) {
             return;
         }
 
-        File parentDir = pathToTargetFile.getParentFile();
-        if ((parentDir != null) && !parentDir.exists()) {
-            if (parentDir.mkdirs()) {
-                logger.error("Directory {} created.", parentDir.getAbsolutePath());
-            } else {
-                logger.error("Directory {} does not exist and was not created.", parentDir.getAbsolutePath());
+        // Create directory
+        if (directory.mkdirs()) {
+            logger.info("Directory {} created.", directory.getAbsolutePath());
+        } else {
+            throw new RuntimeException("Filed to create directory - " + directory.getAbsolutePath());
+        }
+    }
+
+
+    public static void deleteDirectory(File directory) {
+        // If directory does not exist do nothing
+        if (!directory.exists()) {
+            return;
+        }
+
+        if (directory.isDirectory()) {
+            // Recursively delete children
+            for (String child : directory.list()) {
+                deleteDirectory(new File(directory, child));
             }
+        }
+
+        // The directory is now empty so delete it
+        if (!directory.delete()) {
+            throw new RuntimeException("Could not delete directory " + directory.getAbsolutePath());
         }
     }
 }
