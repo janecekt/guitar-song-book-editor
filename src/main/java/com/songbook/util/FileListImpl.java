@@ -114,9 +114,9 @@ public class FileListImpl implements FileList {
 
     @Override
     public void addNewFile(String songName, String encoding) {
-        String fileName = baseDir.getAbsolutePath() + "/" + songName.replaceAll(" ", "_") + ".txt";
-        FileIO.writeStringToFile(fileName, encoding, songName + "\n\nVerse1");
-        logger.info("New file written " + fileName);
+        File fileName = new File(baseDir.getAbsolutePath(), songName.replaceAll(" ", "_") + ".txt");
+        FileIO.writeStringToFile(fileName.getAbsolutePath(), encoding, songName + "\n\nVerse1");
+        logger.info("New file written " + fileName.getAbsolutePath());
         rebuild();
         setCurrent(fileName);
         logger.info("FileList reloaded.");
@@ -135,9 +135,9 @@ public class FileListImpl implements FileList {
      * Sets the file whose absolute path matches curAbsolutePath as current file,
      * if not found the current file is not changed.
      */
-    private void setCurrent(String curAbsolutePath) {
+    private void setCurrent(File curFile) {
         for (int i = 0; i < fileArray.length; i++) {
-            if (fileArray[i].getAbsolutePath().equals(curAbsolutePath)) {
+            if (fileArray[i].getAbsolutePath().equals(curFile.getAbsolutePath())) {
                 curIndex = i;
                 return;
             }
