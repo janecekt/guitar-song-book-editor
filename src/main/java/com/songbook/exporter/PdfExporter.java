@@ -64,17 +64,44 @@ public class PdfExporter implements Exporter {
 
 
     public PdfExporter() {
+        // Load fonts
         FontFactory.registerDirectories();
-        songTitleFont = FontFactory.getFont(FontFactory.TIMES, BaseFont.CP1250, 14f, Font.BOLD);
-        textFont = FontFactory.getFont(FontFactory.TIMES, BaseFont.CP1250, 11f, Font.NORMAL);
-        chordFont = FontFactory.getFont(FontFactory.HELVETICA, BaseFont.CP1250, 11f, Font.BOLD);
+        BaseFont timesFont = null;
+        try {
+            timesFont = BaseFont.createFont("C:/Windows/Fonts/times.ttf", BaseFont.CP1250, true);
+            logger.info("Embedded TTF fonts from C:/Windows/Fonts");
+        } catch (Exception ex) {
+            try {
+                timesFont = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1250, true);
+                logger.info("Embedded default fonts");
+            } catch (Exception ex1) {
+                logger.error("Failed to load fonts ...");
+            }
+        }
+                     
+        // Initialize fonts
+        if (timesFont != null) {
+            songTitleFont = new Font(timesFont, 14f, Font.BOLD);
+            textFont = new Font(timesFont, 11f, Font.NORMAL);
+            chordFont = FontFactory.getFont(FontFactory.HELVETICA, BaseFont.CP1250, 11f, Font.BOLD);
+        } else {
+            songTitleFont = null;
+            textFont = null;
+            chordFont = null;
+        }
+        
         verseSpacing = new Paragraph(" ");
         verseSpacing.setLeading(5f, 0.5f);
     }
 
 
+
     @Override
     public void export(File baseDir, SongBook songBook) {
+        if (songTitleFont == null) {
+            throw new RuntimeException("Fonts not correcly loaded - cannot generate PDF !");
+        }
+
         // Output
         File outputDir = new File(baseDir, "pdf");
         File outputFile = new File(outputDir, "song-book.pdf");
