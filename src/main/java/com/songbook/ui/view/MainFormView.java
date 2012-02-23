@@ -101,9 +101,9 @@ public class MainFormView extends JFrame {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 logPane.setText((String) presentationModel.getLogObservingModel().getTextModel().getValue());
+                logPane.setCaretPosition( logPane.getDocument().getLength() );
             }
         });
-        PropertyConnector.connectAndUpdate(presentationModel.getLogObservingModel().getCaretPositionModel(), logPane, "caretPosition");
 
         // == DO LAYOUT ==
         initLayout();

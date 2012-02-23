@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 public class LogObservingPresentationModel {
     private static final Logger logger = LoggerFactory.getLogger(LogObservingPresentationModel.class);
     private final ValueHolder textModel = new ValueHolder("");
-    private final ValueHolder caretPositionModel = new ValueHolder(0);
 
     // CAREFUL: EvenAppender uses WeakReference to listeners - we need to keep a reference to the listener class
     //    so that it is not garbage-collected.
@@ -36,7 +35,6 @@ public class LogObservingPresentationModel {
         public void onLogEvent(Severity severity, String logMessage) {
             String htmlMessage = "<DIV class=\"entry\"><PRE class=\"" + severity.name() + "\">" + logMessage.trim() + "</PRE></DIV>";
             textModel.setValue(textModel.getString() + htmlMessage);
-            caretPositionModel.setValue(caretPositionModel.intValue() + logMessage.length());
         }
     };
 
@@ -54,10 +52,5 @@ public class LogObservingPresentationModel {
 
     public ValueModel getTextModel() {
         return textModel;
-    }
-
-
-    public ValueModel getCaretPositionModel() {
-        return caretPositionModel;
     }
 }
