@@ -90,7 +90,7 @@ public class LexAn {
 
 
     /** @return the next lexical element. */
-    public LexElement getNextElement() {
+    public LexElement getNextElement() throws ParserException {
         LexElement.Type lexType;
         String lexText = "";
         InputSys.Position lexPosition = nextToken.getPosition();
@@ -141,7 +141,7 @@ public class LexAn {
                 break;
 
             default:
-                throw new RuntimeException("Invalid input token type !");
+                throw new ParserException("Invalid input token type !");
         }
 
         return new LexElement(lexType, lexText, lexPosition);

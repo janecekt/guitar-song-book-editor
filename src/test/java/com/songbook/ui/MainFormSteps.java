@@ -2,15 +2,16 @@ package com.songbook.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 import com.songbook.exporter.HtmlExporter;
 import com.songbook.exporter.LaTexExporter;
 import com.songbook.exporter.PdfExporter;
-import com.songbook.parser.InputSys;
-import com.songbook.parser.LexAn;
-import com.songbook.parser.SyntaxAn;
-import com.songbook.parser.nodes.SongNode;
+import com.songbook.model.SongNode;
+import com.songbook.parser.ChordProParser;
+import com.songbook.parser.Parser;
+import com.songbook.parser.ParserException;
 import com.songbook.ui.presentationmodel.EditorPanePresentationModel;
 import com.songbook.ui.presentationmodel.MainFormPresentationModel;
 import com.songbook.util.FileIO;
@@ -19,17 +20,23 @@ import com.songbook.util.FileListImpl;
 import org.junit.Assert;
 
 public class MainFormSteps {
-    private static String ENCODING = "CP1250";
+    /** Prilis zlutoucky kun upel dabelske ody */
+    private static final String CZECH_TEXT = "P\u0159\u00edli\u0161 \u017elu\u0165ou\u010dk\u00fd k\u016f\u0148 \u00fap\u011bl \u010f\u00e1blesk\u00e9 \u00f3dy.";
+    private static final String ENCODING = "CP1250";
+
+
 
     public static enum DisplayMode {TEXT, HTML}
 
     public static enum SongData {
         SONG1("Song1 - Author",
                 "[G/C]la [F]la",
-                "[G]la"),
+                "[G]la",
+                CZECH_TEXT),
         SONG1_2UP("Song1 - Author",
                 "[A/D]la [G]la",
-                "[A]la"),
+                "[A]la",
+                CZECH_TEXT),
         SONG1_EDITED("Song1 - New author",
                 "[G/C]la [F]la",
                 "[G]loo [G7]loo"),
@@ -59,7 +66,8 @@ public class MainFormSteps {
     }
 
     public static final File TEST_BASEDIR = new File("target/testSongDir");
-    protected MainFormPresentationModel mainPM;
+    private Parser<SongNode> parser;
+    private MainFormPresentationModel mainPM;
 
 
     public void givenSong(String songFileName, SongData songData) throws IOException {
@@ -70,8 +78,9 @@ public class MainFormSteps {
 
 
     public void whenApplicationStarted() {
-        FileList fileList = new FileListImpl(TEST_BASEDIR.getAbsolutePath(), new FileListImpl.TxtFileFilter(), new FileListImpl.FileNameComparator());
-        mainPM = new MainFormPresentationModel(fileList, null, new HtmlExporter(), new LaTexExporter(), new PdfExporter());
+        parser = ChordProParser.createParser();
+        FileList fileList = new FileListImpl(TEST_BASEDIR.getAbsolutePath(), new FileListImpl.TxtFileFilter(), new FileListImpl.FileNameComparator(), parser);
+        mainPM = new MainFormPresentationModel(parser, fileList, null, new HtmlExporter(), new LaTexExporter(), new PdfExporter());
         mainPM.setPropagateErrors(true);
     }
 
@@ -142,16 +151,15 @@ public class MainFormSteps {
     }
 
 
-    public void thenSongDisplayedIs(SongData expectedSongBody, DisplayMode expectedDisplayMode) throws SyntaxAn.SyntaxErrorException {
+    public void thenSongDisplayedIs(SongData expectedSongBody, DisplayMode expectedDisplayMode) throws ParserException {
         switch (expectedDisplayMode) {
             case HTML:
                 Assert.assertEquals("Display mode should be HTML",
                         EditorPanePresentationModel.CONTENT_TYPE_TEXT_HTML,
                         mainPM.getEditorModel().getContentTypeModel().getString());
 
-                InputSys inputSys = new InputSys(new StringReader(expectedSongBody.getSongData()));
-                SyntaxAn syntaxAn = new SyntaxAn(new LexAn(inputSys));
-                SongNode expectedSongNode = syntaxAn.parse();
+                Reader songReader = new StringReader(expectedSongBody.getSongData());
+                SongNode expectedSongNode = parser.parse(songReader);
                 Assert.assertEquals(expectedSongNode.getAsHTML(0),
                         mainPM.getEditorModel().getTextModel().getString());
                 break;

@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package com.songbook.parser.nodes;
+package com.songbook.model;
 
 import java.io.File;
 import java.text.Collator;
@@ -46,12 +46,12 @@ public class SongNode implements Node {
 
         /** Compare method - see Comparator.compare. */
         public int compare(SongNode o1, SongNode o2) {
-            return collator.compare(o1.getTitle(), o2.getTitle());
+            return collator.compare(o1.getTitleNode().getAsText(0), o2.getTitleNode().getAsText(0));
         }
     }
 
     /** Title of the Song. */
-    private final String title;
+    private final TitleNode titleNode;
 
     /** List of Verses of the song (represented by VerseNode classes). */
     private final List<VerseNode> verseList;
@@ -62,11 +62,11 @@ public class SongNode implements Node {
 
     /**
      * Constructor - creates an instance of SongNode.
-     * @param title     Title of the song.
+     * @param titleNode Title of the song.
      * @param verseList List of verses of the song (represented by VerseNode classes).
      */
-    public SongNode(String title, List<VerseNode> verseList) {
-        this.title = title;
+    public SongNode(TitleNode titleNode, List<VerseNode> verseList) {
+        this.titleNode = titleNode;
         this.verseList = Collections.unmodifiableList(verseList);
     }
 
@@ -88,7 +88,13 @@ public class SongNode implements Node {
 
     /** @return the title of the song. */
     public String getTitle() {
-        return title;
+        return titleNode.getAsText(0);
+    }
+
+
+    /** @return the TitleNode of the song. */
+    public TitleNode getTitleNode() {
+        return titleNode;
     }
 
 
@@ -101,7 +107,7 @@ public class SongNode implements Node {
     /** {@inheritDoc} */
     @Override
     public String getAsText(int transposition) {
-        String out = title;
+        String out = titleNode.getAsText(transposition);
         out += "\n\n\n";
 
         for (Iterator<VerseNode> it = verseList.iterator(); it.hasNext(); ) {
@@ -119,7 +125,7 @@ public class SongNode implements Node {
     /** {@inheritDoc} */
     @Override
     public String getAsHTML(int transposition) {
-        String out = "<DIV class=\"title\">" + title + "</DIV>\n";
+        String out = titleNode.getAsHTML(transposition);
 
         for (VerseNode verseNode : verseList) {
             out += verseNode.getAsHTML(transposition) + "\n\n";
@@ -132,13 +138,15 @@ public class SongNode implements Node {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        String out = "SongNode[" + "title=" + title + ",\n";
-
-        for (VerseNode verseNode : verseList) {
-            out += verseNode.toString() + ",\n";
+        StringBuilder out = new StringBuilder();
+        out.append("SongNode[\n");
+        if (titleNode != null) {
+            out.append(titleNode.toString()).append("\n");
         }
-
-        out += "]";
-        return out;
+        for (VerseNode verseNode : verseList) {
+            out.append( verseNode.toString()).append(",\n");
+        }
+        out.append("]");
+        return out.toString();
     }
 }

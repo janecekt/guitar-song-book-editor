@@ -23,6 +23,9 @@ import java.util.regex.Pattern;
 import com.songbook.exporter.HtmlExporter;
 import com.songbook.exporter.LaTexExporter;
 import com.songbook.exporter.PdfExporter;
+import com.songbook.model.SongNode;
+import com.songbook.parser.ChordProParser;
+import com.songbook.parser.Parser;
 import com.songbook.ui.UIDialog;
 import com.songbook.ui.presentationmodel.MainFormPresentationModel;
 import com.songbook.ui.presentationmodel.TextDialogPresentationModel;
@@ -49,6 +52,9 @@ public class Main {
 
             // Build objects (could use DI container but the project is too small for that)
 
+            // Parser
+            Parser<SongNode> parser = ChordProParser.createParser();
+
             // Dialog provider
             UIDialog<String> newNextFileDialog = new UIDialog<String>() {
                 @Override
@@ -64,7 +70,8 @@ public class Main {
 
             // Main Presentation Model
             MainFormPresentationModel mainPM = new MainFormPresentationModel(
-                    new FileListImpl(args[0], new FileListImpl.TxtFileFilter(), new FileListImpl.FileNameComparator()),
+                    parser,
+                    new FileListImpl(args[0], new FileListImpl.TxtFileFilter(), new FileListImpl.FileNameComparator(), parser),
                     newNextFileDialog,
                     new HtmlExporter(),
                     new LaTexExporter(),

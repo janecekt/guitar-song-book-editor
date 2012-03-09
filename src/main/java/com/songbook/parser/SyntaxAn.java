@@ -17,15 +17,17 @@
  */
 package com.songbook.parser;
 
+import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.songbook.parser.nodes.ChordNode;
-import com.songbook.parser.nodes.LineNode;
-import com.songbook.parser.nodes.Node;
-import com.songbook.parser.nodes.SongNode;
-import com.songbook.parser.nodes.TextNode;
-import com.songbook.parser.nodes.VerseNode;
+import com.songbook.model.ChordNode;
+import com.songbook.model.LineNode;
+import com.songbook.model.Node;
+import com.songbook.model.SongNode;
+import com.songbook.model.TextNode;
+import com.songbook.model.TitleNode;
+import com.songbook.model.VerseNode;
 
 /**
  * LL1 Syntax Analyzer of the plain text song representation - parses the text into a tree-like internal representation.
@@ -79,30 +81,7 @@ import com.songbook.parser.nodes.VerseNode;
  *
  * @author Tomas Janecek
  */
-public class SyntaxAn {
-
-    /**
-     * Class representing an Exception thrown when syntax error is encountered.
-     * @author Tomas Janecek
-     */
-    public class SyntaxErrorException extends Exception {
-        /** Position where the syntax error occurred. */
-        private final InputSys.Position position;
-
-        /** Constructor - specify the description and the position of syntax error. */
-        public SyntaxErrorException(String message, InputSys.Position position) {
-            super(message);
-            this.position = position;
-        }
-
-        /** @see Throwable#getMessage() */
-        @Override
-        public String getMessage() {
-            return "SyntaxError: " + super.getMessage() + " ... at " + position.toInfoString();
-        }
-    }
-
-
+public final class SyntaxAn {
     /** Next lexical-element in the input. */
     private LexAn.LexElement nextLexElement;
 
@@ -114,19 +93,23 @@ public class SyntaxAn {
      * Constructor - creates the syntax analyzer.
      * @param lexAn Lexical-Analyzer used to obtain lexical symbols.
      */
-    public SyntaxAn(LexAn lexAn) {
+    private SyntaxAn(LexAn lexAn) throws ParserException {
         this.lexAn = lexAn;
         this.nextLexElement = lexAn.getNextElement();
     }
 
 
     /**
-     * Parses the input returning internal tree-representation whose root is SongNode.
-     * @return SongNode representing this song.
-     * @throws SyntaxErrorException if a syntax-error is encountered during syntax analysis.
+     * Returns an instance of the Parser used to parse string into tree-representation whose root is SongNode.
      */
-    public SongNode parse() throws SyntaxErrorException {
-        return S();
+    public static Parser<SongNode> createParser() {
+        return new Parser<SongNode>() {
+            @Override
+            public SongNode parse(Reader reader) throws ParserException {
+                SyntaxAn syntaxAn = new SyntaxAn( new LexAn( new InputSys(reader) ) );
+                return syntaxAn.S();
+            }
+        };
     }
 
 
@@ -136,9 +119,9 @@ public class SyntaxAn {
      * next lexical element is read
      * otherwise SyntaxErrorException is thrown.
      */
-    protected LexAn.LexElement srovnani(LexAn.LexElement.Type lexType) throws SyntaxErrorException {
+    private LexAn.LexElement srovnani(LexAn.LexElement.Type lexType) throws ParserException {
         if (nextLexElement.getType() != lexType) {
-            throw new SyntaxErrorException("Expected lexical type " + lexType, nextLexElement.getPosition());
+            throw new ParserException("Expected lexical type " + lexType + " at " + nextLexElement.getPosition().toInfoString());
         }
 
         LexAn.LexElement tmp = nextLexElement;
@@ -155,7 +138,7 @@ public class SyntaxAn {
      *
      * @return SongNode representing this song.
      */
-    protected SongNode S() throws SyntaxErrorException {
+    private SongNode S() throws ParserException {
         switch (nextLexElement.getType()) {
             // (eol,string)   S -> N string N B  //
             case L_EOL:
@@ -165,11 +148,11 @@ public class SyntaxAn {
                 N();
                 List<VerseNode> verseList = new LinkedList<VerseNode>();
                 B(verseList);
-                return new SongNode(titleLex.getText(), verseList);
+                return new SongNode(new TitleNode(titleLex.getText()), verseList);
         }
 
         // Syntax ERROR
-        throw new SyntaxErrorException("S: Expected EOL or STRING", nextLexElement.getPosition());
+        throw new ParserException("S: Expected EOL or STRING at " + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -180,7 +163,7 @@ public class SyntaxAn {
      * (jinak)      N -> eps
      * </PRE>
      */
-    protected void N() throws SyntaxAn.SyntaxErrorException {
+    private void N() throws ParserException {
         switch (nextLexElement.getType()) {
             // (eol)        N -> eol N  //
             case L_EOL:
@@ -203,7 +186,7 @@ public class SyntaxAn {
      *
      * @param verseList List of Verses to be extended by VerseNodes found in this song.
      */
-    protected void B(List<VerseNode> verseList) throws SyntaxErrorException {
+    private void B(List<VerseNode> verseList) throws ParserException {
         switch (nextLexElement.getType()) {
             // ( [,string )   B -> SL SLSEP B   //
             case L_LPAR:
@@ -219,7 +202,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("B: Expected [, STRING or EOI", nextLexElement.getPosition());
+        throw new ParserException("B: Expected [, STRING or EOI at" + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -230,7 +213,7 @@ public class SyntaxAn {
      * (eoi)        SLSEP -> eps
      * </PRE>
      */
-    protected void SLSEP() throws SyntaxErrorException {
+    private void SLSEP() throws ParserException {
         switch (nextLexElement.getType()) {
             // (eol)        SLSEP -> eol N   //
             case L_EOL:
@@ -244,7 +227,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("SLSEP: Expected EOL or EOI", nextLexElement.getPosition());
+        throw new ParserException("SLSEP: Expected EOL or EOI " + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -256,7 +239,7 @@ public class SyntaxAn {
      *
      * @return VerseNode representing the verse.
      */
-    protected VerseNode SL() throws SyntaxErrorException {
+    private VerseNode SL() throws ParserException {
         switch (nextLexElement.getType()) {
             // ( [,string )   SL   -> LN LNSEP ZbSL  //
             case L_LPAR:
@@ -269,7 +252,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("SL: Expected [ or STRING", nextLexElement.getPosition());
+        throw new ParserException("SL: Expected [ or STRING at " + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -282,7 +265,7 @@ public class SyntaxAn {
      *
      * @param lineList List of LineNodes to be extended by LineNodes found in this verse.
      */
-    protected void ZbSL(List<LineNode> lineList) throws SyntaxErrorException {
+    private void ZbSL(List<LineNode> lineList) throws ParserException {
         switch (nextLexElement.getType()) {
             // ( [,string )   ZbSL -> LN LNSEP ZbSL   //
             case L_LPAR:
@@ -299,7 +282,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("ZbSL: Expected [, STRING, EOL or EOI", nextLexElement.getPosition());
+        throw new ParserException("ZbSL: Expected [, STRING, EOL or EOI " + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -312,7 +295,7 @@ public class SyntaxAn {
      *
      * @return LineNode representing the line.
      */
-    protected LineNode LN() throws SyntaxErrorException {
+    private LineNode LN() throws ParserException {
         List<Node> contentList;
 
         switch (nextLexElement.getType()) {
@@ -335,7 +318,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("LN: Expected [ or STRING", nextLexElement.getPosition());
+        throw new ParserException("LN: Expected [ or STRING at" + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -346,7 +329,7 @@ public class SyntaxAn {
      * ([,string,eoi)  LNSEP -> eps
      * </PRE>
      */
-    protected void LNSEP() throws SyntaxErrorException {
+    private void LNSEP() throws ParserException {
         switch (nextLexElement.getType()) {
             // ( eol )         LNSEP->eol   //
             case L_EOL:
@@ -361,7 +344,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("LNSEP Expected EOL,[, STRING or EOI", nextLexElement.getPosition());
+        throw new ParserException("LNSEP Expected EOL,[, STRING or EOI " + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -376,7 +359,7 @@ public class SyntaxAn {
 	 *
      * @param contentList List of Nodes to be extended by ChordNode and TextNode found on this line.
      */
-    protected void ZbLN(List<Node> contentList) throws SyntaxErrorException {
+    private void ZbLN(List<Node> contentList) throws ParserException {
         switch (nextLexElement.getType()) {
             // ( [ )        ZbLN -> [ AK ] ZbLN   //
             case L_LPAR:
@@ -404,7 +387,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("ZbLN: Expected [, STRING, EOL or EOI", nextLexElement.getPosition());
+        throw new ParserException("ZbLN: Expected [, STRING, EOL or EOI " + nextLexElement.getPosition().toInfoString());
     }
 
 
@@ -416,7 +399,7 @@ public class SyntaxAn {
      *
      * @return ChordNode representing the Chord.
      */
-    protected ChordNode AK() throws SyntaxErrorException {
+    private ChordNode AK() throws ParserException {
         switch (nextLexElement.getType()) {
             //  (string)      AK   -> string ZbAk //
             case L_STRING:
@@ -426,7 +409,7 @@ public class SyntaxAn {
         }
 
         // Syntax error
-        throw new SyntaxErrorException("AK: Expected STRING", nextLexElement.getPosition());
+        throw new ParserException("AK: Expected STRING at " + nextLexElement.getPosition());
     }
 
 
@@ -439,7 +422,7 @@ public class SyntaxAn {
      *
      * @return String representing ZbAk.
      */
-    protected String ZbAk() throws SyntaxErrorException {
+    private String ZbAk() throws ParserException {
         switch (nextLexElement.getType()) {
             // ( / )        ZbAk -> slash string  //
             case L_SLASH:
@@ -453,6 +436,6 @@ public class SyntaxAn {
         }
 
         // Syntax Error
-        throw new SyntaxErrorException("ZbAK: Expected / or ]", nextLexElement.getPosition());
+        throw new ParserException("ZbAK: Expected / or ] at " + nextLexElement.getPosition());
     }
 }

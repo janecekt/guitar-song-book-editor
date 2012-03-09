@@ -20,7 +20,7 @@ package com.songbook.exporter;
 
 import java.io.File;
 
-import com.songbook.parser.nodes.SongBook;
+import com.songbook.model.SongBook;
 
 public interface Exporter {
     void export(File baseDir, SongBook songBook);

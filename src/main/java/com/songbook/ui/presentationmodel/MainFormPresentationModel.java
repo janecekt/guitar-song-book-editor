@@ -29,10 +29,9 @@ import com.jgoodies.binding.list.SelectionInList;
 import com.jgoodies.binding.value.ValueHolder;
 import com.jgoodies.binding.value.ValueModel;
 import com.songbook.exporter.Exporter;
-import com.songbook.parser.InputSys;
-import com.songbook.parser.LexAn;
-import com.songbook.parser.SyntaxAn;
-import com.songbook.parser.nodes.SongNode;
+import com.songbook.model.SongNode;
+import com.songbook.parser.Parser;
+import com.songbook.parser.ParserException;
 import com.songbook.ui.UIDialog;
 import com.songbook.util.FileIO;
 import com.songbook.util.FileList;
@@ -63,6 +62,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private final Exporter latexExporter;
     private final Exporter pdfExporter;
     private final FileList fileList;
+    private final Parser<SongNode> parser;
 
     // State
     private SongNode songNode;
@@ -70,11 +70,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
 
     public MainFormPresentationModel(
+            Parser<SongNode> parser,
             FileList fileList,
             UIDialog<String> newFilenameDialog,
             Exporter htmlExporter,
             Exporter latexExporter,
             Exporter pdfExporter) {
+        this.parser = parser;
         this.fileList = fileList;
         this.newFilenameDialog = newFilenameDialog;
         this.htmlExporter = htmlExporter;
@@ -102,11 +104,10 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private void rebuildSongNode(String content, int songTranspose) {
         // Rebuild song node
         try {
-            SyntaxAn syntaxAn = new SyntaxAn(new LexAn(new InputSys(new StringReader(content))));
-            songNode = syntaxAn.parse();
+            songNode = parser.parse(new StringReader(content));
             songNodeTransposition = songTranspose;
-        } catch (SyntaxAn.SyntaxErrorException ex) {
-            throw new RuntimeException("Syntax analysis failed - " + ex.getMessage());
+        } catch (ParserException ex) {
+            throw new RuntimeException("Parsing failed - " + ex.getMessage(), ex);
         }
     }
 

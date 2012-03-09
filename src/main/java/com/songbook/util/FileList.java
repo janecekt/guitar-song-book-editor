@@ -19,7 +19,7 @@ package com.songbook.util;
 
 import java.io.File;
 
-import com.songbook.parser.nodes.SongBook;
+import com.songbook.model.SongBook;
 
 public interface FileList {
     SongBook buildSongBook(String encoding);

@@ -21,16 +21,16 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import com.songbook.parser.InputSys;
-import com.songbook.parser.LexAn;
-import com.songbook.parser.SyntaxAn;
-import com.songbook.parser.nodes.SongBook;
-import com.songbook.parser.nodes.SongNode;
+import com.songbook.model.SongBook;
+import com.songbook.model.SongNode;
+import com.songbook.parser.Parser;
+import com.songbook.parser.ParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +52,7 @@ public class FileListImpl implements FileList {
 
     private final FileFilter fileFilter;
     private final Comparator<File> fileComparator;
+    private final Parser<SongNode> parser;
 
 
     /** FileFilter matching all files with ".txt" extension. */
@@ -77,11 +78,13 @@ public class FileListImpl implements FileList {
      * @param baseDir        Base-directory for which the FileList will be constructed.
      * @param fileFilter     Specifies which files form the baseDir will be added to the fileList.
      * @param fileComparator Comparator (for File classes) based on which the entries will be sorted.
+     * @param parser         Parser used to parse String into SongNode.
      */
-    public FileListImpl(String baseDir, FileFilter fileFilter, Comparator<File> fileComparator) {
+    public FileListImpl(String baseDir, FileFilter fileFilter, Comparator<File> fileComparator, Parser<SongNode> parser) {
         this.baseDir = new File(baseDir);
         this.fileFilter = fileFilter;
         this.fileComparator = fileComparator;
+        this.parser = parser;
         rebuild();
     }
 
@@ -91,12 +94,11 @@ public class FileListImpl implements FileList {
         List<SongNode> songNodeList = new ArrayList<SongNode>();
         for (File file : fileArray) {
             try {
-                InputSys inputSys = new InputSys(new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding));
-                SyntaxAn syntaxAn = new SyntaxAn(new LexAn(inputSys));
-                SongNode tmpSongNode = syntaxAn.parse();
+                Reader fileReader = new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding);
+                SongNode tmpSongNode = parser.parse(fileReader);
                 tmpSongNode.setSourceFile(file);
                 songNodeList.add(tmpSongNode);
-            } catch (SyntaxAn.SyntaxErrorException ex) {
+            } catch (ParserException ex) {
                 logger.error("LOADING FAILED - SyntaxError : " + file.getName() + " : " + ex.getMessage(), ex);
             } catch (Exception ex) {
                 logger.error("LOADING FAILED - IO Error : " + file.getName() + " : " + ex.getMessage(), ex);
@@ -134,6 +136,7 @@ public class FileListImpl implements FileList {
     /**
      * Sets the file whose absolute path matches curAbsolutePath as current file,
      * if not found the current file is not changed.
+     * @param curFile File to be set as current.
      */
     private void setCurrent(File curFile) {
         for (int i = 0; i < fileArray.length; i++) {
