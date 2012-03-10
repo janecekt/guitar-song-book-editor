@@ -24,8 +24,8 @@ public class TitleNode implements Node {
 
     public TitleNode(String rawTitle) {
         String[] titleParts = rawTitle.split("-");
-        title = titleParts[0];
-        subTitle = (titleParts.length > 1) ? titleParts[1] : null;
+        title = titleParts[0].trim();
+        subTitle = (titleParts.length > 1) ? titleParts[1].trim() : null;
     }
 
 
@@ -47,7 +47,7 @@ public class TitleNode implements Node {
         if (subTitle == null) {
             return title;
         } else {
-            return title + "-" + subTitle;
+            return title + " - " + subTitle;
         }
     }
 
@@ -56,7 +56,7 @@ public class TitleNode implements Node {
         if (subTitle == null) {
             return "<DIV class=\"title\">" + title + "</DIV>\n";
         } else {
-            return "<DIV class=\"title\">" + title + "-" + subTitle + "</DIV>\n";
+            return "<DIV class=\"title\">" + title + " - " + subTitle + "</DIV>\n";
         }
     }
 

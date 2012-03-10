@@ -18,6 +18,7 @@
 package com.songbook;
 
 import java.awt.Frame;
+import java.io.File;
 import java.util.regex.Pattern;
 
 import com.songbook.exporter.HtmlExporter;
@@ -28,10 +29,10 @@ import com.songbook.parser.ChordProParser;
 import com.songbook.parser.Parser;
 import com.songbook.ui.UIDialog;
 import com.songbook.ui.presentationmodel.MainFormPresentationModel;
+import com.songbook.ui.presentationmodel.SongListPresentationModel;
 import com.songbook.ui.presentationmodel.TextDialogPresentationModel;
 import com.songbook.ui.view.MainFormView;
 import com.songbook.ui.view.TextDialogView;
-import com.songbook.util.FileListImpl;
 
 /**
  * Wrapper class for main function.
@@ -71,7 +72,7 @@ public class Main {
             // Main Presentation Model
             MainFormPresentationModel mainPM = new MainFormPresentationModel(
                     parser,
-                    new FileListImpl(args[0], new FileListImpl.TxtFileFilter(), new FileListImpl.FileNameComparator(), parser),
+                    new SongListPresentationModel(new File(args[0]), parser),
                     newNextFileDialog,
                     new HtmlExporter(),
                     new LaTexExporter(),

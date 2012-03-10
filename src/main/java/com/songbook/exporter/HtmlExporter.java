@@ -66,8 +66,8 @@ public class HtmlExporter implements Exporter {
         builder.append("<HTML>\n");
         builder.append("<HEAD>\n");
         builder.append("  <META http-equiv=\"Content-Type\" content=\"text/html; charset=utf8\" />\n");
-        builder.append("  <LINK href=\"song.css\" rel=\"stylesheet\" type=\"text/css\" />\n");
-        builder.append("  <SCRIPT src=\"song.js\" type=\"text/javascript\"></SCRIPT>\n");
+        builder.append("  <LINK href=\"../resources/song.css\" rel=\"stylesheet\" type=\"text/css\" />\n");
+        builder.append("  <SCRIPT src=\"../resources/song.js\" type=\"text/javascript\"></SCRIPT>\n");
         builder.append("  <TITLE>").append(songNode.getTitle()).append("</TITLE>\n");
         builder.append("</HEAD>\n");
         builder.append("<BODY>\n\n");

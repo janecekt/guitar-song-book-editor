@@ -42,7 +42,7 @@ public class LaTexExporter implements Exporter {
     @Override
     public void export(File baseDir, SongBook songBook) {
         // Output
-        File outputDir = new File(baseDir, "tex");
+        File outputDir = new File(baseDir, "latex");
         File outputFile = new File(outputDir, "allsongs.tex");
         logger.info("Starting export to latex file {}.", outputFile.getAbsolutePath());
 

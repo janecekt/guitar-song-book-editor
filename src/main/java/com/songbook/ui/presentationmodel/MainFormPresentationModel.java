@@ -33,16 +33,12 @@ import com.songbook.model.SongNode;
 import com.songbook.parser.Parser;
 import com.songbook.parser.ParserException;
 import com.songbook.ui.UIDialog;
-import com.songbook.util.FileIO;
-import com.songbook.util.FileList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class MainFormPresentationModel extends BasePresentationModel {
     private static final Logger logger = LoggerFactory.getLogger(MainFormPresentationModel.class);
-    private Action nextAction;
-    private Action previousAction;
     private Action editAction;
     private final ValueHolder transposeModel = new ValueHolder(0);
     private final ValueHolder viewModeModel = new ValueHolder(true);
@@ -55,13 +51,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private final SelectionInList<String> encodingModel = new SelectionInList<String>(new String[]{"CP1250", "UTF8"});
     private final EditorPanePresentationModel editorModel = new EditorPanePresentationModel();
     private final LogObservingPresentationModel logObservingPresentationModel;
+    private final SongListPresentationModel songListPresentationModel;
 
     // Dependencies (services)
     private final UIDialog<String> newFilenameDialog;
     private final Exporter htmlExporter;
     private final Exporter latexExporter;
     private final Exporter pdfExporter;
-    private final FileList fileList;
     private final Parser<SongNode> parser;
 
     // State
@@ -71,13 +67,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
     public MainFormPresentationModel(
             Parser<SongNode> parser,
-            FileList fileList,
+            SongListPresentationModel songListPresentationModel,
             UIDialog<String> newFilenameDialog,
             Exporter htmlExporter,
             Exporter latexExporter,
             Exporter pdfExporter) {
         this.parser = parser;
-        this.fileList = fileList;
+        this.songListPresentationModel = songListPresentationModel;
         this.newFilenameDialog = newFilenameDialog;
         this.htmlExporter = htmlExporter;
         this.latexExporter = latexExporter;
@@ -90,15 +86,15 @@ public class MainFormPresentationModel extends BasePresentationModel {
         initDependencies();
 
         // Initialize contents
-        rebuildSongNodeFromCurrentFile();
-        refreshContent();
+        songListPresentationModel.reloadFromDisk(encodingModel.getValue());
+        songListPresentationModel.getSongListModel().setSelectionIndex(0);
     }
 
 
-    private void rebuildSongNodeFromCurrentFile() {
+    /*private void rebuildSongNodeFromCurrentFile() {
         rebuildSongNode(fileList.getCurrentFileContent(encodingModel.getValue()), 0);
         titleModel.setValue("Guitar Song Book Editor - " + fileList.getCurrent().getName());
-    }
+    } */
 
 
     private void rebuildSongNode(String content, int songTranspose) {
@@ -134,32 +130,6 @@ public class MainFormPresentationModel extends BasePresentationModel {
     }
 
 
-    private void onNextActionPerformed() {
-        logger.info("Next Pressed");
-        try {
-            fileList.gotoNext();
-            transposeModel.setValue(0);
-            rebuildSongNodeFromCurrentFile();
-            refreshContent();
-        } catch (RuntimeException ex) {
-            handleError("Switching to next song failed !", ex);
-        }
-    }
-
-
-    private void onPreviousActionPerformed() {
-        logger.info("Previous Pressed");
-        try {
-            fileList.gotoPrevious();
-            transposeModel.setValue(0);
-            rebuildSongNodeFromCurrentFile();
-            refreshContent();
-        } catch (RuntimeException ex) {
-            handleError("Switching to previous song failed !", ex);
-        }
-    }
-
-
     private void onEditActionPerformed(boolean handleExceptions) {
         logger.info("Edit Pressed");
         try {
@@ -187,10 +157,8 @@ public class MainFormPresentationModel extends BasePresentationModel {
         try {
             String newFilename = newFilenameDialog.runDialog(getOwnerFrame());
             if (newFilename != null) {
-                fileList.addNewFile(newFilename, encodingModel.getValue());
+                songListPresentationModel.addNew(newFilename, encodingModel.getValue());
             }
-            rebuildSongNodeFromCurrentFile();
-            refreshContent();
         } catch (RuntimeException ex) {
             handleError("Creation of new song failed !", ex);
         }
@@ -207,16 +175,23 @@ public class MainFormPresentationModel extends BasePresentationModel {
             }
 
             // Save file
-            FileIO.writeStringToFile(fileList.getCurrent().getAbsolutePath(),
+            songListPresentationModel.saveCurrent(
                     encodingModel.getValue(),
                     songNode.getAsText(transposeModel.intValue() - songNodeTransposition));
-
-            // Set transpose to 0 and refresh
-            transposeModel.setValue(0);
-            rebuildSongNodeFromCurrentFile();
-            refreshContent();
         } catch (RuntimeException ex) {
             handleError("Saving of a song failed -" + songNode.getTitle(), ex);
+        }
+    }
+
+
+    private void onSongSelectionChanged(SongNode selectedSong) {
+        if (selectedSong != null) {
+            logger.info("Selection changed ...");
+            transposeModel.setValue(0);
+            songNode = selectedSong;
+            songNodeTransposition = 0;
+            titleModel.setValue("Guitar Song Book Editor - " + songNode.getSourceFile().getName());
+            refreshContent();
         }
     }
 
@@ -232,7 +207,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
             }
 
             // Export to HTML files
-            htmlExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
+            htmlExporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
         } catch (RuntimeException ex) {
             handleError("EXPORT TO HTML FAILED !", ex);
         }
@@ -249,7 +224,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
                 return;
             }
 
-            latexExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
+            latexExporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
         } catch (RuntimeException ex) {
             handleError("EXPORT TO LATEX FAILED !", ex);
         }
@@ -265,7 +240,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
                 return;
             }
 
-            pdfExporter.export(fileList.getBaseDir(), fileList.buildSongBook(encodingModel.getValue()));
+            pdfExporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
         } catch (Exception ex) {
             handleError("EXPORT TO PDF FAILED !", ex);
         }
@@ -274,16 +249,6 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
     public ValueModel getTitleModel() {
         return titleModel;
-    }
-
-
-    public Action getPreviousAction() {
-        return previousAction;
-    }
-
-
-    public Action getNextAction() {
-        return nextAction;
     }
 
 
@@ -332,6 +297,11 @@ public class MainFormPresentationModel extends BasePresentationModel {
     }
 
 
+    public SongListPresentationModel getSongListPresentationModel() {
+        return songListPresentationModel;
+    }
+
+
     @Override
     protected Logger getLogger() {
         return logger;
@@ -350,24 +320,17 @@ public class MainFormPresentationModel extends BasePresentationModel {
                 onTransposeValueChanged((Integer) evt.getOldValue());
             }
         });
+
+        songListPresentationModel.getSongListModel().getSelectionHolder().addValueChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                onSongSelectionChanged((SongNode) evt.getNewValue());
+            }
+        });
     }
 
 
     private void initActions() {
-        previousAction = new AbstractAction("Previous") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onPreviousActionPerformed();
-            }
-        };
-
-        nextAction = new AbstractAction("Next") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onNextActionPerformed();
-            }
-        };
-
         editAction = new AbstractAction("Edit/View") {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -23,6 +23,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -32,11 +33,20 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.html.HTMLEditorKit;
 
 import com.jgoodies.binding.adapter.BasicComponentFactory;
 import com.jgoodies.binding.adapter.SpinnerToValueModelConnector;
 import com.jgoodies.binding.beans.PropertyConnector;
+import com.jgoodies.binding.list.SelectionInList;
 import com.jgoodies.binding.value.ValueModel;
 import com.songbook.ui.presentationmodel.MainFormPresentationModel;
 import com.songbook.util.FileIO;
@@ -44,8 +54,6 @@ import com.songbook.util.FileIO;
 
 /** View for the MainForm (implementation of the Model-View-PresentationModel). */
 public class MainFormView extends JFrame {
-    private final JButton nextButton;
-    private final JButton previousButton;
     private final JButton editButton;
     private final JSpinner transposeSpinner;
     private final JButton newButton;
@@ -57,6 +65,7 @@ public class MainFormView extends JFrame {
 
     private final JEditorPane editorPane;
     private final JEditorPane logPane;
+    private final JTable songSelectionTable;
 
 
     /**
@@ -69,8 +78,6 @@ public class MainFormView extends JFrame {
         PropertyConnector.connectAndUpdate(presentationModel.getTitleModel(), this, "title");
 
         // == LEFT TOOLBAR ==
-        previousButton = new JButton(presentationModel.getPreviousAction());
-        nextButton = new JButton(presentationModel.getNextAction());
         editButton = new JButton(presentationModel.getEditAction());
         transposeSpinner = new JSpinner();
         SpinnerToValueModelConnector.connect(transposeSpinner.getModel(), presentationModel.getTransposeModel(), 0);
@@ -104,6 +111,17 @@ public class MainFormView extends JFrame {
                 logPane.setCaretPosition( logPane.getDocument().getLength() );
             }
         });
+
+        // == SONG SELECTION ==
+        TableModel tableModel = new SongListTableAdapter(presentationModel.getSongListPresentationModel().getSongListModel());
+        songSelectionTable = new JTable(tableModel);
+        songSelectionTable.setRowSorter(new TableRowSorter<TableModel>(tableModel));
+        songSelectionTable.getRowSorter().setSortKeys(Arrays.asList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
+        bind2Way(songSelectionTable, presentationModel.getSongListPresentationModel().getSongListModel());
+        songSelectionTable.getSelectionModel().setSelectionInterval(0,0);
+
+
+
 
         // == DO LAYOUT ==
         initLayout();
@@ -143,10 +161,9 @@ public class MainFormView extends JFrame {
 
     /** Initialize layout */
     private void initLayout() {
+        // TOOLBAR
         Box toolbarPanel = Box.createHorizontalBox();
         toolbarPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        toolbarPanel.add(previousButton);
-        toolbarPanel.add(nextButton);
         toolbarPanel.add(editButton);
         toolbarPanel.add(transposeSpinner);
         toolbarPanel.add(Box.createHorizontalGlue());
@@ -157,14 +174,24 @@ public class MainFormView extends JFrame {
         toolbarPanel.add(exportPDFButton);
         toolbarPanel.add(encodingComboBox);
 
+        // CENTER PANE
+        JSplitPane centerPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        centerPane.setOneTouchExpandable(true);
+        centerPane.setDividerLocation(500);
+        centerPane.setResizeWeight(1);
+        centerPane.setLeftComponent(new JScrollPane(editorPane));
+        centerPane.setRightComponent(new JScrollPane(songSelectionTable));
 
+        // MAIN PANE
         JSplitPane mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        mainPane.setOneTouchExpandable(true);
         mainPane.setDividerLocation(450);
         mainPane.setResizeWeight(1);
         mainPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-        mainPane.setTopComponent(new JScrollPane(editorPane));
+        mainPane.setTopComponent(centerPane);
         mainPane.setBottomComponent(new JScrollPane(logPane));
 
+        // CONTENT PANE
         Box contentPanel = Box.createVerticalBox();
         contentPanel.add(Box.createRigidArea(new Dimension(10, 10)));
         contentPanel.add(toolbarPanel);
@@ -173,5 +200,40 @@ public class MainFormView extends JFrame {
         this.setMinimumSize(new Dimension(900, 600));
 
         setContentPane(contentPanel);
+    }
+
+    private static void bind2Way(final JTable jTable, final SelectionInList<?> selectionInListModel) {
+        // Set single row selection
+        jTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Bind TABLE => SelectionInList
+        jTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int viewIndex = jTable.getSelectedRow();
+                    if (viewIndex >= 0) {
+                        int modelIndex = jTable.convertRowIndexToModel(viewIndex);
+                        selectionInListModel.setSelectionIndex(modelIndex);
+                    } else {
+                        selectionInListModel.clearSelection();
+                    }
+                }
+            }
+        });
+
+        // Bind SelectionInList => Table
+        selectionInListModel.getSelectionIndexHolder().addValueChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                Integer modelIndex = (Integer) evt.getNewValue();
+                if (modelIndex > 0) {
+                    int rowIndex = jTable.convertRowIndexToView(modelIndex);
+                    jTable.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+                } else {
+                    jTable.clearSelection();
+                }
+            }
+        });
     }
 }

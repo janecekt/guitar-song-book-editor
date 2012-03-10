@@ -25,29 +25,29 @@ public class MainFormStoryTest extends MainFormSteps {
 
 
     @Test
-    public void songPagingScenario() throws Exception {
+    public void songSelectionScenario() throws Exception {
         givenSong("song1.txt", SongData.SONG1);
         givenSong("song2.txt", SongData.SONG2);
 
         whenApplicationStarted();
         thenTitleIs("Guitar Song Book Editor - song1.txt");
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
-        whenPreviousButtonPressed();
+        whenSongSelected(SongData.SONG1);
         thenTitleIs("Guitar Song Book Editor - song1.txt");
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
-        whenNextButtonPressed();
+        whenSongSelected(SongData.SONG2);
         thenTitleIs("Guitar Song Book Editor - song2.txt");
         thenSongDisplayedIs(SongData.SONG2, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG2);
 
-        whenNextButtonPressed();
-        thenTitleIs("Guitar Song Book Editor - song2.txt");
-        thenSongDisplayedIs(SongData.SONG2, DisplayMode.HTML);
-
-        whenPreviousButtonPressed();
+        whenSongSelected(SongData.SONG1);
         thenTitleIs("Guitar Song Book Editor - song1.txt");
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
     }
 
 
@@ -57,12 +57,15 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenEditViewButtonPressed();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.TEXT);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenEditViewButtonPressed();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
     }
 
 
@@ -72,15 +75,19 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenTransposeSetTo(2);
         thenSongDisplayedIs(SongData.SONG1_2UP, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenEditViewButtonPressed();
         thenSongDisplayedIs(SongData.SONG1_2UP, DisplayMode.TEXT);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenEditViewButtonPressed();
         thenSongDisplayedIs(SongData.SONG1_2UP, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
     }
 
 
@@ -90,13 +97,17 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenEditViewButtonPressed();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.TEXT);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenSongEditedTo(SongData.SONG1_EDITED);
+
         whenSaveButtonPressed();
         thenSongDisplayedIs(SongData.SONG1_EDITED, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1_EDITED);
         thenSongFileOnDiskContains("song1.txt", SongData.SONG1_EDITED);
     }
 
@@ -107,12 +118,15 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenTransposeSetTo(2);
         thenSongDisplayedIs(SongData.SONG1_2UP, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenSaveButtonPressed();
         thenSongDisplayedIs(SongData.SONG1_2UP, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1_2UP);
         thenTransposeValueDisplayedIs(0);
         thenSongFileOnDiskContains("song1.txt", SongData.SONG1_2UP);
     }
@@ -124,18 +138,25 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
+
 
         whenEditViewButtonPressed();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.TEXT);
+        thenSongSelectedIs(SongData.SONG1);
+
 
         whenSongEditedTo(SongData.SONG1_EDITED);
         thenSongDisplayedIs(SongData.SONG1_EDITED, DisplayMode.TEXT);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenTransposeSetTo(2);
         thenSongDisplayedIs(SongData.SONG1_EDITED_2UP, DisplayMode.TEXT);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenSaveButtonPressed();
         thenSongDisplayedIs(SongData.SONG1_EDITED_2UP, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1_EDITED_2UP);
         thenTransposeValueDisplayedIs(0);
         thenSongFileOnDiskContains("song1.txt", SongData.SONG1_EDITED_2UP);
     }
@@ -147,8 +168,7 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
-
-
+        thenSongSelectedIs(SongData.SONG1);
     }
 
 
@@ -159,6 +179,7 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenExportToLatexPressed();
     }
@@ -171,6 +192,7 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenExportToHtmlPressed();
     }
@@ -183,6 +205,7 @@ public class MainFormStoryTest extends MainFormSteps {
 
         whenApplicationStarted();
         thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
 
         whenExportToPdfPressed();
     }

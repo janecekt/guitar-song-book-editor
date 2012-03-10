@@ -14,9 +14,8 @@ import com.songbook.parser.Parser;
 import com.songbook.parser.ParserException;
 import com.songbook.ui.presentationmodel.EditorPanePresentationModel;
 import com.songbook.ui.presentationmodel.MainFormPresentationModel;
+import com.songbook.ui.presentationmodel.SongListPresentationModel;
 import com.songbook.util.FileIO;
-import com.songbook.util.FileList;
-import com.songbook.util.FileListImpl;
 import org.junit.Assert;
 
 public class MainFormSteps {
@@ -46,10 +45,12 @@ public class MainFormSteps {
         SONG2("Song2 - Author",
                 "[Em]aa [Dm]aa [G]aa");
 
+        private String title;
         private final String songData;
 
 
         private SongData(String title, String... lines) {
+            this.title = title;
             StringBuilder builder = new StringBuilder();
             builder.append(title).append("\n");
             for (String line : lines) {
@@ -57,11 +58,16 @@ public class MainFormSteps {
             }
             builder.append("\n");
             this.songData = builder.toString();
+
         }
 
 
         public String getSongData() {
             return songData;
+        }
+
+        public String getTitle() {
+            return title;
         }
     }
 
@@ -79,19 +85,26 @@ public class MainFormSteps {
 
     public void whenApplicationStarted() {
         parser = ChordProParser.createParser();
-        FileList fileList = new FileListImpl(TEST_BASEDIR.getAbsolutePath(), new FileListImpl.TxtFileFilter(), new FileListImpl.FileNameComparator(), parser);
-        mainPM = new MainFormPresentationModel(parser, fileList, null, new HtmlExporter(), new LaTexExporter(), new PdfExporter());
+        mainPM = new MainFormPresentationModel(
+                parser,
+                new SongListPresentationModel(TEST_BASEDIR, parser),
+                null,
+                new HtmlExporter(),
+                new LaTexExporter(),
+                new PdfExporter());
         mainPM.setPropagateErrors(true);
     }
 
 
-    public void whenNextButtonPressed() {
-        mainPM.getNextAction().actionPerformed(null);
-    }
-
-
-    public void whenPreviousButtonPressed() {
-        mainPM.getPreviousAction().actionPerformed(null);
+    public void whenSongSelected(SongData song) {
+        // Find song to be selected
+        SongNode selectedSong = null;
+        for (SongNode songNode : mainPM.getSongListPresentationModel().getSongListModel().getList()) {
+            if (song.getTitle().equals(songNode.getTitle())) {
+                selectedSong = songNode;
+            }
+        }
+        mainPM.getSongListPresentationModel().getSongListModel().setSelection(selectedSong);
     }
 
 
@@ -151,7 +164,16 @@ public class MainFormSteps {
     }
 
 
+    public void thenSongSelectedIs(SongData expectedSelectedSong) {
+        // Verify that expected song is selected
+        Assert.assertEquals("Different song selected then expected",
+                expectedSelectedSong.getTitle(),
+                mainPM.getSongListPresentationModel().getSongListModel().getSelection().getTitle());
+    }
+
+
     public void thenSongDisplayedIs(SongData expectedSongBody, DisplayMode expectedDisplayMode) throws ParserException {
+        // Verify that expected song is displayed
         switch (expectedDisplayMode) {
             case HTML:
                 Assert.assertEquals("Display mode should be HTML",
