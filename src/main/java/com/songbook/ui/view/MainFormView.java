@@ -61,6 +61,7 @@ public class MainFormView extends JFrame {
     private final JButton exportHtmlButton;
     private final JButton exportLatexButton;
     private final JButton exportPDFButton;
+    private final JButton exportEPubButton;
     private final JComboBox encodingComboBox;
 
     private final JEditorPane editorPane;
@@ -88,6 +89,7 @@ public class MainFormView extends JFrame {
         exportHtmlButton = new JButton(presentationModel.getExportHtmlAction());
         exportLatexButton = new JButton(presentationModel.getExportLatexAction());
         exportPDFButton = new JButton(presentationModel.getExportPdfAction());
+        exportEPubButton = new JButton(presentationModel.getExportEPubAction());
         encodingComboBox = BasicComponentFactory.createComboBox(presentationModel.getEncodingModel());
 
         // == MODEL ==
@@ -172,6 +174,7 @@ public class MainFormView extends JFrame {
         toolbarPanel.add(exportHtmlButton);
         toolbarPanel.add(exportLatexButton);
         toolbarPanel.add(exportPDFButton);
+        toolbarPanel.add(exportEPubButton);
         toolbarPanel.add(encodingComboBox);
 
         // CENTER PANE

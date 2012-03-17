@@ -19,19 +19,16 @@ package com.songbook.exporter;
 
 import java.io.File;
 
-import com.songbook.model.ChordNode;
-import com.songbook.model.LineNode;
-import com.songbook.model.Node;
 import com.songbook.model.SongBook;
 import com.songbook.model.SongNode;
-import com.songbook.model.TextNode;
-import com.songbook.model.VerseNode;
 import com.songbook.util.FileIO;
+import com.songbook.util.FreeMakerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HtmlExporter implements Exporter {
     private static final Logger logger = LoggerFactory.getLogger(HtmlExporter.class);
+    private static final String SONGBOOK_HTML_SONG_TEMPLATE = "/export/html/song.html.ftl";
 
 
     @Override
@@ -43,83 +40,24 @@ public class HtmlExporter implements Exporter {
         FileIO.createDirectory(outputDir);
 
         for (SongNode songNode : songBook.getSongNodeList()) {
-            try {
-                // Determine target filename
-                String htmlFileName = songNode.getSourceFile().getName().replace(".txt", "") + ".html";
-                File outputFileName = new File(outputDir, htmlFileName);
-
-                // Write content to HTML
-                String htmlContent = buildHtmlForSongNode(songNode);
-                FileIO.writeStringToFile(outputFileName.getAbsolutePath(), "utf8", htmlContent);
-            } catch (Exception ex) {
-                logger.error("... FAILED to export song - " + songNode.getTitle(), ex);
-            }
+            exportSong(songNode, outputDir);
         }
 
         logger.info("COMPLETED export to HTML");
     }
 
 
-    private String buildHtmlForSongNode(SongNode songNode) {
-        StringBuilder builder = new StringBuilder();
+    private void exportSong(SongNode songNode, File outputDir) {
+        try {
+            // Determine target filename
+            String htmlFileName = songNode.getSourceFile().getName().replace(".txt", "") + ".html";
+            File outputFileName = new File(outputDir, htmlFileName);
 
-        builder.append("<HTML>\n");
-        builder.append("<HEAD>\n");
-        builder.append("  <META http-equiv=\"Content-Type\" content=\"text/html; charset=utf8\" />\n");
-        builder.append("  <LINK href=\"../resources/song.css\" rel=\"stylesheet\" type=\"text/css\" />\n");
-        builder.append("  <SCRIPT src=\"../resources/song.js\" type=\"text/javascript\"></SCRIPT>\n");
-        builder.append("  <TITLE>").append(songNode.getTitle()).append("</TITLE>\n");
-        builder.append("</HEAD>\n");
-        builder.append("<BODY>\n\n");
-
-        builder.append("<DIV class=\"title\">").append(songNode.getTitle()).append("</DIV>\n\n");
-
-        builder.append("<DIV class=\"transpose\">\n");
-        builder.append("Transposition: <SPAN id=\"totaltranspose\">0</SPAN>\n");
-        builder.append("[<A href=\"javascript:transpose(1)\">+1</A>]\n");
-        builder.append("[<A href=\"javascript:transpose(-1)\">-1</A>]\n");
-        builder.append("</DIV>");
-
-        for (VerseNode verseNode : songNode.getVerseList()) {
-            builder.append("\n\n");
-            appendVerse(verseNode, builder);
-        }
-
-        builder.append("</BODY>\n");
-        builder.append("</HTML>\n");
-
-        return builder.toString();
-    }
-
-
-    private void appendVerse(VerseNode verseNode, StringBuilder builder) {
-        builder.append("<DIV class=\"verse\">");
-        for (LineNode lineNode : verseNode.getLineNodes()) {
-            appendLine(lineNode, builder);
-            builder.append("<BR/>\n");
-        }
-        builder.append("</DIV>");
-    }
-
-
-    private void appendLine(LineNode lineNode, StringBuilder builder) {
-        for (Node node : lineNode.getContentList()) {
-            if (node instanceof TextNode) {
-                builder.append(((TextNode) node).getText());
-            } else if (node instanceof ChordNode) {
-                ChordNode chordNode = (ChordNode) node;
-
-                builder.append("<SPAN class=\"chord\">");
-                String chord2 = chordNode.getChord2(0);
-                if (!chord2.isEmpty()) {
-                    builder.append("<SPAN title=\"chord\">");
-                    builder.append(chord2);
-                    builder.append("</SPAN>");
-                }
-                builder.append("<SPAN title=\"chord\">");
-                builder.append(chordNode.getChord1(0));
-                builder.append("</SPAN></SPAN>");
-            }
+            // Write content to HTML
+            String htmlContent = FreeMakerUtil.processTemplate(songNode, SONGBOOK_HTML_SONG_TEMPLATE);
+            FileIO.writeStringToFile(outputFileName.getAbsolutePath(), "utf8", htmlContent);
+        } catch (Exception ex) {
+            logger.error("... FAILED to export song - " + songNode.getTitle(), ex);
         }
     }
 }

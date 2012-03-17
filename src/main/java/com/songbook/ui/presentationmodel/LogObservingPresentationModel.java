@@ -30,6 +30,7 @@ public class LogObservingPresentationModel {
 
     // CAREFUL: EvenAppender uses WeakReference to listeners - we need to keep a reference to the listener class
     //    so that it is not garbage-collected.
+    @SuppressWarnings("FieldCanBeLocal")
     private final EventAppender.LogEventListener listener = new EventAppender.LogEventListener() {
         @Override
         public void onLogEvent(Severity severity, String logMessage) {

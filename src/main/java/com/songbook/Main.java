@@ -21,6 +21,7 @@ import java.awt.Frame;
 import java.io.File;
 import java.util.regex.Pattern;
 
+import com.songbook.exporter.EPubExporter;
 import com.songbook.exporter.HtmlExporter;
 import com.songbook.exporter.LaTexExporter;
 import com.songbook.exporter.PdfExporter;
@@ -76,7 +77,8 @@ public class Main {
                     newNextFileDialog,
                     new HtmlExporter(),
                     new LaTexExporter(),
-                    new PdfExporter());
+                    new PdfExporter(),
+                    new EPubExporter());
 
             MainFormView mainFormView = new MainFormView(mainPM);
             mainFormView.setVisible(true);

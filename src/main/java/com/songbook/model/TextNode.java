@@ -35,6 +35,13 @@ public class TextNode implements Node {
     }
 
 
+    /** @return Type of the node (required for FreeMaker). */
+    @SuppressWarnings("unused")
+    public String getType() {
+        return "TextNode";
+    }
+
+
     /** @return Text of this node. */
     public String getText() {
         return text;

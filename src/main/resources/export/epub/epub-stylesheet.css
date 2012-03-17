@@ -1,0 +1,5 @@
+body { font-size: 100%; background-color: white; }
+.title { font-size: 150%; margin-bottom: 10px; }
+.transpose { color: green; }
+.verse { margin-top: 20px; margin-bottom: 20px; }
+.chord { color: black; font-weight: bold; vertical-align: super; }

@@ -1,10 +1,10 @@
 package com.songbook.ui;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import com.songbook.exporter.EPubExporter;
 import com.songbook.exporter.HtmlExporter;
 import com.songbook.exporter.LaTexExporter;
 import com.songbook.exporter.PdfExporter;
@@ -76,7 +76,7 @@ public class MainFormSteps {
     private MainFormPresentationModel mainPM;
 
 
-    public void givenSong(String songFileName, SongData songData) throws IOException {
+    public void givenSong(String songFileName, SongData songData) {
         File targetFile = new File(TEST_BASEDIR, songFileName);
         FileIO.createDirectory(TEST_BASEDIR);
         FileIO.writeStringToFile(targetFile.getAbsolutePath(), ENCODING, songData.getSongData());
@@ -91,7 +91,8 @@ public class MainFormSteps {
                 null,
                 new HtmlExporter(),
                 new LaTexExporter(),
-                new PdfExporter());
+                new PdfExporter(),
+                new EPubExporter());
         mainPM.setPropagateErrors(true);
     }
 
@@ -157,7 +158,7 @@ public class MainFormSteps {
     }
 
 
-    public void thenSongFileOnDiskContains(String fileName, SongData expectedSongData) throws IOException {
+    public void thenSongFileOnDiskContains(String fileName, SongData expectedSongData) {
         File file = new File(TEST_BASEDIR, fileName);
         Assert.assertEquals(expectedSongData.getSongData(),
                 FileIO.readFileToString(file.getAbsolutePath(), ENCODING));

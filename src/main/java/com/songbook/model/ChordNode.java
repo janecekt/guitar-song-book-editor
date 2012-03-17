@@ -54,6 +54,13 @@ public class ChordNode implements Node {
     }
 
 
+    /** @return Type of the node (required for FreeMaker). */
+    @SuppressWarnings("unused")
+    public String getType() {
+        return (chord2.isEmpty()) ? "SimpleChordNode" : "MultiChordNode";
+    }
+
+
     /** @return Text representation of the chord. */
     public String getText() {
         return (chord2.isEmpty()) ? chord1 : chord2 + "/" + chord1;
@@ -64,6 +71,7 @@ public class ChordNode implements Node {
      * @param transposition Required transposition.
      * @return Transposed main chord.
      */
+    @SuppressWarnings("unused")
     public String getChord1(int transposition) {
         return transposeChordWithFailBack(chord1, transposition);
     }
@@ -73,6 +81,7 @@ public class ChordNode implements Node {
      * @param transposition Required transposition
      * @return Transposed bass chord - or empty string if no bass chord specified.
      */
+    @SuppressWarnings("unused")
     public String getChord2(int transposition) {
         return chord2.isEmpty() ? "" : transposeChordWithFailBack(chord2, transposition);
     }

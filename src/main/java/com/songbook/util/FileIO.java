@@ -24,8 +24,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +119,45 @@ public class FileIO {
             } catch (IOException ex) {
                 logger.error("Failed to close resource " + resourceName, ex);
             }
+        }
+    }
+
+
+    /**
+     * Copy the content of the input stream into the output stream.
+     * - InputStream will be automatically closed after completion.
+     * - OutputStream will remain open.
+     * @param inputStream  The input stream to copy from.
+     * @param outputStream The output stream to copy to.
+     * @throws IOException If any error occurs during the copy.
+     */
+    public static void appendInputStreamToOutputStream(InputStream inputStream, OutputStream outputStream) throws IOException {
+        ReadableByteChannel inputChannel = Channels.newChannel(inputStream);
+
+        try {
+            WritableByteChannel outputChannel = Channels.newChannel(outputStream);
+            ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+            while (inputChannel.read(buffer) != -1) {
+                // prepare the buffer to be drained
+                buffer.flip();
+
+                // write to the channel, may block
+                outputChannel.write(buffer);
+
+                // If partial transfer, shift remainder down
+                // If buffer is empty, same as doing clear()
+                buffer.compact();
+            }
+
+            // EOF will leave buffer in fill state
+            buffer.flip();
+
+            // make sure the buffer is fully drained.
+            while (buffer.hasRemaining()) {
+                outputChannel.write(buffer);
+            }
+        } finally {
+            inputChannel.close();
         }
     }
 

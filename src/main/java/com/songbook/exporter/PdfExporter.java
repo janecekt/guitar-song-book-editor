@@ -278,7 +278,7 @@ public class PdfExporter implements Exporter {
 
     private static class PageStats extends PdfPageEventHelper {
         private int currentPage = 1;
-        private Map<String, Integer> map = new HashMap<String, Integer>();
+        private final Map<String, Integer> map = new HashMap<String, Integer>();
 
 
         public int getCurrentPage() {
