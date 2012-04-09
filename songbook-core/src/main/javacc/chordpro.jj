@@ -1,0 +1,237 @@
+/*
+ *  Copyright (c) 2008 - Tomas Janecek.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+options
+{
+    STATIC = false;
+    //USER_CHAR_STREAM = true ;
+    JAVA_UNICODE_ESCAPE = true ;
+}
+PARSER_BEGIN(ChordProParser)
+
+package com.songbook.core.parser;
+
+import java.io.Reader;
+import java.util.List;
+import java.util.ArrayList;
+import com.songbook.core.model.*;
+
+public class ChordProParser
+{
+    /** Returns an instance of the Parser. */
+    public static Parser<SongNode> createParser() {
+        return new Parser<SongNode>() {
+            @Override
+            public SongNode parse(Reader reader) throws ParserException {
+                try {
+                    ChordProParser parser = new ChordProParser( reader );
+                    return parser.Start();
+                } catch (ParseException ex) {
+                    throw new ParserException(ex.getMessage(), ex);
+                } catch (TokenMgrError ex) {
+                    throw new ParserException(ex.getMessage(), ex);
+                }
+            }
+        };
+    }
+}
+PARSER_END(ChordProParser)
+
+
+// ****
+// ** DEFINITION OF TOKENS
+TOKEN: { < TITLE_DIR:     "{title:" >                                  }
+TOKEN: { < SUBTITLE_DIR:  "{subtitle:" >                               }
+TOKEN: { < END_DIR:       "}" >                                        }
+TOKEN: { < LEFT_PAR:      "[" >                                        }
+TOKEN: { < RIGHT_PAR:     "]" >                                        }
+TOKEN: { < SLASH:         "/" >                                        }
+TOKEN: { < EOL:           "\n" | "\r" | "\r\n" >                       }
+TOKEN: { < TEXT:          ( ~["/","\r","\n","[","]","{","}"] )+ >      }
+
+
+
+//****
+//** GRAMMAR
+//****
+//* Start      ->  Title <EOL>+ VerseBlock* <EOF>
+//*
+//* Title      ->  <TITLE_DIR> <TEXT> <END_DIR> <EOL> ( <SUBTITLE_DIR> <TEXT> <END_DIR> <EOL> )?
+//*                | <TEXT> <EOL>
+//*
+//* VerseBlock -> LineBlock+ <EOL>*
+//*
+//* LineBlock  -> (<TEXT> | Chord)+ <EOL>? <EOL>?
+//
+//* Chord      ->  <LEFT_PAR> <TEXT> ( <SLASH> <TEXT> )? <RIGHT_PAR>
+//*
+
+
+
+/**
+ * <pre>
+ * Start      ->  Title <EOL>+ VerseBlock* <EOF>
+ * </pre>
+ */
+SongNode Start() :
+{
+    TitleNode titleNode;
+    VerseNode verseNode;
+    List<VerseNode> verseNodes = new ArrayList<VerseNode>();
+}
+{
+    titleNode = Title()
+    (
+        <EOL>
+    )+
+    (
+        verseNode = VerseBlock()
+        { verseNodes.add(verseNode); }
+    )*
+    <EOF>
+    // Create and return Node
+    { return new SongNode(titleNode, verseNodes); }
+}
+
+
+
+/**
+ * <pre>
+ * Title  ->   <TITLE_DIR> <TEXT> <END_DIR> <EOL> ( <SUBTITLE_DIR> <TEXT> <END_DIR> <EOL> )?
+ *             | <TEXT> <EOL>
+ * </pre>
+ */
+TitleNode Title() :
+{
+    Token title = null;
+    Token subTitle = null;
+}
+{
+    (
+        <TITLE_DIR>
+        title = <TEXT>
+        <END_DIR>
+        <EOL>
+        (
+            <SUBTITLE_DIR>
+            subTitle = <TEXT>
+            <END_DIR>
+            <EOL>
+        )?
+        // Create and return Node
+        { return new TitleNode(title.image, (subTitle != null) ? subTitle.image : null); }
+    )
+    |
+    (
+        title = <TEXT>
+        <EOL>
+        // Create and return Node
+        { return new TitleNode(title.image); }
+    )
+}
+
+
+
+/**
+ * <pre>
+ * VerseBlock -> LineBlock+ <EOL>*
+ * </pre>
+ */
+VerseNode VerseBlock() :
+{
+    LineNode lineNode;
+    List<LineNode> lineNodes = new ArrayList<LineNode>();
+}
+{
+    (
+        LOOKAHEAD(2)
+        lineNode = LineBlock()
+        { lineNodes.add(lineNode); }
+    )+
+    (
+        <EOL>
+    )*
+
+    // Create and return Node
+    { return new VerseNode(lineNodes); }
+}
+
+
+
+/**
+ * <pre>
+//* LineBlock  -> (<TEXT> | Chord)+ <EOL>? <EOL>?
+ * </pre>
+ */
+LineNode LineBlock() :
+{
+    Token text;
+    Node chordNode;
+    List<Node> lineNodes = new ArrayList<Node>();
+}
+{
+    (
+        LOOKAHEAD(2)
+        (
+            (
+                text = <TEXT>
+                { lineNodes.add( new TextNode(text.image) ); }
+            )
+            |
+            (
+                chordNode = Chord()
+                { lineNodes.add( chordNode ); }
+            )
+        )
+    )+
+    (
+        LOOKAHEAD(2)
+        <EOL>
+    )?
+    (
+        LOOKAHEAD(2)
+        <EOL>
+    )?
+
+    // Create and return Node
+    { return new LineNode(lineNodes); }
+}
+
+
+
+/**
+ * <pre>
+ * Chord     ->  <LEFT_PAR> <TEXT> ( <SLASH> <TEXT> )? <RIGHT_PAR>
+ * </pre>
+ */
+ChordNode Chord() :
+{
+    Token chord1 = null;
+    Token chord2 = null;
+}
+{
+    <LEFT_PAR>
+    chord1 = <TEXT>
+    (
+        <SLASH>
+        chord2 = <TEXT>
+    )?
+    <RIGHT_PAR>
+
+    // Create and return Node
+    { return new ChordNode(chord1.image, (chord2!=null) ? chord2.image : "" ); }
+}

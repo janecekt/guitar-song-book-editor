@@ -7,12 +7,18 @@
 
     <groupId>com.songbook</groupId>
     <artifactId>songbook</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>songbook-core</module>
+        <module>songbook-pc</module>
+    </modules>
 
-    <name>Guitar Song Book Editor</name>
+    <name>Guitar Song Book Editor - Parent</name>
 
     <build>
         <plugins>
+            <!-- We are targeting Java 6 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -21,82 +27,66 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>javacc</id>
-                        <goals>
-                            <goal>javacc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.songbook.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>binding</artifactId>
-            <version>2.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.lowagie</groupId>
-            <artifactId>itext</artifactId>
-            <version>2.1.7</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>bouncycastle</groupId>
-                    <artifactId>bcmail-jdk14</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>bouncycastle</groupId>
-                    <artifactId>bcprov-jdk14</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bctsp-jdk14</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-	        <groupId>org.freemarker</groupId>
-	        <artifactId>freemarker</artifactId>
-	        <version>2.3.14</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal dependencies -->
+            <dependency>
+                <groupId>com.songbook</groupId>
+                <artifactId>songbook-core</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <!-- External dependencies -->
+            <dependency>
+                <groupId>com.jgoodies</groupId>
+                <artifactId>binding</artifactId>
+                <version>2.0.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lowagie</groupId>
+                <artifactId>itext</artifactId>
+                <version>2.1.7</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>bouncycastle</groupId>
+                        <artifactId>bcmail-jdk14</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>bouncycastle</groupId>
+                        <artifactId>bcprov-jdk14</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bctsp-jdk14</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.4</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.14</version>
+            </dependency>
+
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.10</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
