@@ -48,8 +48,8 @@ import com.jgoodies.binding.adapter.SpinnerToValueModelConnector;
 import com.jgoodies.binding.beans.PropertyConnector;
 import com.jgoodies.binding.list.SelectionInList;
 import com.jgoodies.binding.value.ValueModel;
+import com.songbook.core.util.FileIO;
 import com.songbook.pc.ui.presentationmodel.MainFormPresentationModel;
-import com.songbook.pc.util.FileIO;
 
 
 /** View for the MainForm (implementation of the Model-View-PresentationModel). */

@@ -34,31 +34,30 @@ public class TitleNode implements Node {
         this.subTitle = subTitle;
     }
 
+
+    public String getFullTitle() {
+        return (subTitle == null) ? title : title + " - " + subTitle;
+    }
+
+
     public String getTitle() {
         return title;
     }
+
 
     public String getSubTitle() {
         return subTitle;
     }
 
-    @Override
-    public String getAsText(int transposition) {
-        if (subTitle == null) {
-            return title;
-        } else {
-            return title + " - " + subTitle;
-        }
+
+    /**
+     * Accepts the visitor (as per the Visitor design pattern).
+     * @param visitor Visitor to be accepted.
+     */
+    public void accept(Visitor visitor) {
+        visitor.visitTitleNode(this);
     }
 
-    @Override
-    public String getAsHTML(int transposition) {
-        if (subTitle == null) {
-            return "<DIV class=\"title\">" + title + "</DIV>\n";
-        } else {
-            return "<DIV class=\"title\">" + title + " - " + subTitle + "</DIV>\n";
-        }
-    }
 
     @Override
     public String toString() {

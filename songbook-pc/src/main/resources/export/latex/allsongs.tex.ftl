@@ -12,17 +12,10 @@
                 <#if lineFragment.type == "TextNode">
                     <#-- Simple text fragment (#t = ignore leading and trailing whitespace) -->
                     ${lineFragment.text}<#t>
-                <#elseif lineFragment.type == "SimpleChordNode">
+                <#elseif lineFragment.type == "SimpleChordNode" || lineFragment.type == "MultiChordNode">
                     <#-- Simple chord e.g. "C" (#t = ignore leading and trailing whitespace) -->
                     \chord{<#t>
-                    ${lineFragment.getChord1(0).replaceAll("#", "\\\\#")}<#t>
-                    }<#t>
-                <#elseif lineFragment.type == "MultiChordNode">
-                    <#-- Complex code e.g. "C/G" (#t = ignore leading and trailing whitespace) -->
-                    \chord{<#t>
-                    ${lineFragment.getChord1(0).replaceAll("#", "\\\\#")}<#t>
-                    /<#t>
-                    ${lineFragment.getChord2(0).replaceAll("#", "\\\\#")}<#t>
+                    ${lineFragment.getText().replaceAll("#", "\\\\#")}<#t>
                     }<#t>
                 </#if>
             </#list>

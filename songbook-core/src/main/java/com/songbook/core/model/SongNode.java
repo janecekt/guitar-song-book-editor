@@ -18,38 +18,14 @@
 package com.songbook.core.model;
 
 import java.io.File;
-import java.text.Collator;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Class representing the Song.
  * @author Tomas Janecek
  */
 public class SongNode implements Node {
-
-    /** Comparator of SongNode classes based on title - uses current locale for comparisons. */
-    public static class TitleComparator implements Comparator<SongNode> {
-
-        /** Collator class used for Locale-aware string comparisons. */
-        private final Collator collator;
-
-
-        /** Constructor - Creates the instance of TitleComparator. */
-        public TitleComparator() {
-            collator = Collator.getInstance(Locale.getDefault());
-        }
-
-
-        /** Compare method - see Comparator.compare. */
-        public int compare(SongNode o1, SongNode o2) {
-            return collator.compare(o1.getTitleNode().getAsText(0), o2.getTitleNode().getAsText(0));
-        }
-    }
-
     /** Title of the Song. */
     private final TitleNode titleNode;
 
@@ -88,7 +64,7 @@ public class SongNode implements Node {
 
     /** @return the title of the song. */
     public String getTitle() {
-        return titleNode.getAsText(0);
+        return titleNode.getFullTitle();
     }
 
 
@@ -104,34 +80,21 @@ public class SongNode implements Node {
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public String getAsText(int transposition) {
-        String out = titleNode.getAsText(transposition);
-        out += "\n\n\n";
+    /**
+     * Accepts the visitor (as per the Visitor design pattern).
+     * @param visitor Visitor to be accepted.
+     */
+    public void accept(Visitor visitor) {
+        visitor.enterSongNode(this);
 
-        for (Iterator<VerseNode> it = verseList.iterator(); it.hasNext(); ) {
-            VerseNode verseNode = it.next();
-            out += verseNode.getAsText(transposition);
-            if (it.hasNext()) {
-                out += "\n\n";
-            }
+        titleNode.accept(visitor);
+
+        for (int i=0; i<verseList.size(); i++) {
+            VerseNode verseNode = verseList.get(i);
+            verseNode.accept(visitor, i==0, (i+1) == verseList.size() );
         }
 
-        return out;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getAsHTML(int transposition) {
-        String out = titleNode.getAsHTML(transposition);
-
-        for (VerseNode verseNode : verseList) {
-            out += verseNode.getAsHTML(transposition) + "\n\n";
-        }
-
-        return out;
+        visitor.exitSongNode(this);
     }
 
 

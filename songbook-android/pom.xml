@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>songbook</artifactId>
+        <groupId>com.songbook</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <packaging>apk</packaging>
+    <name>Guitar Song Book Editor - Android</name>
+
+    <artifactId>songbook-android</artifactId>
+
+    <!-- Android Plugin -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <!-- Default locations -->
+                    <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+                    <resourceDirectory>${project.basedir}/res</resourceDirectory>
+                    <sdk>
+                        <platform>8</platform>
+                    </sdk>
+                    <deleteConflictingFiles>true</deleteConflictingFiles>
+                    <proguard>
+                        <skip>true</skip>
+                    </proguard>
+                </configuration>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>com.songbook</groupId>
+            <artifactId>songbook-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Google Guice Dependency Injection -->
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>2.2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.roboguice</groupId>
+            <artifactId>roboguice</artifactId>
+            <version>2.0-RC2b</version>
+        </dependency>
+        <!--dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-android</artifactId>
+            <version>1.6.1-RC1</version>
+        </dependency-->
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

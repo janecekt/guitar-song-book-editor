@@ -12,6 +12,7 @@
     <modules>
         <module>songbook-core</module>
         <module>songbook-pc</module>
+        <module>songbook-android</module>
     </modules>
 
     <name>Guitar Song Book Editor - Parent</name>

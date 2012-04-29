@@ -61,27 +61,25 @@ public class LineNode implements Node {
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public String getAsText(int transposition) {
-        String out = "";
+    /**
+     * Accepts the visitor (as per the Visitor design pattern).
+     * @param visitor Visitor to be accepted.
+     * @param isFirst Indicates whether line is the is the first in the verse.
+     * @param isLast  Indicates whether line is the last in the verse.
+     */
+    public void accept(Visitor visitor, boolean isFirst, boolean isLast) {
+        visitor.enterLineNode(this, isFirst, isLast);
 
-        for (Node node : contentList) {
-            out += node.getAsText(transposition);
+        for (int i=0; i<contentList.size(); i++) {
+            Node node = contentList.get(i);
+            if (node instanceof TextNode) {
+                ((TextNode) node).accept(visitor, i==0, (i+1)==contentList.size());
+            } else if (node instanceof ChordNode) {
+                ((ChordNode) node).accept(visitor, i==0, (i+1)==contentList.size());
+            }
         }
 
-        return out;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getAsHTML(int transposition) {
-        String out = "";
-        for (Node node : contentList) {
-            out += node.getAsHTML(transposition);
-        }
-        return out;
+        visitor.exitLineNode(this, isFirst, isLast);
     }
 
 

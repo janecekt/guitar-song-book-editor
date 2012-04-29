@@ -18,68 +18,35 @@
 package com.songbook.pc.ui.presentationmodel;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.jgoodies.binding.list.SelectionInList;
 import com.songbook.core.model.SongBook;
 import com.songbook.core.model.SongNode;
-import com.songbook.core.parser.Parser;
-import com.songbook.core.parser.ParserException;
-import com.songbook.pc.util.FileIO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.songbook.core.util.FileIO;
+import com.songbook.core.util.SongNodeLoader;
 
 public class SongListPresentationModel {
-    private static final Logger logger = LoggerFactory.getLogger(SongListPresentationModel.class);
-
     private final File baseDir;
-    private final Parser<SongNode> parser;
+    private final SongNodeLoader loader;
     private final SelectionInList<SongNode> songListModel = new SelectionInList<SongNode>();
 
 
-    public SongListPresentationModel(File baseDir, Parser<SongNode> parser) {
+    public SongListPresentationModel(File baseDir, SongNodeLoader loader) {
         this.baseDir = baseDir;
-        this.parser = parser;
+        this.loader = loader;
     }
 
 
     public void reloadFromDisk(String encoding) {
         // Reload songs form disk
-        List<SongNode> newSongList = new ArrayList<SongNode>();
-        for (File file : baseDir.listFiles()) {
-            if (file.isFile() && file.getName().endsWith(".txt")) {
-                SongNode songNode = loadSongFromFile(file, encoding);
-                if (songNode != null) {
-                    newSongList.add(songNode);
-                }
-            }
-        }
+        List<SongNode> newSongList = loader.loadSongNodesFromDirectory(baseDir, encoding);
 
         // Refresh song list
         songListModel.getList().clear();
         songListModel.getList().addAll(newSongList);
     }
-
-
-    private SongNode loadSongFromFile(File file, String encoding) {
-        try {
-            Reader fileReader = new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding);
-            SongNode songNode = parser.parse(fileReader);
-            songNode.setSourceFile(file);
-            return songNode;
-        } catch (ParserException ex) {
-            logger.error("LOADING FAILED - SyntaxError : " + file.getName() + " : " + ex.getMessage(), ex);
-        } catch (IOException ex) {
-            logger.error("LOADING FAILED - IO Error : " + file.getName() + " : " + ex.getMessage(), ex);
-        }
-        return null;
-    }
-
 
 
     public void saveCurrent(String encoding, String content) {
@@ -88,7 +55,7 @@ public class SongListPresentationModel {
         FileIO.writeStringToFile(sourceFile.getAbsolutePath(), encoding, content);
 
         // Load file from disk
-        SongNode newSongNode = loadSongFromFile(sourceFile, encoding);
+        SongNode newSongNode = loader.loadSongNodeFromFile(sourceFile, encoding);
 
         // Update songListModel
         songListModel.getList().remove(currentSong);
@@ -103,7 +70,7 @@ public class SongListPresentationModel {
         FileIO.writeStringToFile(fileName.getAbsolutePath(), encoding, songName + "\n\nVerse1");
 
         // Load file from disk
-        SongNode songNode = loadSongFromFile(fileName, encoding);
+        SongNode songNode = loader.loadSongNodeFromFile(fileName, encoding);
 
         // Update songListModel
         songListModel.getList().add(songNode);

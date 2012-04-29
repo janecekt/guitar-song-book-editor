@@ -1,0 +1,11 @@
+<resources>
+    <string-array name="prefsOrderingEntries">
+        <item>Order by title</item>
+        <item>Order by subtitle</item>
+    </string-array>
+
+    <string-array name="prefsFileEncodingEntries">
+        <item>UTF8</item>
+        <item>CP1250</item>
+    </string-array>
+</resources>

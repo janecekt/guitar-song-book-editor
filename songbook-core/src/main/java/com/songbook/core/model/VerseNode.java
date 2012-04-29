@@ -18,7 +18,6 @@
 package com.songbook.core.model;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class VerseNode implements Node {
     private final List<LineNode> lines;
 
     /** Boolean flag indicating whether the song contains any chords. */
-    private final boolean containsChords;
+    private final boolean hasChords;
 
 
     /**
@@ -40,14 +39,20 @@ public class VerseNode implements Node {
     public VerseNode(List<LineNode> lines) {
         this.lines = Collections.unmodifiableList(lines);
 
-        boolean containsChords = false;
+        boolean hasChords = false;
         for (LineNode lineNode : lines) {
             if (lineNode.hasChords()) {
-                containsChords = true;
+                hasChords = true;
                 break;
             }
         }
-        this.containsChords = containsChords;
+        this.hasChords = hasChords;
+    }
+
+
+    /** @return True if any line in this verse contain chords (false otherwise). */
+    public boolean hasChords() {
+        return hasChords;
     }
 
 
@@ -57,33 +62,22 @@ public class VerseNode implements Node {
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public String getAsText(int transposition) {
-        String out = "";
-        for (Iterator<LineNode> it = lines.iterator(); it.hasNext(); ) {
-            LineNode lineNode = it.next();
-            out += lineNode.getAsText(transposition) + "\n";
-            if (it.hasNext() && containsChords) {
-                out += "\n";
-            }
+    /**
+     * Accepts the visitor (as per the Visitor design pattern).
+     * @param visitor Visitor to be accepted.
+     * @param isFirst Indicates whether verse is the first verse.
+     * @param isLast  Indicates whether verse is a last verse.
+     */
+    public void accept(Visitor visitor, boolean isFirst, boolean isLast) {
+        visitor.enterVerseNode(this, isFirst, isLast);
+
+        for (int i = 0; i < lines.size(); i++) {
+            LineNode lineNode = lines.get(i);
+            lineNode.accept(visitor, i == 0, (i + 1) == lines.size());
         }
 
-        return out;
-    }
 
-
-    /** {@inheritDoc} */
-    @Override
-    public String getAsHTML(int transposition) {
-        String out = "<DIV class=\"verse\">";
-
-        for (LineNode lineNode : lines) {
-            out += lineNode.getAsHTML(transposition) + "<BR />\n";
-        }
-
-        out += "</DIV>";
-        return out;
+        visitor.exitVerseNode(this, isFirst, isLast);
     }
 
 

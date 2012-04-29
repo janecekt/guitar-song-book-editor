@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import com.songbook.core.model.SongNode;
 import com.songbook.core.parser.ChordProParser;
 import com.songbook.core.parser.Parser;
+import com.songbook.core.util.SongNodeLoader;
 import com.songbook.pc.exporter.EPubExporter;
 import com.songbook.pc.exporter.HtmlExporter;
 import com.songbook.pc.exporter.LaTexExporter;
@@ -73,7 +74,7 @@ public class Main {
             // Main Presentation Model
             MainFormPresentationModel mainPM = new MainFormPresentationModel(
                     parser,
-                    new SongListPresentationModel(new File(args[0]), parser),
+                    new SongListPresentationModel(new File(args[0]), new SongNodeLoader(parser)),
                     newNextFileDialog,
                     new HtmlExporter(),
                     new LaTexExporter(),

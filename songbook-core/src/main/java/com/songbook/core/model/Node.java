@@ -21,19 +21,4 @@ package com.songbook.core.model;
  * Interface for classes of internal song representation.
  * @author Tomas Janecek
  */
-public interface Node {
-    /**
-     * Plain-text representation of the node.
-     * @param transposition Transposition to be applied.
-     * @return the plain-text format representation.
-     */
-    String getAsText(int transposition);
-
-
-    /**
-     * HTML representation of the node.
-     * @param transposition Transposition to be applied.
-     * @return the simple-html format representation.
-     */
-    String getAsHTML(int transposition);
-}
+public interface Node { }

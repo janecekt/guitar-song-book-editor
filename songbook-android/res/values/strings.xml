@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SongBook</string>
+
+    <!-- Activity titles -->
+    <string name="title.songViewActivity">Song View</string>
+    <string name="title.preferencesActivity">SongBook Preferences</string>
+
+    <!-- Messages -->
+    <string name="prefs.message.locationDoesNotExit">Location %1$s does not exist.</string>
+    <string name="prefs.message.fileExistsButDoesNotEndWithZip">File %1$s exists but does not end with ZIP.</string>
+    <string name="prefs.message.downloadingStarted">Downloading of songbook STARTED.</string>
+    <string name="prefs.message.downloadingCompleted">Downloading of songbook COMPLETED.</string>
+    <string name="prefs.message.downloadingFailed">Downloading of songbook FAILED - %1$s.</string>
+
+
+
+    <!-- Menus -->
+    <string name="menu.preferences">Preferences</string>
+
+    <string name="label.unknown">Unknown</string>
+    <string name="label.noSongsLoaded">No songs are loaded.</string>
+
+
+    <!-- List settings Preferences -->
+    <string name="prefs.category.songListSettings">Song List Settings</string>
+
+    <string name="prefs.groupingEnabled.key">prefs.groupingEnabled</string>
+    <string name="prefs.groupingEnabled.title">Grouping enabled</string>
+
+    <string name="prefs.ordering.key">prefs.ordering</string>
+    <string name="prefs.ordering.title">List Ordering</string>
+
+    <string name="prefs.orderingLocale.key">prefs.orderingLocale</string>
+    <string name="prefs.orderingLocale.title">Ordering Locale</string>
+
+
+    <!-- Song display preferences -->
+    <string name="prefs.category.songViewSettings">Song View Settings</string>
+
+    <string name="prefs.chordsOn.key">prefs.chordsOn</string>
+    <string name="prefs.chordsOn.title">Chords On</string>
+
+    <string name="prefs.fontSize.key">prefs.fontSize</string>
+    <string name="prefs.fontSize.title">Font Size</string>
+
+    <string name="prefs.lineSpacing.key">prefs.lineSpacing</string>
+    <string name="prefs.lineSpacing.title">Line spacing</string>
+
+    <string name="prefs.verseSpacing.key">prefs.verseSpacing</string>
+    <string name="prefs.verseSpacing.title">Verse spacing</string>
+
+
+    <!-- Location -->
+    <string name="prefs.category.songBookFileSettings">Songbook File Settings</string>
+
+    <string name="prefs.songBookLocation.key">prefs.songBookLocation</string>
+    <string name="prefs.songBookLocation.title">Song book location</string>
+
+    <string name="prefs.fileEncoding.key">prefs.fileEncoding</string>
+    <string name="prefs.fileEncoding.title">File encoding</string>
+
+    <string name="prefs.downloadSongbook.key">prefs.downloadSongbook</string>
+    <string name="prefs.downloadSongbook.title">Download latest songbook</string>
+    <string name="prefs.downloadSongbook.summary">Press and hold to start downloading</string>
+</resources>

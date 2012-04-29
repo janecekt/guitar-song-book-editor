@@ -21,10 +21,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
+import com.songbook.core.comparator.SongNodeTitleComparator;
 import com.songbook.core.model.SongBook;
 import com.songbook.core.model.SongNode;
-import com.songbook.pc.util.FileIO;
+import com.songbook.core.util.FileIO;
 import com.songbook.pc.util.FreeMakerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +49,7 @@ public class LaTexExporter implements Exporter {
 
         // Sort songs
         List<SongNode> sortedArrayList = new ArrayList<SongNode>(songBook.getSongNodeList());
-        Collections.sort(sortedArrayList, new SongNode.TitleComparator());
+        Collections.sort(sortedArrayList, new SongNodeTitleComparator(Locale.getDefault()));
 
         // Build document
         String output = FreeMakerUtil.processTemplate(new SongBook(sortedArrayList), SONGBOOK_LATEX_ALLSONGS_TEMPLATE);

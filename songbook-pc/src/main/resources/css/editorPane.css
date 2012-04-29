@@ -4,14 +4,17 @@ body {
     background-color: white;
 }
 
-.title {
+.titleNode {
     font-size: 120%;
-    margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .verse {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding-top: 15px;
+}
+
+.line {
+    padding-top: 5px;
 }
 
 .chord {

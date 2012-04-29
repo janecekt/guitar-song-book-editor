@@ -48,17 +48,14 @@ public class TextNode implements Node {
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public String getAsText(int transposition) {
-        return text;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getAsHTML(int transposition) {
-        return text;
+    /**
+     * Accepts the visitor (as per the Visitor design pattern).
+     * @param visitor Visitor to be accepted.
+     * @param isFirst Indicates whether the text node is the first in the line.
+     * @param isLast  Indicates whether the text node is last in the line.
+     */
+    public void accept(Visitor visitor, boolean isFirst, boolean isLast) {
+        visitor.visitTextNode(this, isFirst, isLast);
     }
 
 

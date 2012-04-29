@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 
@@ -41,6 +42,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
+import com.songbook.core.comparator.SongNodeTitleComparator;
 import com.songbook.core.model.ChordNode;
 import com.songbook.core.model.LineNode;
 import com.songbook.core.model.Node;
@@ -48,7 +50,7 @@ import com.songbook.core.model.SongBook;
 import com.songbook.core.model.SongNode;
 import com.songbook.core.model.TextNode;
 import com.songbook.core.model.VerseNode;
-import com.songbook.pc.util.FileIO;
+import com.songbook.core.util.FileIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +112,7 @@ public class PdfExporter implements Exporter {
         try {
             // Sort songs alphabetically
             List<SongNode> alphabeticalList = new ArrayList<SongNode>(songBook.getSongNodeList());
-            Collections.sort(alphabeticalList, new SongNode.TitleComparator());
+            Collections.sort(alphabeticalList, new SongNodeTitleComparator(Locale.getDefault()));
 
             // Generate PDF - pass 1 (collect page stats)
             PageStats pageStats = generatePDF(alphabeticalList, outputFile);

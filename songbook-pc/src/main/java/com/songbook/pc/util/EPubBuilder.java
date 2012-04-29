@@ -28,12 +28,14 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.songbook.core.util.FileIO;
+
 
 public class EPubBuilder {
-    private static final String RESOURCE_TOC_NCX_FTL = "util/epub/toc.ncx.ftl";
-    private static final String RESOURCE_MIMETYPE = "/util/epub/content/mimetype";
-    private static final String RESOURCE_CONTAINER_XML = "/util/epub/content/META-INF/container.xml";
-    private static final String RESOURCE_CONTENT_OPF_FTL = "util/epub/content.opf.ftl";
+    private static final String RESOURCE_TOC_NCX_FTL = "/epub/toc.ncx.ftl";
+    private static final String RESOURCE_MIMETYPE = "/epub/content/mimetype";
+    private static final String RESOURCE_CONTAINER_XML = "/epub/content/META-INF/container.xml";
+    private static final String RESOURCE_CONTENT_OPF_FTL = "/epub/content.opf.ftl";
 
     private String bookTitle;
     private String bookCreator;

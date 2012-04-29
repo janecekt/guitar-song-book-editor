@@ -19,12 +19,9 @@
                     <#if lineFragment.type == "TextNode">
                         <#-- Simple text fragment (#t = ignore leading and trailing whitespace) -->
                         ${lineFragment.text}<#t>
-                    <#elseif lineFragment.type == "SimpleChordNode">
+                    <#elseif lineFragment.type == "SimpleChordNode" || lineFragment.type == "MultiChordNode">
                         <#-- Simple chord e.g. "C" (#t = ignore leading and trailing whitespace) -->
-                        <span class="chord">${lineFragment.getChord1(0)}</span><#t>
-                    <#elseif lineFragment.type == "MultiChordNode">
-                        <#-- Complex code e.g. "C/G" (#t = ignore leading and trailing whitespace) -->
-                        <span class="chord">${lineFragment.getChord1(0)}/${lineFragment.getChord2(0)}</span><#t>
+                        <span class="chord">${lineFragment.getText()}</span><#t>
                     </#if>
                 </#list>
                 <#-- Line break at the end of the line (#lt = ignore leading whitespace) -->

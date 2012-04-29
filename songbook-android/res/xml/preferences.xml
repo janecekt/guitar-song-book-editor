@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/prefs.category.songListSettings">
+        <CheckBoxPreference android:key="@string/prefs.groupingEnabled.key"
+                            android:title="@string/prefs.groupingEnabled.title"
+                            android:defaultValue="true" />
+
+        <ListPreference android:key="@string/prefs.ordering.key"
+                        android:title="@string/prefs.ordering.title"
+                        android:entries="@array/prefsOrderingEntries"
+                        android:defaultValue="BY_TITLE" />
+
+        <ListPreference android:key="@string/prefs.orderingLocale.key"
+                        android:title="@string/prefs.orderingLocale.title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prefs.category.songViewSettings">
+        <CheckBoxPreference android:key="@string/prefs.chordsOn.key"
+                            android:title="@string/prefs.chordsOn.title"
+                            android:defaultValue="true" />
+
+        <EditTextPreference android:key="@string/prefs.fontSize.key"
+                            android:title="@string/prefs.fontSize.title"
+                            android:inputType="number"
+                            android:defaultValue="10" />
+
+        <EditTextPreference android:key="@string/prefs.lineSpacing.key"
+                            android:title="@string/prefs.lineSpacing.title"
+                            android:inputType="number"
+                            android:defaultValue="10" />
+
+        <EditTextPreference android:key="@string/prefs.verseSpacing.key"
+                            android:title="@string/prefs.verseSpacing.title"
+                            android:inputType="number"
+                            android:defaultValue="10" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prefs.category.songBookFileSettings">
+        <EditTextPreference android:key="@string/prefs.songBookLocation.key"
+                            android:title="@string/prefs.songBookLocation.title"
+                            android:inputType="text"
+                            android:defaultValue="/songbook" />
+
+        <ListPreference android:key="@string/prefs.fileEncoding.key"
+                        android:title="@string/prefs.fileEncoding.title"
+                        android:entries="@array/prefsFileEncodingEntries"
+                        android:entryValues="@array/prefsFileEncodingEntries"
+                        android:defaultValue="CP1250" />
+
+        <Preference android:key="@string/prefs.downloadSongbook.key"
+                    android:title="@string/prefs.downloadSongbook.title"
+                    android:summary="@string/prefs.downloadSongbook.summary"  />
+    </PreferenceCategory>
+</PreferenceScreen>

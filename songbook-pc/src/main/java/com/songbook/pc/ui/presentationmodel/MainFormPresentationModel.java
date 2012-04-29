@@ -31,6 +31,8 @@ import com.jgoodies.binding.value.ValueModel;
 import com.songbook.core.model.SongNode;
 import com.songbook.core.parser.Parser;
 import com.songbook.core.parser.ParserException;
+import com.songbook.core.visitor.HtmlBuilderVisitor;
+import com.songbook.core.visitor.TextBuilderVisitor;
 import com.songbook.pc.exporter.Exporter;
 import com.songbook.pc.ui.UIDialog;
 import org.slf4j.Logger;
@@ -114,10 +116,14 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
     private void refreshContent() {
         // Update view
+        StringBuilder sb = new StringBuilder();
+        int transposition = transposeModel.intValue() - songNodeTransposition;
         if (viewModeModel.booleanValue()) {
-            getEditorModel().setHtmlText(songNode.getAsHTML(transposeModel.intValue() - songNodeTransposition));
+            songNode.accept(new HtmlBuilderVisitor(sb, true, transposition, false));
+            getEditorModel().setHtmlText(sb.toString());
         } else {
-            getEditorModel().setPlainText(songNode.getAsText(transposeModel.intValue() - songNodeTransposition));
+            songNode.accept(new TextBuilderVisitor(sb, transposition));
+            getEditorModel().setPlainText(sb.toString());
         }
     }
 
@@ -179,9 +185,11 @@ public class MainFormPresentationModel extends BasePresentationModel {
             }
 
             // Save file
+            StringBuilder sb = new StringBuilder();
+            songNode.accept(new TextBuilderVisitor(sb, transposeModel.intValue() - songNodeTransposition));
             songListPresentationModel.saveCurrent(
                     encodingModel.getValue(),
-                    songNode.getAsText(transposeModel.intValue() - songNodeTransposition));
+                    sb.toString());
         } catch (RuntimeException ex) {
             handleError("Saving of a song failed -" + songNode.getTitle(), ex);
         }

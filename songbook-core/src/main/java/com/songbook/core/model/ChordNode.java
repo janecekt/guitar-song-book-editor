@@ -57,13 +57,25 @@ public class ChordNode implements Node {
     /** @return Type of the node (required for FreeMaker). */
     @SuppressWarnings("unused")
     public String getType() {
-        return (chord2.isEmpty()) ? "SimpleChordNode" : "MultiChordNode";
+        return "".equals(chord2) ? "SimpleChordNode" : "MultiChordNode";
     }
 
 
     /** @return Text representation of the chord. */
     public String getText() {
-        return (chord2.isEmpty()) ? chord1 : chord2 + "/" + chord1;
+        return "".equals(chord2) ? chord1 : chord1 + "/" + chord2;
+    }
+    
+
+    /**
+     * Returns a text representation of the chord - e.g. D, F#/D.
+     * @param transposition Transposition to be applied.
+     * @return Text representation of the chords
+     */
+    public String getText(int transposition) {
+        return "".equals(chord2)
+                ? transposeChordWithFailBack(chord1, transposition)
+                : transposeChordWithFailBack(chord1, transposition) + "/" + transposeChordWithFailBack(chord2, transposition);
     }
 
 
@@ -83,35 +95,18 @@ public class ChordNode implements Node {
      */
     @SuppressWarnings("unused")
     public String getChord2(int transposition) {
-        return chord2.isEmpty() ? "" : transposeChordWithFailBack(chord2, transposition);
+        return "".equals(chord2) ? "" : transposeChordWithFailBack(chord2, transposition);
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public String getAsText(int transposition) {
-        if (chord2.isEmpty()) {
-            return "[" + transposeChordWithFailBack(chord1, transposition) + "]";
-        } else {
-            return "[" + transposeChordWithFailBack(chord1, transposition) + "/" + transposeChordWithFailBack(chord2, transposition) + "]";
-        }
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getAsHTML(int transposition) {
-        String out = "<SPAN class=\"chord\">";
-
-        out += transposeChordWithFailBack(chord1, transposition);
-
-        if (!chord2.isEmpty()) {
-            out += "/" + transposeChordWithFailBack(chord2, transposition);
-        }
-
-        out += "</SPAN>";
-
-        return out;
+    /**
+     * Accepts the visitor (as per the Visitor design pattern).
+     * @param visitor Visitor to be accepted.
+     * @param isFirst Indicates whether the chord node is the first in the line.
+     * @param isLast  Indicates whether the chord node is last in the line.
+     */
+    public void accept(Visitor visitor, boolean isFirst, boolean isLast) {
+        visitor.visitChordNode(this, isFirst, isLast);
     }
 
 

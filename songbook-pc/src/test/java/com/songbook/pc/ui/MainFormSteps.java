@@ -1,3 +1,20 @@
+/*
+ *  Copyright (c) 2008 - Tomas Janecek.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package com.songbook.pc.ui;
 
 import java.io.File;
@@ -8,6 +25,9 @@ import com.songbook.core.model.SongNode;
 import com.songbook.core.parser.ChordProParser;
 import com.songbook.core.parser.Parser;
 import com.songbook.core.parser.ParserException;
+import com.songbook.core.util.FileIO;
+import com.songbook.core.util.SongNodeLoader;
+import com.songbook.core.visitor.HtmlBuilderVisitor;
 import com.songbook.pc.exporter.EPubExporter;
 import com.songbook.pc.exporter.HtmlExporter;
 import com.songbook.pc.exporter.LaTexExporter;
@@ -15,7 +35,6 @@ import com.songbook.pc.exporter.PdfExporter;
 import com.songbook.pc.ui.presentationmodel.EditorPanePresentationModel;
 import com.songbook.pc.ui.presentationmodel.MainFormPresentationModel;
 import com.songbook.pc.ui.presentationmodel.SongListPresentationModel;
-import com.songbook.pc.util.FileIO;
 import org.junit.Assert;
 
 public class MainFormSteps {
@@ -87,7 +106,7 @@ public class MainFormSteps {
         parser = ChordProParser.createParser();
         mainPM = new MainFormPresentationModel(
                 parser,
-                new SongListPresentationModel(TEST_BASEDIR, parser),
+                new SongListPresentationModel(TEST_BASEDIR, new SongNodeLoader(parser)),
                 null,
                 new HtmlExporter(),
                 new LaTexExporter(),
@@ -183,7 +202,9 @@ public class MainFormSteps {
 
                 Reader songReader = new StringReader(expectedSongBody.getSongData());
                 SongNode expectedSongNode = parser.parse(songReader);
-                Assert.assertEquals(expectedSongNode.getAsHTML(0),
+                StringBuilder sb = new StringBuilder();
+                expectedSongNode.accept(new HtmlBuilderVisitor(sb, true, 0, false));
+                Assert.assertEquals(sb.toString(),
                         mainPM.getEditorModel().getTextModel().getString());
                 break;
             case TEXT:
