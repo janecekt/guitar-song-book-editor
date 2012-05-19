@@ -7,7 +7,8 @@
 
     <TextView android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:id="@+id/song_list_item_title"/>
+            android:id="@+id/song_list_item_title"
+            style="@style/style.song_list_item_title" />
 
     <TextView android:layout_width="wrap_content"
             android:layout_height="fill_parent"

@@ -68,9 +68,15 @@ public class SongViewActivity extends RoboActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.song_view_layout);
-        gestureDetector = new GestureDetector(new SwipeGestureDetector());
 
+        // Keep the screen saver
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // Initialize layout
+        setContentView(R.layout.song_view_layout);
+
+        // Setup gestures
+        gestureDetector = new GestureDetector(new SwipeGestureDetector());
         webView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
