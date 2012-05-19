@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SongBook</string>
+
+    <!-- Activity titles -->
+    <string name="title.songViewActivity">Náhled písničky</string>
+    <string name="title.preferencesActivity">Nastavení aplikace SongBook</string>
+
+    <!-- Messages -->
+    <string name="prefs.message.locationDoesNotExit">Cesta %1$s neexistuje.</string>
+    <string name="prefs.message.fileExistsButDoesNotEndWithZip">Soubor %1$s existuje ale nemá koncovku ZIP.</string>
+    <string name="prefs.message.downloadingStarted">Stahování ZAHÁJENO.</string>
+    <string name="prefs.message.downloadingCompleted">Stahovaní DOKONČENO.</string>
+    <string name="prefs.message.downloadingFailed">Downloading SELHALO - %1$s.</string>
+
+    <!-- Menus -->
+    <string name="menu.preferences">Nastavení</string>
+    <string name="menu.transpose">Transponovat</string>
+    <string name="menu.transposeUp">Nahoru</string>
+    <string name="menu.transposeNone">Nic</string>
+    <string name="menu.transposeDown">Dolů</string>
+
+    <!-- Labels -->
+    <string name="label.unknown">Neznámý</string>
+    <string name="label.noSongsLoaded">Nejsou načteny žádné písničky.</string>
+
+
+    <!-- List settings Preferences -->
+    <string name="prefs.category.songListSettings">Nastavení seznamu písniček</string>
+
+    <string name="prefs.groupingEnabled.title">Seskupování</string>
+    <string name="prefs.ordering.title">Řazení seznamu</string>
+    <string name="prefs.orderingLocale.title">Locale pro řazení</string>
+
+    <!-- Song display preferences -->
+    <string name="prefs.category.songViewSettings">Nastavení náhledu písničky</string>
+
+    <string name="prefs.chordsOn.title">Zobrazit akordy</string>
+    <string name="prefs.fontSize.title">Velikost písma</string>
+    <string name="prefs.lineSpacing.title">Mezera mezi řádky</string>
+    <string name="prefs.verseSpacing.title">Mezara mezi slokami</string>
+
+    <!-- Location preferences -->
+    <string name="prefs.category.songBookFileSettings">Nastavení zpěvníku</string>
+
+    <string name="prefs.songBookLocation.title">Cesta ke zpěvníku</string>
+    <string name="prefs.fileEncoding.title">Kódování zpěvníku</string>
+    <string name="prefs.downloadSongbook.title">Stáhout nejnovějsí zpěvník</string>
+    <string name="prefs.downloadSongbook.summary">Stiskněte a podržte pro zahájení stahování</string>
+
+    <!-- Other Settings -->
+    <string name="prefs.category.otherSettings">Ostatní nastavení</string>
+
+    <string name="prefs.updateApk.title">Aktualizovat aplikaci</string>
+    <string name="prefs.updateApk.summary">Stiskněte a podržte pro zahájení aktualizace</string>
+
+    <!-- Array Options -->
+    <string-array name="prefsOrderingEntries">
+        <item>Řadit podle názvu</item>
+        <item>Řadit podle interpreta</item>
+    </string-array>
+</resources>

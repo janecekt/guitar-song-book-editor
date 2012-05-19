@@ -52,4 +52,10 @@
                     android:title="@string/prefs.downloadSongbook.title"
                     android:summary="@string/prefs.downloadSongbook.summary"  />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prefs.category.otherSettings">
+        <Preference android:key="@string/prefs.updateApk.key"
+                    android:title="@string/prefs.updateApk.title"
+                    android:summary="@string/prefs.updateApk.summary"  />
+    </PreferenceCategory>
 </PreferenceScreen>

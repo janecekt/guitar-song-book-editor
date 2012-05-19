@@ -38,6 +38,99 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>windowsProperies</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <jarsigner.path>${java.home}/../bin/jarsigner.exe</jarsigner.path>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>linixProperies</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <jarsigner.path>${java.home}/../bin/jarsigner</jarsigner.path>
+            </properties>
+
+        </profile>
+
+        <profile>
+            <id>sign</id>
+            <build>
+                <plugins>
+                    <!-- Build APK -->
+                    <plugin>
+                        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                        <artifactId>android-maven-plugin</artifactId>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <sign>
+                                <debug>false</debug>
+                            </sign>
+                        </configuration>
+                    </plugin>
+
+                    <!-- Sign -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-apk</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${jarsigner.path}</executable>
+                                    <workingDirectory>${project.basedir}</workingDirectory>
+                                    <arguments>
+                                        <argument>-keystore</argument>
+                                        <argument>../release-key.keystore</argument>
+                                        <argument>${project.build.directory}/${artifactId}-${version}.apk</argument>
+                                        <argument>release-key</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                        <artifactId>maven-android-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>zipalign-apk</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>zipalign</goal>
+                                </goals>
+                                <configuration>
+                                    <zipalign>
+                                        <verbose>true</verbose>
+                                        <skip>false</skip>
+                                    </zipalign>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
     <dependencies>
         <!-- Internal dependencies -->
         <dependency>

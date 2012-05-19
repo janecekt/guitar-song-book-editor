@@ -139,7 +139,7 @@ public class SongListActivity extends RoboListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
+        getMenuInflater().inflate(R.menu.song_list_menu, menu);
         return true;
     }
 

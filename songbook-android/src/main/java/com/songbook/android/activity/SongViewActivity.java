@@ -20,15 +20,20 @@ package com.songbook.android.activity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.Button;
 import com.google.inject.Inject;
 import com.songbook.android.R;
 import com.songbook.android.util.PreferencesManager;
@@ -57,6 +62,8 @@ public class SongViewActivity extends RoboActivity {
     WebView webView;
 
     private GestureDetector gestureDetector;
+    private Dialog transposeDialog;
+    private int transposition = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,12 +82,13 @@ public class SongViewActivity extends RoboActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        transposition = 0;
         refresh();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
+        getMenuInflater().inflate(R.menu.song_view_menu, menu);
         return true;
     }
 
@@ -90,9 +98,28 @@ public class SongViewActivity extends RoboActivity {
             case R.id.itemPrefs:
                 startActivity(new Intent(this, PreferencesActivity.class));
                 break;
+            case R.id.itemTranspose:
+                openTransposeDialog();
+                break;
         }
         // True = menu event fully handled
         return true;
+    }
+
+
+    private void onTransposeUp() {
+        transposition++;
+        refresh();
+    }
+
+    private void onTransposeNone() {
+        transposition = 0;
+        refresh();
+    }
+
+    private void onTransposeDown() {
+        transposition--;
+        refresh();
     }
 
     
@@ -107,6 +134,7 @@ public class SongViewActivity extends RoboActivity {
             int songIndex = songListManager.getSelectedIndex();
             songIndex = (songIndex + 1) % songListManager.getSongNodeList().size();
             songListManager.setSelectedIndex(songIndex);
+            transposition = 0;
             refresh();
         }
     }
@@ -116,13 +144,10 @@ public class SongViewActivity extends RoboActivity {
             int songIndex = songListManager.getSelectedIndex();
             songIndex = (songIndex - 1 + songListManager.getSongNodeList().size()) % songListManager.getSongNodeList().size();
             songListManager.setSelectedIndex(songIndex);
+            transposition = 0;
             refresh();
         }
-    }
-
-
-
-    
+    }       
     
     private String buildSongHtml(SongNode songNode) {
         Matcher matcher = SONG_TEMPLATE_TOKEN_PATTERN.matcher(SONG_TEMPLATE);
@@ -139,7 +164,7 @@ public class SongViewActivity extends RoboActivity {
                 // Build SongHtml
                 StringBuilder songHtml = new StringBuilder();
                 if (songNode != null) {                
-                    songNode.accept(new HtmlBuilderVisitor(songHtml, preferencesManager.isChordsOn(), 0, true));
+                    songNode.accept(new HtmlBuilderVisitor(songHtml, preferencesManager.isChordsOn(), transposition, true));
                 } else {
                     songHtml.append("<DIV class=\"text\">").append(labelNoSongsLoaded).append("</DIV>");
                 }
@@ -151,6 +176,55 @@ public class SongViewActivity extends RoboActivity {
         matcher.appendTail(sb);
         return sb.toString();
     }
+
+
+    private void openTransposeDialog() {
+        transposeDialog = new Dialog(this);
+        transposeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        transposeDialog.setContentView(R.layout.transpose_dialog_layout);
+
+        Button transposeUp = (Button) transposeDialog.findViewById(R.id.transposeUpButton);
+        transposeUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onTransposeUp();
+            }
+        });
+
+        Button transposeNone = (Button) transposeDialog.findViewById(R.id.transposeNoneButton);
+        transposeNone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onTransposeNone();
+            }
+        });
+
+        Button transposeDown = (Button) transposeDialog.findViewById(R.id.transposeDownButton);
+        transposeDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onTransposeDown();
+            }
+        });
+
+        Button transposeClose = (Button) transposeDialog.findViewById(R.id.transposeCloseButton);
+        transposeClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                transposeDialog.hide();
+                transposeDialog = null;
+            }
+        });
+
+        Window window = transposeDialog.getWindow();
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setGravity(Gravity.BOTTOM);
+
+        transposeDialog.show();
+    }
+
 
     private class SwipeGestureDetector extends GestureDetector.SimpleOnGestureListener {
         // Swipe properties, you can change it to make the swipe

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preferences Keys -->
+    <string name="prefs.chordsOn.key">prefs.chordsOn</string>
+    <string name="prefs.groupingEnabled.key">prefs.groupingEnabled</string>
+    <string name="prefs.ordering.key">prefs.ordering</string>
+    <string name="prefs.orderingLocale.key">prefs.orderingLocale</string>
+
+    <string name="prefs.fontSize.key">prefs.fontSize</string>
+    <string name="prefs.lineSpacing.key">prefs.lineSpacing</string>
+    <string name="prefs.verseSpacing.key">prefs.verseSpacing</string>
+
+    <string name="prefs.songBookLocation.key">prefs.songBookLocation</string>
+    <string name="prefs.fileEncoding.key">prefs.fileEncoding</string>
+    <string name="prefs.downloadSongbook.key">prefs.downloadSongbook</string>
+    <string name="prefs.updateApk.key">prefs.updateApk</string>
+</resources>

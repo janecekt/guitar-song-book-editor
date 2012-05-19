@@ -105,7 +105,7 @@ public class PreferencesManager {
     public Locale getOrderingLocale() {
         String localeDisplayName = sharedPreferences.getString(orderingLocaleKey, null);
         for (Locale locale : Locale.getAvailableLocales()) {
-            if (locale.getDisplayName().equals(localeDisplayName)) {
+            if (locale.getDisplayName(locale).equals(localeDisplayName)) {
                 return locale;
             }
         }

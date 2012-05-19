@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -55,6 +57,9 @@ public class PreferencesActivity extends RoboPreferenceActivity {
 
     @InjectResource(R.string.prefs_downloadSongbook_key)
     private String downloadSongbookKey;
+    
+    @InjectResource(R.string.prefs_updateApk_key)
+    private String updateApkKey;
     
     @InjectResource(R.string.prefs_message_locationDoesNotExit)
     private String locationDoesNotNotExistMessage;
@@ -85,7 +90,9 @@ public class PreferencesActivity extends RoboPreferenceActivity {
         // Populate locale entries selection
         List<String> localeEntries = new ArrayList<String>();
         for (Locale locale : Locale.getAvailableLocales()) {
-            localeEntries.add(locale.getDisplayName());
+            if (!locale.getDisplayName().contains("(")) {
+                localeEntries.add(locale.getDisplayName(locale));
+            }
         }
         String[] localeEntriesArray = localeEntries.toArray(new String[localeEntries.size()]);
         ListPreference orderingLocalePreference = (ListPreference) findPreference(orderingLocaleKey);
@@ -133,6 +140,7 @@ public class PreferencesActivity extends RoboPreferenceActivity {
         // Implement long click listeners
         // NOTE: Not supported directly by PreferenceClass - hence we have to do it via the view.
         final Preference downloadSongbookPreference = findPreference(downloadSongbookKey);
+        final Preference updateApkPreference = findPreference(updateApkKey);
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -140,6 +148,10 @@ public class PreferencesActivity extends RoboPreferenceActivity {
                 ListAdapter listAdapter = listView.getAdapter();
                 if (downloadSongbookPreference == listAdapter.getItem(position)) {
                     onDownloadSongBook();
+                    return true;
+                }
+                if (updateApkPreference == listAdapter.getItem(position)) {
+                    onUpdateApk();
                     return true;
                 }
                 return false;
@@ -172,6 +184,39 @@ public class PreferencesActivity extends RoboPreferenceActivity {
                     downloadingCompletedMessage,
                     Toast.LENGTH_LONG).show();
 
+        } catch (IOException ex) {
+            Toast.makeText(PreferencesActivity.this,
+                    String.format(downloadingFailedMessage, ex.getMessage()),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    public void onUpdateApk() {
+        Toast.makeText(PreferencesActivity.this,
+                downloadingStartedMessage,
+                Toast.LENGTH_LONG).show();
+
+        try {
+            URL url = new URL("http://guitar-song-book-editor.googlecode.com/files/songbook-android-latest.apk");
+            FileOutputStream outputStream = openFileOutput("songbook-android-latest.apk", MODE_WORLD_READABLE);
+
+            // Create InputStream from connection
+            URLConnection urlConnection = url.openConnection();
+            InputStream inputStream = urlConnection.getInputStream();
+
+            // Append input stream to output stream
+            FileIO.appendInputStreamToOutputStream(inputStream, outputStream);
+
+            Toast.makeText(PreferencesActivity.this,
+                    downloadingCompletedMessage,
+                    Toast.LENGTH_LONG).show();
+
+            // Start the activity to trigger installation of the APK
+            File apkFile = getFileStreamPath("songbook-android-latest.apk");
+            Intent installApkIntent = new Intent(Intent.ACTION_VIEW);
+            installApkIntent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+            startActivity(installApkIntent);
         } catch (IOException ex) {
             Toast.makeText(PreferencesActivity.this,
                     String.format(downloadingFailedMessage, ex.getMessage()),
