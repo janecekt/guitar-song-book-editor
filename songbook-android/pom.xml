@@ -20,7 +20,6 @@
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>3.1.1</version>
                 <configuration>
                     <!-- Default locations -->
                     <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
@@ -28,7 +27,6 @@
                     <sdk>
                         <platform>8</platform>
                     </sdk>
-                    <deleteConflictingFiles>true</deleteConflictingFiles>
                     <proguard>
                         <skip>true</skip>
                     </proguard>
@@ -40,32 +38,7 @@
 
     <profiles>
         <profile>
-            <id>windowsProperies</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <properties>
-                <jarsigner.path>${java.home}/../bin/jarsigner.exe</jarsigner.path>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>linixProperies</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                </os>
-            </activation>
-            <properties>
-                <jarsigner.path>${java.home}/../bin/jarsigner</jarsigner.path>
-            </properties>
-
-        </profile>
-
-        <profile>
-            <id>sign</id>
+            <id>release</id>
             <build>
                 <plugins>
                     <!-- Build APK -->
@@ -84,7 +57,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
                         <executions>
                             <execution>
                                 <id>sign-apk</id>
@@ -108,7 +80,7 @@
 
                     <plugin>
                         <groupId>com.jayway.maven.plugins.android.generation2</groupId>
-                        <artifactId>maven-android-plugin</artifactId>
+                        <artifactId>android-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>zipalign-apk</id>
@@ -120,6 +92,8 @@
                                     <zipalign>
                                         <verbose>true</verbose>
                                         <skip>false</skip>
+                                        <inputApk>${project.build.directory}/${artifactId}-${version}.apk</inputApk>
+                                        <outputApk>${project.build.directory}/${artifactId}-latest.apk</outputApk>
                                     </zipalign>
                                 </configuration>
                             </execution>
@@ -129,7 +103,6 @@
             </build>
         </profile>
     </profiles>
-
 
     <dependencies>
         <!-- Internal dependencies -->
