@@ -33,7 +33,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
-import android.widget.Button;
+import android.widget.TextView;
 import com.google.inject.Inject;
 import com.songbook.android.R;
 import com.songbook.android.util.PreferencesManager;
@@ -46,7 +46,7 @@ import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 public class SongViewActivity extends RoboActivity {
-    private static final Pattern SONG_TEMPLATE_TOKEN_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}"); 
+    private static final Pattern SONG_TEMPLATE_TOKEN_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
     private static final String SONG_TEMPLATE = FileIO.readResourceToString("/song-template.html");
 
     @Inject
@@ -54,16 +54,21 @@ public class SongViewActivity extends RoboActivity {
 
     @Inject
     SongListManager songListManager;
-    
+
     @InjectResource(R.string.label_noSongsLoaded)
     String labelNoSongsLoaded;
+
+    @InjectResource(R.string.label_transposeTitle)
+    String labelTransposeTitle;
 
     @InjectView(R.id.song_view_web_view)
     WebView webView;
 
     private GestureDetector gestureDetector;
     private Dialog transposeDialog;
+    private SongNode songNode;
     private int transposition = 0;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,18 +90,20 @@ public class SongViewActivity extends RoboActivity {
         });
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
-        transposition = 0;
-        refresh();
+        refresh(true);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.song_view_menu, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -115,46 +122,57 @@ public class SongViewActivity extends RoboActivity {
 
     private void onTransposeUp() {
         transposition++;
-        refresh();
+        refresh(false);
     }
+
 
     private void onTransposeNone() {
         transposition = 0;
-        refresh();
+        refresh(false);
     }
+
 
     private void onTransposeDown() {
         transposition--;
-        refresh();
+        refresh(false);
     }
 
-    
-    private void refresh() {
-        SongNode songNode = songListManager.getSelectedSongNode();               
+    private void onTransposeSave() {
+        songListManager.saveTransposition(songNode.getSourceFile().getName(), transposition);
+    }
+
+
+    private void refresh(boolean updateTransposition) {
+        songNode = songListManager.getSelectedSongNode();
+        if (updateTransposition) {
+            transposition = songListManager.getTransposition(songNode.getSourceFile().getName());
+        }
         String data = buildSongHtml(songNode);
         webView.loadData(data, "text/html", "UTF8");
+        transposeDialogRefreshTransposeTitle();
     }
+
 
     private void onSwipeLeft() {
         if (songListManager.getSongNodeList().size() > 0) {
             int songIndex = songListManager.getSelectedIndex();
             songIndex = (songIndex + 1) % songListManager.getSongNodeList().size();
             songListManager.setSelectedIndex(songIndex);
-            transposition = 0;
-            refresh();
+            refresh(true);
         }
     }
+
 
     private void onSwipeRight() {
         if (songListManager.getSongNodeList().size() > 0) {
             int songIndex = songListManager.getSelectedIndex();
             songIndex = (songIndex - 1 + songListManager.getSongNodeList().size()) % songListManager.getSongNodeList().size();
             songListManager.setSelectedIndex(songIndex);
-            transposition = 0;
-            refresh();
+            refresh(true);
         }
-    }       
-    
+    }
+
+
     private String buildSongHtml(SongNode songNode) {
         Matcher matcher = SONG_TEMPLATE_TOKEN_PATTERN.matcher(SONG_TEMPLATE);
         StringBuffer sb = new StringBuffer();
@@ -168,9 +186,13 @@ public class SongViewActivity extends RoboActivity {
                 matcher.appendReplacement(sb, Integer.toString(preferencesManager.getFontSize()));
             } else if ("SONG_BODY".equals(tokenName)) {
                 // Build SongHtml
-                StringBuilder songHtml = new StringBuilder();
-                if (songNode != null) {                
-                    songNode.accept(new HtmlBuilderVisitor(songHtml, preferencesManager.isChordsOn(), transposition, true));
+                StringBuffer songHtml = new StringBuffer();
+                if (songNode != null) {
+                    songNode.accept(new HtmlBuilderVisitor(songHtml, transposition,
+                            HtmlBuilderVisitor.Mode.TWO_LINE_TITLE,
+                            HtmlBuilderVisitor.Mode.DISPLAY_TRANSPOSITION,
+                            HtmlBuilderVisitor.Mode.HTML_ESCAPING,
+                            preferencesManager.isChordsOn() ? HtmlBuilderVisitor.Mode.CHORDS_ON : null));
                 } else {
                     songHtml.append("<DIV class=\"text\">").append(labelNoSongsLoaded).append("</DIV>");
                 }
@@ -189,7 +211,7 @@ public class SongViewActivity extends RoboActivity {
         transposeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         transposeDialog.setContentView(R.layout.transpose_dialog_layout);
 
-        Button transposeUp = (Button) transposeDialog.findViewById(R.id.transposeUpButton);
+        View transposeUp = transposeDialog.findViewById(R.id.transposeUpButton);
         transposeUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -197,7 +219,7 @@ public class SongViewActivity extends RoboActivity {
             }
         });
 
-        Button transposeNone = (Button) transposeDialog.findViewById(R.id.transposeNoneButton);
+        View transposeNone = transposeDialog.findViewById(R.id.transposeNoneButton);
         transposeNone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,7 +227,7 @@ public class SongViewActivity extends RoboActivity {
             }
         });
 
-        Button transposeDown = (Button) transposeDialog.findViewById(R.id.transposeDownButton);
+        View transposeDown = transposeDialog.findViewById(R.id.transposeDownButton);
         transposeDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -213,7 +235,15 @@ public class SongViewActivity extends RoboActivity {
             }
         });
 
-        Button transposeClose = (Button) transposeDialog.findViewById(R.id.transposeCloseButton);
+        View transposeSave = transposeDialog.findViewById(R.id.transposeSaveButton);
+        transposeSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onTransposeSave();
+            }
+        });
+
+        View transposeClose = transposeDialog.findViewById(R.id.titleBarCloseButton);
         transposeClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -221,6 +251,8 @@ public class SongViewActivity extends RoboActivity {
                 transposeDialog = null;
             }
         });
+
+        transposeDialogRefreshTransposeTitle();
 
         Window window = transposeDialog.getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
@@ -232,6 +264,15 @@ public class SongViewActivity extends RoboActivity {
     }
 
 
+    private void transposeDialogRefreshTransposeTitle() {
+        if (transposeDialog != null) {
+            String transposeString = (transposition > 0) ? ("+" + transposition) : Integer.toString(transposition);
+            TextView title = (TextView) transposeDialog.findViewById(R.id.titleBarTitle);
+            title.setText(String.format(labelTransposeTitle, transposeString));
+        }
+    }
+
+
     private class SwipeGestureDetector extends GestureDetector.SimpleOnGestureListener {
         // Swipe properties, you can change it to make the swipe
         // longer or shorter and speed
@@ -239,9 +280,10 @@ public class SongViewActivity extends RoboActivity {
         private static final int SWIPE_MAX_OFF_PATH = 200;
         private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
+
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.i("TRACE","OnFling called");
+            Log.i("TRACE", "OnFling called");
             float diffAbs = Math.abs(e1.getY() - e2.getY());
             float diff = e1.getX() - e2.getX();
 

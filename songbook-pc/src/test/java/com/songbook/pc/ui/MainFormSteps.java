@@ -20,6 +20,7 @@ package com.songbook.pc.ui;
 import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 
 import com.songbook.core.model.SongNode;
 import com.songbook.core.parser.ChordProParser;
@@ -40,7 +41,7 @@ import org.junit.Assert;
 public class MainFormSteps {
     /** Prilis zlutoucky kun upel dabelske ody */
     private static final String CZECH_TEXT = "P\u0159\u00edli\u0161 \u017elu\u0165ou\u010dk\u00fd k\u016f\u0148 \u00fap\u011bl \u010f\u00e1blesk\u00e9 \u00f3dy.";
-    private static final String ENCODING = "CP1250";
+    private static final Charset ENCODING = Charset.forName("CP1250");
 
 
 
@@ -202,8 +203,8 @@ public class MainFormSteps {
 
                 Reader songReader = new StringReader(expectedSongBody.getSongData());
                 SongNode expectedSongNode = parser.parse(songReader);
-                StringBuilder sb = new StringBuilder();
-                expectedSongNode.accept(new HtmlBuilderVisitor(sb, true, 0, false));
+                StringBuffer sb = new StringBuffer();
+                expectedSongNode.accept(new HtmlBuilderVisitor(sb, 0, HtmlBuilderVisitor.Mode.CHORDS_ON));
                 Assert.assertEquals(sb.toString(),
                         mainPM.getEditorModel().getTextModel().getString());
                 break;

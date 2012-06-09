@@ -7,10 +7,10 @@
         <!--suppress HtmlUnknownTarget -->
         <link href="../resources/song.css" rel="stylesheet" type="text/css" />
         <script src="../resources/song.js" type="text/javascript"></script>
-        <title>${title}</title>
+        <title>${title?html}</title>
     </head>
     <body>
-        <div class="title">${title}</div>
+        <div class="title">${title?html}</div>
 
         <div class="transpose">
             Transposition: <span id="totaltranspose">0</span>
@@ -26,18 +26,18 @@
                     <#list lineNode.contentList as lineFragment>
                         <#if lineFragment.type == "TextNode">
                             <#-- Simple text fragment (#t = ignore leading and trailing whitespace) -->
-                            ${lineFragment.text}<#t>
+                            ${lineFragment.text?html}<#t>
                         <#elseif lineFragment.type == "SimpleChordNode">
                             <#-- Simple chord e.g. "C" (#t = ignore leading and trailing whitespace) -->
                             <span class="chord"><#t>
-                                <span title="chord">${lineFragment.getChord1(0)}</span><#t>
+                                <span title="chord">${lineFragment.getChord1(0)?html}</span><#t>
                             </span><#t>
                         <#elseif lineFragment.type == "MultiChordNode">
                             <#-- Complex code e.g. "C/G" (#t = ignore leading and trailing whitespace) -->
                             <span class="chord">
-                                <span title="chord">${lineFragment.getChord1(0)}</span><#t>
+                                <span title="chord">${lineFragment.getChord1(0)?html}</span><#t>
                                 /<#t>
-                                <span title="chord">${lineFragment.getChord2(0)}</span><#t>
+                                <span title="chord">${lineFragment.getChord2(0)?html}</span><#t>
                             </span>
                         </#if>
                     </#list>

@@ -1,34 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="fill_parent"
-             android:layout_height="80px"
-             android:orientation="horizontal"
-             android:weightSum="3">
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
 
-        <Button android:id="@+id/transposeDownButton"
-                android:text="@string/menu.transposeDown"
-                android:drawableTop="@android:drawable/ic_media_rew"
-                android:layout_height="fill_parent"
-                android:layout_width="fill_parent"
-                android:layout_weight="1" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="horizontal">
 
-        <Button android:id="@+id/transposeNoneButton"
-                android:text="@string/menu.transposeNone"
-                android:drawableTop="@android:drawable/ic_media_pause"
-                android:layout_height="fill_parent"
-                android:layout_width="fill_parent"
-                android:layout_weight="1" />
+        <TextView android:id="@+id/titleBarTitle"
+                  android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:layout_alignParentLeft="true"
+                  android:layout_centerVertical="true"
+                  android:paddingLeft="10dp"
+                  style="@style/style.transpose_dialog_title" />
 
-        <Button android:id="@+id/transposeUpButton"
-                android:text="@string/menu.transposeUp"
-                android:drawableTop="@android:drawable/ic_media_ff"
-                android:layout_height="fill_parent"
-                android:layout_width="fill_parent"
-                android:layout_weight="1" />
+        <ImageButton android:id="@+id/titleBarCloseButton"
+                     android:src="@android:drawable/btn_dialog"
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
-        <Button android:id="@+id/transposeCloseButton"
-                android:drawableTop="@android:drawable/ic_menu_close_clear_cancel"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content" />
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:orientation="horizontal"
+                  android:weightSum="4">
+        <ImageButton android:id="@+id/transposeDownButton"
+                     android:src="@drawable/ic_minus"
+                     android:layout_height="fill_parent"
+                     android:layout_width="fill_parent"
+                     android:layout_weight="1"/>
+
+        <ImageButton android:id="@+id/transposeNoneButton"
+                     android:src="@drawable/ic_revert"
+                     android:layout_height="fill_parent"
+                     android:layout_width="fill_parent"
+                     android:layout_weight="1"/>
+
+        <ImageButton android:id="@+id/transposeUpButton"
+                     android:src="@drawable/ic_plus"
+                     android:layout_height="fill_parent"
+                     android:layout_width="fill_parent"
+                     android:layout_weight="1"/>
+
+        <ImageButton android:id="@+id/transposeSaveButton"
+                     android:src="@drawable/ic_save"
+                     android:layout_height="fill_parent"
+                     android:layout_width="fill_parent"
+                     android:layout_weight="1"/>
+    </LinearLayout>
 </LinearLayout>

@@ -68,6 +68,12 @@
                                     <executable>${jarsigner.path}</executable>
                                     <workingDirectory>${project.basedir}</workingDirectory>
                                     <arguments>
+                                        <!-- Force JDK5 compatible signing algorithm -->
+                                        <argument>-sigalg</argument>
+                                        <argument>MD5withRSA</argument>
+                                        <argument>-digestalg</argument>
+                                        <argument>SHA1</argument>
+                                        <!-- Set keystore -->
                                         <argument>-keystore</argument>
                                         <argument>../release-key.keystore</argument>
                                         <argument>${project.build.directory}/${artifactId}-${version}.apk</argument>

@@ -16,9 +16,7 @@
     <!-- Menus -->
     <string name="menu.preferences">Nastavení</string>
     <string name="menu.transpose">Transponovat</string>
-    <string name="menu.transposeUp">Nahoru</string>
-    <string name="menu.transposeNone">Nic</string>
-    <string name="menu.transposeDown">Dolů</string>
+    <string name="label.transposeTitle">Transpozice: %1$s</string>
 
     <!-- Labels -->
     <string name="label.unknown">Neznámý</string>

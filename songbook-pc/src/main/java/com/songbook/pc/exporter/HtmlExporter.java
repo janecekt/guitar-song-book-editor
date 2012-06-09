@@ -18,6 +18,7 @@
 package com.songbook.pc.exporter;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import com.songbook.core.model.SongBook;
 import com.songbook.core.model.SongNode;
@@ -55,7 +56,7 @@ public class HtmlExporter implements Exporter {
 
             // Write content to HTML
             String htmlContent = FreeMakerUtil.processTemplate(songNode, SONGBOOK_HTML_SONG_TEMPLATE);
-            FileIO.writeStringToFile(outputFileName.getAbsolutePath(), "utf8", htmlContent);
+            FileIO.writeStringToFile(outputFileName.getAbsolutePath(), Charset.forName("UTF8"), htmlContent);
         } catch (Exception ex) {
             logger.error("... FAILED to export song - " + songNode.getTitle(), ex);
         }

@@ -18,6 +18,7 @@
 package com.songbook.pc.ui.presentationmodel;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class SongListPresentationModel {
     }
 
 
-    public void reloadFromDisk(String encoding) {
+    public void reloadFromDisk(Charset encoding) {
         // Reload songs form disk
         List<SongNode> newSongList = loader.loadSongNodesFromDirectory(baseDir, encoding);
 
@@ -49,7 +50,7 @@ public class SongListPresentationModel {
     }
 
 
-    public void saveCurrent(String encoding, String content) {
+    public void saveCurrent(Charset encoding, String content) {
         SongNode currentSong = songListModel.getValue();
         File sourceFile = currentSong.getSourceFile();
         FileIO.writeStringToFile(sourceFile.getAbsolutePath(), encoding, content);
@@ -64,7 +65,7 @@ public class SongListPresentationModel {
     }
 
 
-    public void addNew(String songName, String encoding) {
+    public void addNew(String songName, Charset encoding) {
         // Create file
         File fileName = new File(baseDir.getAbsolutePath(), songName.replaceAll(" ", "_") + ".txt");
         FileIO.writeStringToFile(fileName.getAbsolutePath(), encoding, songName + "\n\nVerse1");

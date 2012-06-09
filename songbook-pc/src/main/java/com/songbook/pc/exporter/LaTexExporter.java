@@ -18,6 +18,7 @@
 package com.songbook.pc.exporter;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,7 @@ public class LaTexExporter implements Exporter {
         String output = FreeMakerUtil.processTemplate(new SongBook(sortedArrayList), SONGBOOK_LATEX_ALLSONGS_TEMPLATE);
 
         // Write to file
-        FileIO.writeStringToFile(outputFile.getAbsolutePath(), "utf8", output);
+        FileIO.writeStringToFile(outputFile.getAbsolutePath(), Charset.forName("UTF8"), output);
 
         logger.info("COMPLETED export to latex file {}.", outputFile.getAbsolutePath());
     }

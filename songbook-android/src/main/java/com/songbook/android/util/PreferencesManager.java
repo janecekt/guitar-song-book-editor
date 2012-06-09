@@ -17,6 +17,7 @@
  */
 package com.songbook.android.util;
 
+import java.nio.charset.Charset;
 import java.util.Locale;
 
 import android.content.SharedPreferences;
@@ -122,8 +123,8 @@ public class PreferencesManager {
         return sharedPreferences.getString(songBookLocationKey, "/sdcard/songbook");
     }
     
-    public String getFileEncoding() {
-        return sharedPreferences.getString(fileEncodingKey, "CP1250");
+    public Charset getFileEncoding() {
+        return Charset.forName(sharedPreferences.getString(fileEncodingKey, "CP1250"));
     }
 
 
@@ -169,5 +170,10 @@ public class PreferencesManager {
 
     public String getSongBookLocationKey() {
         return songBookLocationKey;
+    }
+
+
+    public String getFileEncodingKey() {
+        return fileEncodingKey;
     }
 }

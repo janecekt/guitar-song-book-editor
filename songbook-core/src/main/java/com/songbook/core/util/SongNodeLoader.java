@@ -17,6 +17,7 @@
  */
 package com.songbook.core.util;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,9 +25,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -45,7 +52,7 @@ public class SongNodeLoader {
         this.parser = parser;
     }
 
-    public SongNode loadSongNodeFromFile(File file, String encoding) {
+    public SongNode loadSongNodeFromFile(File file, Charset encoding) {
         try {
             Reader fileReader = new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding);
             SongNode songNode = parser.parse(fileReader);
@@ -60,7 +67,7 @@ public class SongNodeLoader {
     }
 
     
-    public List<SongNode> loadSongNodesFromDirectory(File directory, String encoding) {
+    public List<SongNode> loadSongNodesFromDirectory(File directory, Charset encoding) {
         List<SongNode> newSongList = new ArrayList<SongNode>();
         for (File file : directory.listFiles()) {
             if (file.isFile() && file.getName().endsWith(".txt")) {
@@ -74,7 +81,7 @@ public class SongNodeLoader {
     }
 
 
-    public List<SongNode> loadSongNodesFromZip(InputStream zipStream, String encoding) throws ParserException {
+    public List<SongNode> loadSongNodesFromZip(InputStream zipStream, Charset encoding) throws ParserException {
         List<SongNode> songList = new ArrayList<SongNode>();
 
         // Load data from zip stream into SongList
@@ -94,7 +101,9 @@ public class SongNodeLoader {
                 // Create a Reader
                 Reader reader = new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), encoding);
                 try {
-                    songList.add(parser.parse(reader));
+                    SongNode songNode = parser.parse(reader);
+                    songNode.setSourceFile(new File(zipEntry.getName()));
+                    songList.add(songNode);
                 } catch (ParserException ex) {
                     throw new RuntimeException("Failed to parse " + zipEntry.getName(), ex);
                 }
@@ -106,11 +115,48 @@ public class SongNodeLoader {
                 try {
                     zipInputStream.close();
                 } catch (IOException ex) {
-                    //throw new RuntimeException("Failed to close ZIP stream", ex);
+                    logger.error("Failed to close ZipStream !", ex);
                 }
             }
         }
         // Set song list
         return songList;
+    }
+
+
+    public Map<String,Integer> loadTransposeMap(InputStream stream) {
+        ReaderIterable readerIterable = new ReaderIterable(stream, Charset.forName("UTF8"), "transpose map");
+        try {
+            Map<String, Integer> transposeMap = new HashMap<String, Integer>();
+            for (String line : readerIterable) {
+                String[] parts = line.split("|");
+                if (parts.length >= 2) {
+                    transposeMap.put(parts[0], Integer.parseInt(parts[1]));
+                }
+            }
+            return transposeMap;
+        } finally {
+            readerIterable.close();
+        }
+    }
+
+    public void saveTransposeMap(OutputStream stream, Map<String,Integer> transposeMap) {
+        Writer writer = new BufferedWriter(new OutputStreamWriter(stream, Charset.forName("UTF8")));
+        try {
+            for (Map.Entry<String,Integer> entry : transposeMap.entrySet()) {
+                writer.append(entry.getKey())
+                        .append("|")
+                        .append(Integer.toString(entry.getValue()))
+                        .append("\n");
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to save transpose map !", ex);
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ex) {
+                logger.error("Saving of transpose map failed !", ex);
+            }
+        }
     }
 }

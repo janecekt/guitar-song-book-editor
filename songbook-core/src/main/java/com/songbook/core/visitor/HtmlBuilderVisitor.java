@@ -17,6 +17,9 @@
  */
 package com.songbook.core.visitor;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.songbook.core.model.ChordNode;
 import com.songbook.core.model.LineNode;
 import com.songbook.core.model.SongNode;
@@ -24,22 +27,22 @@ import com.songbook.core.model.TextNode;
 import com.songbook.core.model.TitleNode;
 import com.songbook.core.model.VerseNode;
 import com.songbook.core.model.Visitor;
+import com.songbook.core.util.StringUtil;
 
 /**
  * SongNode visitor which traverses the SongNode tree and builds a HTML representation.
  */
 public class HtmlBuilderVisitor implements Visitor {
-    private StringBuilder sb;
-    private boolean chordsOn;
+    public static enum Mode { CHORDS_ON, TWO_LINE_TITLE, DISPLAY_TRANSPOSITION, HTML_ESCAPING }
+    private StringBuffer sb;
     private int transposition;
-    private boolean twoLineTitle;
+    private List<Mode> mode;
 
 
-    public HtmlBuilderVisitor(StringBuilder sb, boolean chordsOn, int transposition, boolean twoLineTitle) {
+    public HtmlBuilderVisitor(StringBuffer sb, int transposition, Mode... mode) {
         this.sb = sb;
-        this.chordsOn = chordsOn;
         this.transposition = transposition;
-        this.twoLineTitle = twoLineTitle;
+        this.mode = Arrays.asList(mode);
     }
 
     @Override
@@ -77,21 +80,37 @@ public class HtmlBuilderVisitor implements Visitor {
 
     @Override
     public void visitTitleNode(TitleNode titleNode) {
+        // Add transposition info
+        if (mode.contains(Mode.DISPLAY_TRANSPOSITION) && transposition != 0) {
+            sb.append("<div class=\"transposition\">");
+            sb.append(transposition > 0 ? "+"+transposition : transposition );
+            sb.append("</div>");
+        }
+
+        // Add title
         sb.append("<div class=\"titleNode\">");
 
         sb.append("<span class=\"title\">");
-        sb.append(titleNode.getTitle());
+        if (mode.contains(Mode.HTML_ESCAPING)) {
+            StringUtil.appendAndHtmlEscape(sb, titleNode.getTitle());
+        } else {
+            sb.append(titleNode.getTitle());
+        }
         sb.append("</span>");
 
         if (titleNode.getSubTitle() != null) {
-            if (twoLineTitle) {
+            if (mode.contains(Mode.TWO_LINE_TITLE)) {
                 sb.append("<br/>\n");
             } else {
                 sb.append(" - ");
             }
 
             sb.append("<span class=\"subtitle\">");
-            sb.append(titleNode.getSubTitle());
+            if (mode.contains(Mode.HTML_ESCAPING)) {
+                StringUtil.appendAndHtmlEscape(sb, titleNode.getSubTitle());
+            } else {
+                sb.append(titleNode.getSubTitle());
+            }
             sb.append("</span>");
         }
         sb.append("</div>\n");
@@ -101,16 +120,24 @@ public class HtmlBuilderVisitor implements Visitor {
     @Override
     public void visitTextNode(TextNode textNode, boolean isFirst, boolean isLast) {
         sb.append("<span class=\"text\">");
-        sb.append(textNode.getText());
+        if (mode.contains(Mode.HTML_ESCAPING)) {
+            StringUtil.appendAndHtmlEscape(sb, textNode.getText());
+        } else {
+            sb.append(textNode.getText());
+        }
         sb.append("</span>");
     }
 
 
     @Override
     public void visitChordNode(ChordNode chordNode, boolean isFirst, boolean isLast) {
-        if (chordsOn) {
+        if (mode.contains(Mode.CHORDS_ON)) {
             sb.append("<span class=\"chord\">");
-            sb.append(chordNode.getText(transposition));
+            if (mode.contains(Mode.HTML_ESCAPING)) {
+                StringUtil.appendAndHtmlEscape(sb, chordNode.getText(transposition));
+            } else {
+                sb.append(chordNode.getText(transposition));
+            }
             sb.append("</span>");
         }
     }

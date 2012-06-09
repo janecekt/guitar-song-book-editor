@@ -18,20 +18,20 @@
 package com.songbook.core.util;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,23 +50,11 @@ public class FileIO {
      * @param encoding Encoding to be used.
      * @param content  String to be written to the file.
      */
-    public static void writeStringToFile(String path, String encoding, String content) {
-        BufferedWriter bw = null;
+    public static void writeStringToFile(String path, Charset encoding, String content) {
         try {
-            try {
-                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), encoding));
-                bw.write(content);
-            } catch (IOException ex) {
-                throw new RuntimeException("Failed to write to file " + path, ex);
-            }
-        } finally {
-            try {
-                if (bw != null) {
-                    bw.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Failed to close file " + path, ex);
-            }
+            writeStringToStream(new FileOutputStream(path), encoding, content, "file " + path);
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException("File " + path + " was not found !", ex);
         }
     }
 
@@ -77,47 +65,73 @@ public class FileIO {
      * @param encoding Encoding to be used.
      * @return The content of the file as String.
      */
-    public static String readFileToString(String path, String encoding) {
-        BufferedReader br = null;
+    public static String readFileToString(String path, Charset encoding) {
         try {
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(path), encoding));
+            return readStreamToString(new FileInputStream(path), encoding, "file " + path);
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException("File " + path + " was not found !", ex);
+        }
+    }
+
+
+    /**
+     * Reads a resource with the given name into string.
+     * @param resourceName Resource path to be read.
+     * @return String content of the resource.
+     */
+    public static String readResourceToString(String resourceName) {
+        BufferedInputStream inStream = new BufferedInputStream(FileIO.class.getResourceAsStream(resourceName));
+        return readStreamToString(inStream, Charset.forName("UTF8"), "resource " + resourceName);
+    }
+
+
+    /**
+     * Reads the input stream into string.
+     * @param inStream Input stream to be read.
+     * @param encoding Charset to be used for conversion of bytes to string.
+     * @param description Description used in exceptions.
+     * @return String content of the input stream.
+     */
+    public static String readStreamToString(InputStream inStream, Charset encoding, String description) {
+        ReaderIterable readerIterable = null;
+        try {
+            readerIterable = new ReaderIterable(inStream, encoding, description);
             StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
+            for (String line : readerIterable) {
                 builder.append(line).append("\n");
             }
             return builder.toString();
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read file into string - " + path, ex);
         } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Failed to close file " + path, ex);
+            if (readerIterable != null) {
+                readerIterable.close();
             }
         }
     }
 
 
-    public static String readResourceToString(String resourceName) {
-        BufferedInputStream inStream = new BufferedInputStream(FileIO.class.getResourceAsStream(resourceName));
+    /**
+     * Writes a given string into output stream.
+     * @param outStream Output stream to be written to.
+     * @param encoding Charset to be used.
+     * @param content Content to be written into the output stream.
+     * @param description Description used in exceptions.
+     */
+    public static void writeStringToStream(OutputStream outStream, Charset encoding, String content, String description) {
+        BufferedWriter bw = null;
         try {
-            StringBuilder builder = new StringBuilder();
-            byte[] chars = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inStream.read(chars)) > -1) {
-                builder.append(new String(chars, 0, bytesRead));
+            try {
+                bw = new BufferedWriter(new OutputStreamWriter(outStream, encoding));
+                bw.write(content);
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to write to " + description, ex);
             }
-            return builder.toString();
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read resource " + resourceName, ex);
         } finally {
             try {
-                inStream.close();
+                if (bw != null) {
+                    bw.close();
+                }
             } catch (IOException ex) {
-                logger.error("Failed to close resource " + resourceName, ex);
+                logger.error("Failed to close " + description, ex);
             }
         }
     }

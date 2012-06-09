@@ -16,13 +16,11 @@
     <!-- Menus -->
     <string name="menu.preferences">Preferences</string>
     <string name="menu.transpose">Transpose</string>
-    <string name="menu.transposeUp">Up</string>
-    <string name="menu.transposeNone">None</string>
-    <string name="menu.transposeDown">Down</string>
 
     <!-- Labels -->
     <string name="label.unknown">Unknown</string>
     <string name="label.noSongsLoaded">No songs are loaded.</string>
+    <string name="label.transposeTitle">Transposition: %1$s</string>
 
 
     <!-- List settings Preferences -->

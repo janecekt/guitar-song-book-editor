@@ -19,11 +19,17 @@ package com.songbook.android.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -47,6 +53,12 @@ public class SongListManager {
     private int selectedIndex;
 
     private List<SongNode> songNodeList;
+
+    private String transposeMapFileName;
+    private final Map<String,Integer> transposeMap = new HashMap<String, Integer>();
+
+
+
    
     @SuppressWarnings("FieldCanBeLocal")
     private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -58,7 +70,7 @@ public class SongListManager {
             }
             
             if (key.equals(preferencesManager.getSongBookLocationKey())                    
-                    || key.equals(preferencesManager.getFileEncoding())) {
+                    || key.equals(preferencesManager.getFileEncodingKey())) {
                 initialize();
             }
         }
@@ -92,13 +104,30 @@ public class SongListManager {
         setSongNodeList(songNodeList, comparator);
     }
 
-    
+
+    private void initializeTransposeMap(String fileName) {
+        // Clrear transpose map
+        transposeMap.clear();
+
+        // If fileName does not exist do nothing
+        List<String> internalFileList = Arrays.asList(context.fileList());
+        if (!internalFileList.contains(fileName)) {
+            return;
+        }
+        try {
+            transposeMap.putAll(songNodeLoader.loadTransposeMap(context.openFileInput(fileName)));
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException("Transpose map file not found - " + fileName, ex);
+        }
+    }
+
 
     private void initialize() {
         // Extract preferences
         Comparator<SongNode> comparator = buildComparatorFromPreferences();
-        String fileEncoding = preferencesManager.getFileEncoding();
+        Charset fileEncoding = preferencesManager.getFileEncoding();
         String location = preferencesManager.getSongBookLocation();
+        transposeMapFileName = null;
 
         try {
             // Load from internal storage
@@ -106,6 +135,7 @@ public class SongListManager {
                 String internalFileName = location.replace("internal://", "");
                 FileInputStream inputStream = context.openFileInput(internalFileName);                
                 setSongNodeList(songNodeLoader.loadSongNodesFromZip(inputStream, fileEncoding), comparator);
+                transposeMapFileName = internalFileName + ".transpose";
                 status = Status.LOADED;
                 return;
             }
@@ -116,6 +146,7 @@ public class SongListManager {
             if (locationFile.isDirectory()) {
                 List<SongNode> songNodes = songNodeLoader.loadSongNodesFromDirectory(locationFile, fileEncoding);
                 setSongNodeList(songNodes, comparator);
+                transposeMapFileName = locationFile.getName() + ".transpose";
                 status = Status.LOADED;
                 return;
             }
@@ -123,12 +154,14 @@ public class SongListManager {
             // Load from ZIP file
             if (locationFile.isFile() && locationFile.getAbsolutePath().endsWith(".zip")) {
                 setSongNodeList(songNodeLoader.loadSongNodesFromZip(new FileInputStream(location), fileEncoding), comparator);
+                transposeMapFileName = locationFile.getName() + ".transpose";
                 status = Status.LOADED;
                 return;
             }
 
             // Invalid location
             setSongNodeList(Collections.unmodifiableList(new ArrayList<SongNode>()), comparator);
+            initializeTransposeMap(transposeMapFileName);
             status = Status.LOCATION_DOES_NOT_EXIST_OR_IS_INVALID;
         } catch (Exception ex) {
             // Invalid location
@@ -137,6 +170,33 @@ public class SongListManager {
         }
     }
 
+
+    public int getTransposition(String songFileName) {
+        Integer transposition = transposeMap.get(songFileName);
+        return (transposition != null) ? transposition : 0;
+    }
+
+    public void saveTransposition(String songFileName, int transposition) {
+        // Update transpose map
+        if (transposition != 0) {
+           transposeMap.put(songFileName, transposition);
+        } else {
+            transposeMap.remove(songFileName);
+        }
+
+        // Save transpose map
+        if (transposeMap.size() == 0) {
+            context.deleteFile(transposeMapFileName);
+        } else {
+            OutputStream out;
+            try {
+                out = context.openFileOutput(transposeMapFileName, Context.MODE_WORLD_READABLE);
+                songNodeLoader.saveTransposeMap(out, transposeMap);
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException("Failed to save transpose map !", ex);
+            }
+        }
+    }
 
     public Status getStatus() {
         return status;

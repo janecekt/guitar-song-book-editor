@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -92,7 +93,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
         initDependencies();
 
         // Initialize contents
-        songListPresentationModel.reloadFromDisk(encodingModel.getValue());
+        songListPresentationModel.reloadFromDisk(Charset.forName(encodingModel.getValue()));
         songListPresentationModel.getSongListModel().setSelectionIndex(0);
     }
 
@@ -116,12 +117,13 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
     private void refreshContent() {
         // Update view
-        StringBuilder sb = new StringBuilder();
         int transposition = transposeModel.intValue() - songNodeTransposition;
         if (viewModeModel.booleanValue()) {
-            songNode.accept(new HtmlBuilderVisitor(sb, true, transposition, false));
+            StringBuffer sb = new StringBuffer();
+            songNode.accept(new HtmlBuilderVisitor(sb, transposition, HtmlBuilderVisitor.Mode.CHORDS_ON));
             getEditorModel().setHtmlText(sb.toString());
         } else {
+            StringBuilder sb = new StringBuilder();
             songNode.accept(new TextBuilderVisitor(sb, transposition));
             getEditorModel().setPlainText(sb.toString());
         }
@@ -167,7 +169,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
         try {
             String newFilename = newFilenameDialog.runDialog(getOwnerFrame());
             if (newFilename != null) {
-                songListPresentationModel.addNew(newFilename, encodingModel.getValue());
+                songListPresentationModel.addNew(newFilename, Charset.forName(encodingModel.getValue()));
             }
         } catch (RuntimeException ex) {
             handleError("Creation of new song failed !", ex);
@@ -188,7 +190,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
             StringBuilder sb = new StringBuilder();
             songNode.accept(new TextBuilderVisitor(sb, transposeModel.intValue() - songNodeTransposition));
             songListPresentationModel.saveCurrent(
-                    encodingModel.getValue(),
+                    Charset.forName(encodingModel.getValue()),
                     sb.toString());
         } catch (RuntimeException ex) {
             handleError("Saving of a song failed -" + songNode.getTitle(), ex);
