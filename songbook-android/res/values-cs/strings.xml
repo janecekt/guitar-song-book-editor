@@ -19,7 +19,7 @@
     <string name="label.transposeTitle">Transpozice: %1$s</string>
 
     <!-- Labels -->
-    <string name="label.unknown">Neznámý</string>
+    <string name="label.unknown">Neznámé</string>
     <string name="label.noSongsLoaded">Nejsou načteny žádné písničky.</string>
 
 
@@ -56,5 +56,6 @@
     <string-array name="prefsOrderingEntries">
         <item>Řadit podle názvu</item>
         <item>Řadit podle interpreta</item>
+        <item>Řadit podle indexu</item>
     </string-array>
 </resources>

@@ -42,7 +42,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
-import com.songbook.core.comparator.SongNodeTitleComparator;
+import com.songbook.core.comparator.SongNodeIndexComparator;
 import com.songbook.core.model.ChordNode;
 import com.songbook.core.model.LineNode;
 import com.songbook.core.model.Node;
@@ -51,6 +51,7 @@ import com.songbook.core.model.SongNode;
 import com.songbook.core.model.TextNode;
 import com.songbook.core.model.VerseNode;
 import com.songbook.core.util.FileIO;
+import com.songbook.core.util.SongNodeLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +64,12 @@ public class PdfExporter implements Exporter {
     private final Font textFont;
     private final Font chordFont;
     private final Paragraph verseSpacing;
+    private final SongNodeLoader loader;
 
 
-    public PdfExporter() {
+    public PdfExporter(SongNodeLoader loader) {
+        this.loader = loader;
+
         // Load fonts
         FontFactory.registerDirectories();
         BaseFont timesFont = null;
@@ -107,21 +111,25 @@ public class PdfExporter implements Exporter {
         // Output
         File outputDir = new File(baseDir, "pdf");
         File outputFile = new File(outputDir, "song-book.pdf");
+        File songIndexFile = new File(outputDir, SongNodeLoader.SONG_INDEX_FILE_NAME);
         FileIO.createDirectory(outputDir);
 
         try {
             // Sort songs alphabetically
-            List<SongNode> alphabeticalList = new ArrayList<SongNode>(songBook.getSongNodeList());
-            Collections.sort(alphabeticalList, new SongNodeTitleComparator(Locale.getDefault()));
+            List<SongNode> orderedList = new ArrayList<SongNode>(songBook.getSongNodeList());
+            Collections.sort(orderedList, new SongNodeIndexComparator(Locale.getDefault()));
 
             // Generate PDF - pass 1 (collect page stats)
-            PageStats pageStats = generatePDF(alphabeticalList, outputFile);
+            PageStats pageStats = generatePDF(orderedList, outputFile);
 
             // Reorder songs so that 2-page song always starts on even page number
-            List<SongNode> reorderedList = reorderList(alphabeticalList, pageStats);
+            List<SongNode> reorderedList = reorderList(orderedList, pageStats);
 
             // Generate PDF - pass 2
             generatePDF(reorderedList, outputFile);
+
+            // Write song index file
+            loader.saveSongIndexFile(songIndexFile, reorderedList);
 
             // Open document
             openPDF(outputFile);

@@ -56,5 +56,6 @@
     <string-array name="prefsOrderingEntries">
         <item>Order by title</item>
         <item>Order by subtitle</item>
+        <item>Order by index</item>
     </string-array>
 </resources>

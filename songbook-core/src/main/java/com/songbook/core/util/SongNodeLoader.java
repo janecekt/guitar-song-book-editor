@@ -17,11 +17,13 @@
  */
 package com.songbook.core.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SongNodeLoader {
+    public static String SONG_INDEX_FILE_NAME = "_song-index.txt";
     private static Logger logger = LoggerFactory.getLogger(SongNodeLoader.class);
     private final Parser<SongNode> parser;
 
@@ -69,20 +72,32 @@ public class SongNodeLoader {
     
     public List<SongNode> loadSongNodesFromDirectory(File directory, Charset encoding) {
         List<SongNode> newSongList = new ArrayList<SongNode>();
+        HashMap<String, Integer> songIndexMap = null;
         for (File file : directory.listFiles()) {
             if (file.isFile() && file.getName().endsWith(".txt")) {
-                SongNode songNode = loadSongNodeFromFile(file, encoding);
-                if (songNode != null) {
-                    newSongList.add(songNode);
+                if (SONG_INDEX_FILE_NAME.equals(file.getName())) {
+                    try {
+                        Reader reader = new InputStreamReader(new FileInputStream(file), encoding);
+                        songIndexMap = loadSongIndexMap(reader);
+                    } catch (FileNotFoundException ex) {
+                        logger.error("File {} was not found", file.getAbsolutePath());
+                    }
+                } else {
+                    SongNode songNode = loadSongNodeFromFile(file, encoding);
+                    if (songNode != null) {
+                        newSongList.add(songNode);
+                    }
                 }
             }
         }
+        enrichSongsWithIndex(newSongList, songIndexMap);
         return newSongList;
     }
 
 
     public List<SongNode> loadSongNodesFromZip(InputStream zipStream, Charset encoding) throws ParserException {
         List<SongNode> songList = new ArrayList<SongNode>();
+        HashMap<String,Integer> songIndexMap = null;
 
         // Load data from zip stream into SongList
         ZipInputStream zipInputStream = null;
@@ -98,16 +113,26 @@ public class SongNodeLoader {
                     outputStream.write(buffer, 0, count);
                 }
 
-                // Create a Reader
                 Reader reader = new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), encoding);
-                try {
-                    SongNode songNode = parser.parse(reader);
-                    songNode.setSourceFile(new File(zipEntry.getName()));
-                    songList.add(songNode);
-                } catch (ParserException ex) {
-                    throw new RuntimeException("Failed to parse " + zipEntry.getName(), ex);
+                if (SONG_INDEX_FILE_NAME.equals(zipEntry.getName())) {
+                    // Load song order file
+                    songIndexMap = loadSongIndexMap(reader);
+                } else {
+                    // Load and parse song
+                    try {
+                        SongNode songNode = parser.parse(reader);
+                        songNode.setSourceFile(new File(zipEntry.getName()));
+                        songList.add(songNode);
+                    } catch (ParserException ex) {
+                        throw new RuntimeException("Failed to parse " + zipEntry.getName(), ex);
+                    }
                 }
             }
+
+            // Set song list
+            enrichSongsWithIndex(songList, songIndexMap);
+            return songList;
+
         } catch (IOException ex) {
             throw new RuntimeException("Failed to open SongBook from ZIP", ex);
         } finally {
@@ -119,8 +144,6 @@ public class SongNodeLoader {
                 }
             }
         }
-        // Set song list
-        return songList;
     }
 
 
@@ -158,5 +181,58 @@ public class SongNodeLoader {
                 logger.error("Saving of transpose map failed !", ex);
             }
         }
+    }
+
+
+    private void enrichSongsWithIndex(List<SongNode> songList, HashMap<String,Integer> songIndexMap) {
+        if (songIndexMap == null) {
+            logger.warn("No " + SONG_INDEX_FILE_NAME + " file defined !");
+            return;
+        }
+
+        for (SongNode songNode : songList) {
+            File sourceFile = songNode.getSourceFile();
+            if (sourceFile == null) {
+                logger.warn("Source file not set for " + songNode.getTitle());
+                continue;
+            }
+
+            Integer index = songIndexMap.get(sourceFile.getName());
+            if (index == null) {
+                logger.warn("No index for song " + sourceFile.getName());
+                continue;
+            }
+
+            songNode.setIndex(index);
+        }
+    }
+
+
+    private HashMap<String,Integer> loadSongIndexMap(Reader reader) {
+        ReaderIterable readerIterable = null;
+        try {
+            HashMap<String,Integer> result = new HashMap<String, Integer>();
+            int lineNumber = 1;
+            readerIterable = new ReaderIterable(new BufferedReader(reader), "song order file !");
+            for (String line : readerIterable) {
+                result.put(line.trim(), lineNumber);
+                lineNumber++;
+            }
+            return result;
+        } finally {
+            if (readerIterable != null) {
+                readerIterable.close();
+            }
+        }
+    }
+
+
+    public void saveSongIndexFile(File outputFile, List<SongNode> songList) {
+        StringBuilder sb = new StringBuilder();
+        for (SongNode songNode : songList) {
+            sb.append(songNode.getSourceFile().getName());
+            sb.append("\n");
+        }
+        FileIO.writeStringToFile(outputFile.getAbsolutePath(), Charset.forName("ISO-8859-1"), sb.toString());
     }
 }

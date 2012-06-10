@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import com.songbook.core.comparator.SongNodeTitleComparator;
+import com.songbook.core.comparator.SongNodeIndexComparator;
 import com.songbook.core.model.SongBook;
 import com.songbook.core.model.SongNode;
 import com.songbook.core.util.FileIO;
@@ -50,7 +50,7 @@ public class LaTexExporter implements Exporter {
 
         // Sort songs
         List<SongNode> sortedArrayList = new ArrayList<SongNode>(songBook.getSongNodeList());
-        Collections.sort(sortedArrayList, new SongNodeTitleComparator(Locale.getDefault()));
+        Collections.sort(sortedArrayList, new SongNodeIndexComparator(Locale.getDefault()));
 
         // Build document
         String output = FreeMakerUtil.processTemplate(new SongBook(sortedArrayList), SONGBOOK_LATEX_ALLSONGS_TEMPLATE);

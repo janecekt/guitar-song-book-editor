@@ -94,6 +94,9 @@ public class SongListActivity extends RoboListActivity {
         // Set grouping as per the preferences
         Transformer<SongNode,String> groupTransformer;
         switch (preferencesManager.getOrdering()) {
+            case BY_INDEX:
+                groupTransformer = new SongNodeIndexGroupTransformer();
+                break;
             case BY_SUBTITLE:
                 groupTransformer = new SongNodeSubTitleGroupTransformer();
                 break;
@@ -157,7 +160,7 @@ public class SongListActivity extends RoboListActivity {
     private class SongNodeTitleGroupTransformer implements Transformer<SongNode,String> {
         @Override
         public String transform(SongNode songNode) {
-            return songNode.getTitleNode().getTitle().substring(0,1);
+            return "- " + songNode.getTitleNode().getTitle().substring(0,1) + " -";
         }
     }
     
@@ -168,8 +171,20 @@ public class SongListActivity extends RoboListActivity {
             return (subTitle == null) ? labelUnknown : subTitle;
         }
     }
-    
-    
+
+    private class SongNodeIndexGroupTransformer implements Transformer<SongNode,String> {
+        @Override
+        public String transform(SongNode songNode) {
+            if (songNode.getIndex() == null) {
+                return labelUnknown;
+            } else {
+                int tens = songNode.getIndex() / 10;
+                return (tens*10) + " - " + ((tens+1)*10);
+            }
+        }
+    }
+
+
     private static class GroupViewMapper extends ViewMapper<String, GroupViewMapper.GroupViewHolder> {
         public GroupViewMapper(Context context, int dataLayoutResource) {
             super(context, dataLayoutResource);
@@ -226,6 +241,7 @@ public class SongListActivity extends RoboListActivity {
             SongNodeViewHolder viewHolder = new SongNodeViewHolder();
             viewHolder.titleView = (TextView) view.findViewById(R.id.song_list_item_title);
             viewHolder.subTitleView = (TextView) view.findViewById(R.id.song_list_item_subTitle);
+            viewHolder.indexView = (TextView) view.findViewById(R.id.song_list_item_index);
             return  viewHolder;
         }
 
@@ -234,6 +250,7 @@ public class SongListActivity extends RoboListActivity {
         protected void populateView(SongNode songNode, SongNodeViewHolder viewHolder) {
             viewHolder.titleView.setText(songNode.getTitleNode().getTitle());
             viewHolder.subTitleView.setText(songNode.getTitleNode().getSubTitle());
+            viewHolder.indexView.setText( (songNode.getIndex() != null) ? Integer.toString(songNode.getIndex()) : "");
         }
 
 
@@ -249,6 +266,7 @@ public class SongListActivity extends RoboListActivity {
         protected static class SongNodeViewHolder {
             TextView titleView;
             TextView subTitleView;
+            TextView indexView;
         }        
     }
 }

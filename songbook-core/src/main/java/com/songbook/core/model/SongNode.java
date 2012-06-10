@@ -35,6 +35,9 @@ public class SongNode implements Node {
     /** Source file (may be null). */
     private File sourceFile;
 
+    /** SongBook Index (may be null). */
+    private Integer index;
+
 
     /**
      * Constructor - creates an instance of SongNode.
@@ -59,6 +62,18 @@ public class SongNode implements Node {
      */
     public void setSourceFile(File sourceFile) {
         this.sourceFile = sourceFile;
+    }
+
+
+    /** @return Song book index determining the position in the song book. */
+    public Integer getIndex() {
+        return index;
+    }
+
+
+    /** Sets the song book index determining the position in the song book. */
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
 

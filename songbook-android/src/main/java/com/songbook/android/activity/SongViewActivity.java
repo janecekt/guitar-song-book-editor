@@ -192,6 +192,7 @@ public class SongViewActivity extends RoboActivity {
                             HtmlBuilderVisitor.Mode.TWO_LINE_TITLE,
                             HtmlBuilderVisitor.Mode.DISPLAY_TRANSPOSITION,
                             HtmlBuilderVisitor.Mode.HTML_ESCAPING,
+                            HtmlBuilderVisitor.Mode.DISPLAY_SONG_INDEX,
                             preferencesManager.isChordsOn() ? HtmlBuilderVisitor.Mode.CHORDS_ON : null));
                 } else {
                     songHtml.append("<DIV class=\"text\">").append(labelNoSongsLoaded).append("</DIV>");

@@ -105,13 +105,14 @@ public class MainFormSteps {
 
     public void whenApplicationStarted() {
         parser = ChordProParser.createParser();
+        SongNodeLoader loader = new SongNodeLoader(parser);
         mainPM = new MainFormPresentationModel(
                 parser,
-                new SongListPresentationModel(TEST_BASEDIR, new SongNodeLoader(parser)),
+                new SongListPresentationModel(TEST_BASEDIR, loader),
                 null,
                 new HtmlExporter(),
                 new LaTexExporter(),
-                new PdfExporter(),
+                new PdfExporter(loader),
                 new EPubExporter());
         mainPM.setPropagateErrors(true);
     }

@@ -85,7 +85,8 @@ public class PreferencesActivity extends RoboPreferenceActivity {
         ListPreference orderingPreference = (ListPreference) findPreference(orderingKey);
         orderingPreference.setEntryValues(new CharSequence[]{
                 PreferencesManager.OrderingKey.BY_TITLE.name(),
-                PreferencesManager.OrderingKey.BY_SUBTITLE.name()});
+                PreferencesManager.OrderingKey.BY_SUBTITLE.name(),
+                PreferencesManager.OrderingKey.BY_INDEX.name()});
         
         // Populate locale entries selection
         List<String> localeEntries = new ArrayList<String>();

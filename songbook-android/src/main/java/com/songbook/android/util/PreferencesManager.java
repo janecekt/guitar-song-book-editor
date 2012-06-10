@@ -28,7 +28,7 @@ import roboguice.inject.InjectResource;
 
 @SuppressWarnings("UnusedDeclaration")
 public class PreferencesManager {
-    public static enum OrderingKey {BY_TITLE, BY_SUBTITLE}
+    public static enum OrderingKey {BY_TITLE, BY_SUBTITLE, BY_INDEX}
 
     private final SharedPreferences sharedPreferences;
 

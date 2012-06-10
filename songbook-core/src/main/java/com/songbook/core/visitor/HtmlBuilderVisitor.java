@@ -33,10 +33,11 @@ import com.songbook.core.util.StringUtil;
  * SongNode visitor which traverses the SongNode tree and builds a HTML representation.
  */
 public class HtmlBuilderVisitor implements Visitor {
-    public static enum Mode { CHORDS_ON, TWO_LINE_TITLE, DISPLAY_TRANSPOSITION, HTML_ESCAPING }
+    public static enum Mode { CHORDS_ON, TWO_LINE_TITLE, DISPLAY_TRANSPOSITION, DISPLAY_SONG_INDEX, HTML_ESCAPING }
     private StringBuffer sb;
     private int transposition;
     private List<Mode> mode;
+    private SongNode songNode;
 
 
     public HtmlBuilderVisitor(StringBuffer sb, int transposition, Mode... mode) {
@@ -46,11 +47,15 @@ public class HtmlBuilderVisitor implements Visitor {
     }
 
     @Override
-    public void enterSongNode(SongNode songNode) { }
+    public void enterSongNode(SongNode songNode) {
+        this.songNode = songNode;
+    }
 
 
     @Override
-    public void exitSongNode(SongNode songNode) { }
+    public void exitSongNode(SongNode songNode) {
+        this.songNode = null;
+    }
 
 
     @Override
@@ -91,6 +96,11 @@ public class HtmlBuilderVisitor implements Visitor {
         sb.append("<div class=\"titleNode\">");
 
         sb.append("<span class=\"title\">");
+        if (mode.contains(Mode.DISPLAY_SONG_INDEX) && (songNode.getIndex() != null)) {
+            sb.append(songNode.getIndex());
+            sb.append(". ");
+        }
+
         if (mode.contains(Mode.HTML_ESCAPING)) {
             StringUtil.appendAndHtmlEscape(sb, titleNode.getTitle());
         } else {

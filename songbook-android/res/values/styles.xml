@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="style.song_list_item_title" parent="android:TextAppearance.Medium">
-        <item name="android:textColor">#FF9900</item>
+        <item name="android:textColor">#ff9900</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="style.song_list_item_index" parent="android:TextAppearance.Medium">
+        <item name="android:textColor">#bbbbff</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="style.group_list_item_title" parent="android:TextAppearance.Medium.Inverse">
-        <!--item name="android:textColor">#FF9900</item-->
         <item name="android:textStyle">bold</item>
         <item name="android:background">#888888</item>
     </style>

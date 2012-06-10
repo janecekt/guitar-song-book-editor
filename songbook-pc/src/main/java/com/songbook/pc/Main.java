@@ -58,6 +58,9 @@ public class Main {
             // Parser
             Parser<SongNode> parser = ChordProParser.createParser();
 
+            // Loader
+            SongNodeLoader loader = new SongNodeLoader(parser);
+
             // Dialog provider
             UIDialog<String> newNextFileDialog = new UIDialog<String>() {
                 @Override
@@ -74,11 +77,11 @@ public class Main {
             // Main Presentation Model
             MainFormPresentationModel mainPM = new MainFormPresentationModel(
                     parser,
-                    new SongListPresentationModel(new File(args[0]), new SongNodeLoader(parser)),
+                    new SongListPresentationModel(new File(args[0]), loader),
                     newNextFileDialog,
                     new HtmlExporter(),
                     new LaTexExporter(),
-                    new PdfExporter(),
+                    new PdfExporter(loader),
                     new EPubExporter());
 
             MainFormView mainFormView = new MainFormView(mainPM);

@@ -34,6 +34,7 @@ import java.util.Map;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.google.inject.Inject;
+import com.songbook.core.comparator.SongNodeIndexComparator;
 import com.songbook.core.comparator.SongNodeSubTitleComparator;
 import com.songbook.core.comparator.SongNodeTitleComparator;
 import com.songbook.core.model.SongNode;
@@ -92,6 +93,8 @@ public class SongListManager {
         switch (preferencesManager.getOrdering()) {
             case BY_SUBTITLE:
                 return new SongNodeSubTitleComparator(orderingLocale);
+            case BY_INDEX:
+                return new SongNodeIndexComparator(orderingLocale);
             case BY_TITLE:
             default:
                 return new SongNodeTitleComparator(orderingLocale);
