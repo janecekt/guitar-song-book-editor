@@ -56,6 +56,9 @@ public class PreferencesManager {
     @InjectResource(R.string.prefs_fontSize_key)
     private String fontSizeKey;
 
+    @InjectResource(R.string.prefs_searchBoxEnabled_key)
+    private String searchBoxEnabledKey;
+
     @InjectResource(R.string.prefs_groupingEnabled_key)
     private String groupingEnabledKey;
 
@@ -92,6 +95,9 @@ public class PreferencesManager {
         return sharedPreferences.getBoolean(groupingEnabledKey, false);
     }
 
+    public boolean isSearchBoxEnabled() {
+        return sharedPreferences.getBoolean(searchBoxEnabledKey, false);
+    }
 
     public int getLineSpacing() {
         return Integer.parseInt(sharedPreferences.getString(lineSpacingKey, "0"));

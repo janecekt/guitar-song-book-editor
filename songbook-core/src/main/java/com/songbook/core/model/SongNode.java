@@ -21,6 +21,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+import com.songbook.core.visitor.SearchTextBuilderVisitor;
+
 /**
  * Class representing the Song.
  * @author Tomas Janecek
@@ -31,6 +33,9 @@ public class SongNode implements Node {
 
     /** List of Verses of the song (represented by VerseNode classes). */
     private final List<VerseNode> verseList;
+
+    /** Text representation of the song used for full text search. */
+    private String searchText;
 
     /** Source file (may be null). */
     private File sourceFile;
@@ -47,6 +52,16 @@ public class SongNode implements Node {
     public SongNode(TitleNode titleNode, List<VerseNode> verseList) {
         this.titleNode = titleNode;
         this.verseList = Collections.unmodifiableList(verseList);
+    }
+
+
+    public String getSearchText() {
+        if (searchText == null) {
+            SearchTextBuilderVisitor visitor = new SearchTextBuilderVisitor();
+            this.accept(visitor);
+            searchText = visitor.getResult();
+        }
+        return searchText;
     }
 
 

@@ -2,6 +2,7 @@
 <resources>
     <!-- Preferences Keys -->
     <string name="prefs.chordsOn.key">prefs.chordsOn</string>
+    <string name="prefs.searchBoxEnabled.key">prefs.seachBoxEnabled</string>
     <string name="prefs.groupingEnabled.key">prefs.groupingEnabled</string>
     <string name="prefs.ordering.key">prefs.ordering</string>
     <string name="prefs.orderingLocale.key">prefs.orderingLocale</string>

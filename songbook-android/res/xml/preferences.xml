@@ -6,6 +6,10 @@
                             android:title="@string/prefs.groupingEnabled.title"
                             android:defaultValue="true" />
 
+        <CheckBoxPreference android:key="@string/prefs.searchBoxEnabled.key"
+                            android:title="@string/prefs.searchBoxEnabled.title"
+                            android:defaultValue="true" />
+
         <ListPreference android:key="@string/prefs.ordering.key"
                         android:title="@string/prefs.ordering.title"
                         android:entries="@array/prefsOrderingEntries"

@@ -21,12 +21,13 @@
     <string name="label.unknown">Unknown</string>
     <string name="label.noSongsLoaded">No songs are loaded.</string>
     <string name="label.transposeTitle">Transposition: %1$s</string>
-
+    <string name="label.filterHint">type to filter</string>
 
     <!-- List settings Preferences -->
     <string name="prefs.category.songListSettings">Song List Settings</string>
 
     <string name="prefs.groupingEnabled.title">Grouping enabled</string>
+    <string name="prefs.searchBoxEnabled.title">SearchBox enabled</string>
     <string name="prefs.ordering.title">List Ordering</string>
     <string name="prefs.orderingLocale.title">Ordering Locale</string>
 

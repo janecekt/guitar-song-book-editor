@@ -24,10 +24,14 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.google.inject.Inject;
 import com.songbook.android.R;
@@ -37,15 +41,22 @@ import com.songbook.android.util.PreferencesManager;
 import com.songbook.android.util.SongListManager;
 import com.songbook.core.model.SongNode;
 import com.songbook.core.util.Transformer;
-import roboguice.activity.RoboListActivity;
+import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectResource;
+import roboguice.inject.InjectView;
 
-public class SongListActivity extends RoboListActivity {
+public class SongListActivity extends RoboActivity {
     @InjectResource(R.string.label_unknown)
     String labelUnknown;
 
     @InjectResource(R.string.label_noSongsLoaded)
     String labelNoSongsLoaded;
+
+    @InjectView(R.id.song_list)
+    ListView listView;
+
+    @InjectView(R.id.song_list_search_box)
+    EditText searchEditText;
 
     @Inject
     SongListManager songListManager;
@@ -60,18 +71,36 @@ public class SongListActivity extends RoboListActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
+        // Initialize layout
+        setContentView(R.layout.song_list_layout);
+
         // Set ListView adapter
         adapter = new ComplexListAdapter( Arrays.asList(
                 new SongNodeViewMapper(this.getBaseContext(), R.layout.song_list_item_layout),
                 new GroupViewMapper(this.getBaseContext(), R.layout.group_list_item_layout)));
-        setListAdapter(adapter);
+        listView.setAdapter(adapter);
 
-        // Make view clickable and start listening to events
-        getListView().setClickable(true);
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // Make ListView clickable and start listening to events
+        listView.setClickable(true);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 onItemClicked((int) id);
+            }
+        });
+
+        // Search text box
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                refreshActivity();
             }
         });
     }
@@ -80,6 +109,7 @@ public class SongListActivity extends RoboListActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        searchEditText.setVisibility(preferencesManager.isSearchBoxEnabled() ? View.VISIBLE : View.GONE );
         refreshActivity();
     }
 
@@ -88,7 +118,6 @@ public class SongListActivity extends RoboListActivity {
     protected void onStop() {
         super.onStop();
     }
-
 
     public void refreshActivity() {
         // Set grouping as per the preferences
@@ -113,18 +142,30 @@ public class SongListActivity extends RoboListActivity {
             List<Object> groupedList = new ArrayList<Object>();
             List<Long> idMap = new ArrayList<Long>();
             String previousGroup = null;
+            String searchText = searchEditText.getText().toString().replaceAll("\\W", "").toLowerCase();
+            boolean isSearchBoxEnabled = preferencesManager.isSearchBoxEnabled();
             long songNodeIndex = 0;
+
             for (SongNode songNode : songListManager.getSongNodeList()) {
-                if (groupTransformer != null) {
-                    String currentGroup = groupTransformer.transform(songNode);
-                    if (!currentGroup.equals(previousGroup)) {
-                        groupedList.add(currentGroup);
-                        idMap.add(-1L);
-                        previousGroup = currentGroup;
+                // Verify search text
+                if (!isSearchBoxEnabled
+                    || (searchText == null)
+                    || ("".equals(searchText))
+                    || songNode.getSearchText().contains(searchText)) {
+
+                    // Add group if necessary
+                    if (groupTransformer != null) {
+                        String currentGroup = groupTransformer.transform(songNode);
+                        if (!currentGroup.equals(previousGroup)) {
+                            groupedList.add(currentGroup);
+                            idMap.add(-1L);
+                            previousGroup = currentGroup;
+                        }
                     }
+                    // Add song
+                    groupedList.add(songNode);
+                    idMap.add(songNodeIndex);
                 }
-                groupedList.add(songNode);
-                idMap.add(songNodeIndex);
                 songNodeIndex++;
             }
             adapter.setData( groupedList, idMap);

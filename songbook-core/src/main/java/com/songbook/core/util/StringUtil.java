@@ -25,16 +25,16 @@ import java.util.regex.Pattern;
 public final class StringUtil {
     private StringUtil() {}
 
-    private static final Pattern PATTERN = Pattern.compile("([\"\'<>&%])");
-    private static Map<String,String> replaceMap = new HashMap<String, String>();
+    private static final Pattern HTML_SEARCH_PATTERN = Pattern.compile("([\"\'<>&%])");
+    private static Map<String,String> HTML_REPLACE_MAP = new HashMap<String, String>();
     static {
-        replaceMap.put("\"","&quot;");
-        replaceMap.put("'","&apos;");
-        replaceMap.put("'","&apos;");
-        replaceMap.put("<","&lt;");
-        replaceMap.put(">","&gt;");
-        replaceMap.put("&","&amp;");
-        replaceMap.put("%","%25");
+        HTML_REPLACE_MAP.put("\"", "&quot;");
+        HTML_REPLACE_MAP.put("'", "&apos;");
+        HTML_REPLACE_MAP.put("'", "&apos;");
+        HTML_REPLACE_MAP.put("<", "&lt;");
+        HTML_REPLACE_MAP.put(">", "&gt;");
+        HTML_REPLACE_MAP.put("&", "&amp;");
+        HTML_REPLACE_MAP.put("%", "%25");
     }
 
     public static String htmlEscape(String string) {
@@ -44,10 +44,10 @@ public final class StringUtil {
     }
 
     public static void appendAndHtmlEscape(StringBuffer sb, String string) {
-        Matcher matcher = PATTERN.matcher(string);
+        Matcher matcher = HTML_SEARCH_PATTERN.matcher(string);
         while (matcher.find()) {
             String replaceCharacter = matcher.group(1);
-            String replacement = replaceMap.get(replaceCharacter);
+            String replacement = HTML_REPLACE_MAP.get(replaceCharacter);
             if (replacement == null) {
                 throw new IllegalStateException("Replacement Map does not contain the replacement for " + replaceCharacter);
             }
