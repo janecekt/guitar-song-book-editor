@@ -40,7 +40,7 @@ import org.junit.Assert;
 
 public class MainFormSteps {
     /** Prilis zlutoucky kun upel dabelske ody */
-    private static final String CZECH_TEXT = "P\u0159\u00edli\u0161 \u017elu\u0165ou\u010dk\u00fd k\u016f\u0148 \u00fap\u011bl \u010f\u00e1blesk\u00e9 \u00f3dy.";
+    public static final String CZECH_TEXT = "P\u0159\u00edli\u0161 \u017elu\u0165ou\u010dk\u00fd k\u016f\u0148 \u00fap\u011bl \u010f\u00e1blesk\u00e9 \u00f3dy.";
     private static final Charset ENCODING = Charset.forName("CP1250");
 
 

@@ -40,6 +40,7 @@ import com.songbook.android.framework.ViewMapper;
 import com.songbook.android.util.PreferencesManager;
 import com.songbook.android.util.SongListManager;
 import com.songbook.core.model.SongNode;
+import com.songbook.core.util.StringUtil;
 import com.songbook.core.util.Transformer;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectResource;
@@ -142,7 +143,7 @@ public class SongListActivity extends RoboActivity {
             List<Object> groupedList = new ArrayList<Object>();
             List<Long> idMap = new ArrayList<Long>();
             String previousGroup = null;
-            String searchText = searchEditText.getText().toString().replaceAll("\\W", "").toLowerCase();
+            String searchText = StringUtil.removeAccentsAndNonStandardCharacters(searchEditText.getText().toString());
             boolean isSearchBoxEnabled = preferencesManager.isSearchBoxEnabled();
             long songNodeIndex = 0;
 

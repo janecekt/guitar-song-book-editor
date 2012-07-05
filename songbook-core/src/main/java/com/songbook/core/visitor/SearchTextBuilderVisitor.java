@@ -7,6 +7,7 @@ import com.songbook.core.model.TextNode;
 import com.songbook.core.model.TitleNode;
 import com.songbook.core.model.VerseNode;
 import com.songbook.core.model.Visitor;
+import com.songbook.core.util.StringUtil;
 
 public class SearchTextBuilderVisitor implements Visitor {
     private StringBuilder sb = new StringBuilder();
@@ -14,7 +15,7 @@ public class SearchTextBuilderVisitor implements Visitor {
 
     public String getResult() {
         if (result == null) {
-            result = sb.toString().replaceAll("\\W", "").toLowerCase();
+            result = StringUtil.removeAccentsAndNonStandardCharacters(sb.toString());
         }
         return result;
     }

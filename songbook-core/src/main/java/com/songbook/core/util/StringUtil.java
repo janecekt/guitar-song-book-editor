@@ -17,6 +17,8 @@
  */
 package com.songbook.core.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -24,9 +26,13 @@ import java.util.regex.Pattern;
 
 public final class StringUtil {
     private StringUtil() {}
-
+    private static final Pattern CLEANUP_PATTERN = Pattern.compile("(\\p{InCombiningDiacriticalMarks}+)|(\\W)");
     private static final Pattern HTML_SEARCH_PATTERN = Pattern.compile("([\"\'<>&%])");
-    private static Map<String,String> HTML_REPLACE_MAP = new HashMap<String, String>();
+    private static final Map<String,String> HTML_REPLACE_MAP = new HashMap<String, String>();
+
+    private static Method NORMALIZE_METHOD;
+    private static Object NFD_VALUE;
+
     static {
         HTML_REPLACE_MAP.put("\"", "&quot;");
         HTML_REPLACE_MAP.put("'", "&apos;");
@@ -35,6 +41,22 @@ public final class StringUtil {
         HTML_REPLACE_MAP.put(">", "&gt;");
         HTML_REPLACE_MAP.put("&", "&amp;");
         HTML_REPLACE_MAP.put("%", "%25");
+
+        // Initialize Normalizer reflections
+        try {
+            // Get NFD value
+            Class<?> formClass = Class.forName("java.text.Normalizer$Form");
+            Field nfdField = formClass.getDeclaredField("NFD");
+            NFD_VALUE = nfdField.get(null);
+
+            // Get normalize method
+            Class<?> normalizerClass = Class.forName("java.text.Normalizer");
+            NORMALIZE_METHOD = normalizerClass.getDeclaredMethod("normalize", CharSequence.class, formClass);
+        } catch (Exception ex) {
+            // If there is any exception => Normalizer is not present on classpath
+            NFD_VALUE = null;
+            NORMALIZE_METHOD = null;
+        }
     }
 
     public static String htmlEscape(String string) {
@@ -56,4 +78,23 @@ public final class StringUtil {
         matcher.appendTail(sb);
     }
 
+    public static String removeAccentsAndNonStandardCharacters(String string) {
+        String normalizedText = string;
+
+        // Normalize text using a Normalizer if possible
+        if (NORMALIZE_METHOD != null) {
+            try {
+                // Invoke the bellow via reflection
+                // java.text.Normalizer.normalize(string, java.text.Normalizer.Form.NFD);
+
+                // Normalize text
+                normalizedText = (String) NORMALIZE_METHOD.invoke(null, string, NFD_VALUE);
+            } catch (Exception ex) {
+                normalizedText = string;
+            }
+        }
+
+        // Update pattern.
+        return CLEANUP_PATTERN.matcher(normalizedText).replaceAll("").toLowerCase();
+    }
 }
