@@ -148,7 +148,7 @@ public class SongViewActivity extends RoboActivity {
             transposition = songListManager.getTransposition(songNode.getSourceFile().getName());
         }
         String data = buildSongHtml(songNode);
-        webView.loadData(data, "text/html", "UTF8");
+        webView.loadDataWithBaseURL(null, data, "text/html", "UTF8", null);
         transposeDialogRefreshTransposeTitle();
     }
 
