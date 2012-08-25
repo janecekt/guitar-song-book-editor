@@ -16,6 +16,7 @@
     <!-- Set height to 0, and let the weight param expand it -->
     <ListView android:id="@+id/song_list"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:layout_weight="1" />
+              android:layout_height="0dp"
+              android:layout_weight="1"
+              android:focusable="true" />
 </LinearLayout>

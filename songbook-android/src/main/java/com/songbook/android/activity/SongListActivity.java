@@ -112,6 +112,7 @@ public class SongListActivity extends RoboActivity {
         super.onStart();
         searchEditText.setVisibility(preferencesManager.isSearchBoxEnabled() ? View.VISIBLE : View.GONE );
         refreshActivity();
+        listView.requestFocus();
     }
 
 
