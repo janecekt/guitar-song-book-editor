@@ -10,6 +10,9 @@
     <string name="prefs.fontSize.key">prefs.fontSize</string>
     <string name="prefs.lineSpacing.key">prefs.lineSpacing</string>
     <string name="prefs.verseSpacing.key">prefs.verseSpacing</string>
+    <string name="prefs.pagingAnimationEnabled.key">pref.animatedPagingEnabled.key</string>
+    <string name="prefs.pagingAnimationActiveAreaPercentage.key">prefs.pagingAnimationActiveAreaPercentage.key</string>
+    <string name="prefs.pagingAnimationMaxFps.key">pref.animationMaxFps.key</string>
 
     <string name="prefs.songBookLocation.key">prefs.songBookLocation</string>
     <string name="prefs.fileEncoding.key">prefs.fileEncoding</string>

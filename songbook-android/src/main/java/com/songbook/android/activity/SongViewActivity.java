@@ -23,19 +23,21 @@ import java.util.regex.Pattern;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.TextView;
 import com.google.inject.Inject;
 import com.songbook.android.R;
+import com.songbook.android.paging.PagingView;
+import com.songbook.android.paging.PagingProvider;
 import com.songbook.android.util.PreferencesManager;
 import com.songbook.android.util.SongListManager;
 import com.songbook.core.model.SongNode;
@@ -45,7 +47,7 @@ import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
-public class SongViewActivity extends RoboActivity {
+public class SongViewActivity extends RoboActivity implements PagingProvider {
     private static final Pattern SONG_TEMPLATE_TOKEN_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
     private static final String SONG_TEMPLATE = FileIO.readResourceToString("/song-template.html");
 
@@ -65,9 +67,11 @@ public class SongViewActivity extends RoboActivity {
     WebView webView;
 
     private GestureDetector gestureDetector;
+    private PagingView pagingView;
     private Dialog transposeDialog;
     private SongNode songNode;
     private int transposition = 0;
+
 
 
     @Override
@@ -80,14 +84,16 @@ public class SongViewActivity extends RoboActivity {
         // Initialize layout
         setContentView(R.layout.song_view_layout);
 
+        // Set-up pagingView
+        pagingView = new PagingView(this, this,
+                preferencesManager.getPagingAnimationActiveAreaSizePercentage() / 100f,
+                preferencesManager.getPagingAnimationMaxFps());
+        addContentView(
+                pagingView,
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+
         // Setup gestures
         gestureDetector = new GestureDetector(new SwipeGestureDetector());
-        webView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return gestureDetector.onTouchEvent(motionEvent);
-            }
-        });
     }
 
 
@@ -95,6 +101,36 @@ public class SongViewActivity extends RoboActivity {
     protected void onStart() {
         super.onStart();
         refresh(true);
+
+        if (preferencesManager.isPagingAnimationEnabled()) {
+            pagingView.setVisibility(View.VISIBLE);
+            pagingView.updateParameters(
+                    preferencesManager.getPagingAnimationActiveAreaSizePercentage() / 100f,
+                    preferencesManager.getPagingAnimationMaxFps());
+            webView.setOnTouchListener(null);
+        } else {
+            pagingView.setVisibility(View.GONE);
+            webView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return gestureDetector.onTouchEvent(motionEvent);
+                }
+            });
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        pagingView.onResume();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pagingView.onPause();
     }
 
 
@@ -153,7 +189,8 @@ public class SongViewActivity extends RoboActivity {
     }
 
 
-    private void onSwipeLeft() {
+    @Override
+    public void goToNextPage() {
         if (songListManager.getSongNodeList().size() > 0) {
             int songIndex = songListManager.getSelectedIndex();
             songIndex = (songIndex + 1) % songListManager.getSongNodeList().size();
@@ -163,7 +200,8 @@ public class SongViewActivity extends RoboActivity {
     }
 
 
-    private void onSwipeRight() {
+    @Override
+    public void goToPreviousPage() {
         if (songListManager.getSongNodeList().size() > 0) {
             int songIndex = songListManager.getSelectedIndex();
             songIndex = (songIndex - 1 + songListManager.getSongNodeList().size()) % songListManager.getSongNodeList().size();
@@ -172,6 +210,10 @@ public class SongViewActivity extends RoboActivity {
         }
     }
 
+    @Override
+    public View getOverlayedView() {
+        return webView;
+    }
 
     private String buildSongHtml(SongNode songNode) {
         Matcher matcher = SONG_TEMPLATE_TOKEN_PATTERN.matcher(SONG_TEMPLATE);
@@ -274,6 +316,7 @@ public class SongViewActivity extends RoboActivity {
     }
 
 
+
     private class SwipeGestureDetector extends GestureDetector.SimpleOnGestureListener {
         // Swipe properties, you can change it to make the swipe
         // longer or shorter and speed
@@ -284,7 +327,6 @@ public class SongViewActivity extends RoboActivity {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.i("TRACE", "OnFling called");
             float diffAbs = Math.abs(e1.getY() - e2.getY());
             float diff = e1.getX() - e2.getX();
 
@@ -294,10 +336,10 @@ public class SongViewActivity extends RoboActivity {
 
             if ((diff > SWIPE_MIN_DISTANCE) && (Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)) {
                 // Left swipe
-                onSwipeLeft();
+                goToNextPage();
             } else if ((-diff > SWIPE_MIN_DISTANCE) && (Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY)) {
                 // Right swipe
-                onSwipeRight();
+                goToPreviousPage();
 
             }
             return false;

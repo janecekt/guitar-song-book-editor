@@ -80,6 +80,15 @@ public class PreferencesManager {
     @InjectResource(R.string.prefs_fileEncoding_key)
     private String fileEncodingKey;
 
+    @InjectResource(R.string.prefs_pagingAnimationEnabled_key)
+    private String pagingAnimationEnabledKey;
+
+    @InjectResource(R.string.prefs_pagingAnimationActiveAreaPercentage_key)
+    private String pagingAnimationActiveAreaPercentageKey;
+
+    @InjectResource(R.string.prefs_pagingAnimationMaxFps_key)
+    private String pagingAnimationMaxFpsKey;
+
 
     public boolean isChordsOn() {
         return sharedPreferences.getBoolean(chordsOnKey, false);
@@ -88,6 +97,18 @@ public class PreferencesManager {
 
     public int getFontSize() {
         return Integer.parseInt(sharedPreferences.getString(fontSizeKey, "0"));
+    }
+
+    public boolean isPagingAnimationEnabled() {
+        return sharedPreferences.getBoolean(pagingAnimationEnabledKey, false);
+    }
+
+    public int getPagingAnimationActiveAreaSizePercentage() {
+        return Integer.parseInt(sharedPreferences.getString(pagingAnimationActiveAreaPercentageKey, "10"));
+    }
+
+    public int getPagingAnimationMaxFps() {
+        return Integer.parseInt(sharedPreferences.getString(pagingAnimationMaxFpsKey, "60"));
     }
 
 

@@ -39,6 +39,13 @@
     <string name="prefs.lineSpacing.title">Line spacing</string>
     <string name="prefs.verseSpacing.title">Verse spacing</string>
 
+    <!-- Paging animation preferences -->
+    <string name="prefs.category.pagingAnimationSettings">Animated Paging Settings</string>
+
+    <string name="prefs.pagingAnimationEnabled.title">Animated paging On</string>
+    <string name="prefs.pagingAnimationActiveAreaPercentage.title">Active area %</string>
+    <string name="prefs.pagingAnimationMaxFps.title">Animation max FPS</string>
+
     <!-- Location preferences -->
     <string name="prefs.category.songBookFileSettings">Songbook File Settings</string>
 

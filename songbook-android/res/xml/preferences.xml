@@ -40,6 +40,24 @@
                             android:defaultValue="10" />
     </PreferenceCategory>
 
+
+    <PreferenceCategory android:title="@string/prefs.category.pagingAnimationSettings">
+        <CheckBoxPreference android:key="@string/prefs.pagingAnimationEnabled.key"
+                            android:title="@string/prefs.pagingAnimationEnabled.title"
+                            android:defaultValue="true" />
+
+        <EditTextPreference android:key="@string/prefs.pagingAnimationActiveAreaPercentage.key"
+                            android:title="@string/prefs.pagingAnimationActiveAreaPercentage.title"
+                            android:inputType="number"
+                            android:defaultValue="10" />
+
+        <EditTextPreference android:key="@string/prefs.pagingAnimationMaxFps.key"
+                            android:title="@string/prefs.pagingAnimationMaxFps.title"
+                            android:inputType="number"
+                            android:defaultValue="10" />
+    </PreferenceCategory>
+
+
     <PreferenceCategory android:title="@string/prefs.category.songBookFileSettings">
         <EditTextPreference android:key="@string/prefs.songBookLocation.key"
                             android:title="@string/prefs.songBookLocation.title"

@@ -31,6 +31,13 @@
     <string name="prefs.ordering.title">Řazení seznamu</string>
     <string name="prefs.orderingLocale.title">Locale pro řazení</string>
 
+    <!-- Paging animation preferences -->
+    <string name="prefs.category.pagingAnimationSettings">Nastavení animace stánkování</string>
+
+    <string name="prefs.pagingAnimationEnabled.title">Animované stránkování</string>
+    <string name="prefs.pagingAnimationActiveAreaPercentage.title">Aktivnní plocha %</string>
+    <string name="prefs.pagingAnimationMaxFps.title">Max FPS animací</string>
+
     <!-- Song display preferences -->
     <string name="prefs.category.songViewSettings">Nastavení náhledu písničky</string>
 
