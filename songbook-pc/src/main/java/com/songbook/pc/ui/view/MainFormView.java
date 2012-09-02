@@ -120,10 +120,9 @@ public class MainFormView extends JFrame {
         songSelectionTable.setRowSorter(new TableRowSorter<TableModel>(tableModel));
         songSelectionTable.getRowSorter().setSortKeys(Arrays.asList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
         bind2Way(songSelectionTable, presentationModel.getSongListPresentationModel().getSongListModel());
-        songSelectionTable.getSelectionModel().setSelectionInterval(0,0);
-
-
-
+        if (!presentationModel.getSongListPresentationModel().getSongListModel().isEmpty()) {
+            songSelectionTable.getSelectionModel().setSelectionInterval(0,0);
+        }
 
         // == DO LAYOUT ==
         initLayout();

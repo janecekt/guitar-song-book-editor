@@ -94,7 +94,9 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
         // Initialize contents
         songListPresentationModel.reloadFromDisk(Charset.forName(encodingModel.getValue()));
-        songListPresentationModel.getSongListModel().setSelectionIndex(0);
+        if (!songListPresentationModel.getSongListModel().isEmpty()) {
+            songListPresentationModel.getSongListModel().setSelectionIndex(0);
+        }
     }
 
 

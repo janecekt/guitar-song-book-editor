@@ -28,6 +28,11 @@ public class EditorPanePresentationModel {
     private final ValueHolder contentTypeModel = new ValueHolder();
     private final ValueHolder caretPositionModel = new ValueHolder();
 
+    public EditorPanePresentationModel() {
+        setHtmlText("");
+    }
+
+
     public ValueHolder getEditableModel() {
         return editableModel;
     }
