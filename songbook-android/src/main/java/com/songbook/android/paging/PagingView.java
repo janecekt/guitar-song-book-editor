@@ -144,14 +144,15 @@ public class PagingView extends GLSurfaceView {
 
 
     public boolean onDoubleTapEventOccurred(final MotionEvent event) {
-        if (event.getX() > leftRectX) {
-            final Bitmap current = captureCurrentScreenAsBitmap();
-            pagingModel.startFlipAnimation(current, PagingModel.Direction.RIGHT);
-            return true;
-        }
-        if (event.getX() < rightRectX) {
+        if (event.getX() <= leftRectX) {
             final Bitmap current = captureCurrentScreenAsBitmap();
             pagingModel.startFlipAnimation(current, PagingModel.Direction.LEFT);
+            pagingProvider.goToPreviousPage();
+            return true;
+        }
+        if (event.getX() >= rightRectX) {
+            final Bitmap current = captureCurrentScreenAsBitmap();
+            pagingModel.startFlipAnimation(current, PagingModel.Direction.RIGHT);
             pagingProvider.goToNextPage();
             return true;
         }
