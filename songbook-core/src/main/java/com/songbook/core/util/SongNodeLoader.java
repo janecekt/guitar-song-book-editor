@@ -20,7 +20,6 @@ package com.songbook.core.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,8 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import com.songbook.core.model.SongNode;
 import com.songbook.core.parser.Parser;
@@ -95,55 +92,36 @@ public class SongNodeLoader {
     }
 
 
-    public List<SongNode> loadSongNodesFromZip(InputStream zipStream, Charset encoding) throws ParserException {
+    public List<SongNode> loadSongNodesFromZip(InputStream zipStream, Charset encoding) {
         List<SongNode> songList = new ArrayList<SongNode>();
         HashMap<String,Integer> songIndexMap = null;
 
         // Load data from zip stream into SongList
-        ZipInputStream zipInputStream = null;
+        ZipInputStreamIterable zipIterable = new ZipInputStreamIterable(zipStream, "Songbook ZIP");
         try {
-            zipInputStream = new ZipInputStream(zipStream);
-            ZipEntry zipEntry;
-            byte[] buffer = new byte[1024];
-            while ( (zipEntry = zipInputStream.getNextEntry()) != null) {
-                // Read into stream
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                int count;
-                while ((count = zipInputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, count);
-                }
-
-                Reader reader = new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), encoding);
-                if (SONG_INDEX_FILE_NAME.equals(zipEntry.getName())) {
+            for (DataEntry entry : zipIterable) {
+                Reader reader = new InputStreamReader(new ByteArrayInputStream(entry.getData()), encoding);
+                if (SONG_INDEX_FILE_NAME.equals(entry.getName())) {
                     // Load song order file
                     songIndexMap = loadSongIndexMap(reader);
                 } else {
                     // Load and parse song
                     try {
                         SongNode songNode = parser.parse(reader);
-                        songNode.setSourceFile(new File(zipEntry.getName()));
+                        songNode.setSourceFile(new File(entry.getName()));
                         songList.add(songNode);
                     } catch (ParserException ex) {
-                        throw new RuntimeException("Failed to parse " + zipEntry.getName(), ex);
+                        throw new RuntimeException("Failed to parse " + entry.getName(), ex);
                     }
                 }
             }
-
-            // Set song list
-            enrichSongsWithIndex(songList, songIndexMap);
-            return songList;
-
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to open SongBook from ZIP", ex);
         } finally {
-            if (zipInputStream != null) {
-                try {
-                    zipInputStream.close();
-                } catch (IOException ex) {
-                    logger.error("Failed to close ZipStream !", ex);
-                }
-            }
+            zipIterable.close();
         }
+
+        // Set song list
+        enrichSongsWithIndex(songList, songIndexMap);
+        return songList;
     }
 
 

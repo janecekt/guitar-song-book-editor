@@ -22,106 +22,50 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ReaderIterable implements Iterable<String> {
-    private static Logger logger = LoggerFactory.getLogger(SongNodeLoader.class);
-    private StringIterator iterator;
-    private boolean iteratorReturned = false;
-
+public class ReaderIterable extends GenericIterable<String> {
+    private static Logger logger = LoggerFactory.getLogger(ReaderIterable.class);
+    private final BufferedReader reader;
+    private final String description;
 
     public ReaderIterable(InputStream inStream, Charset encoding, String description) {
-        this(new BufferedReader(new InputStreamReader(inStream, encoding)), description);
+        this.reader = new BufferedReader(new InputStreamReader(inStream, encoding));
+        this.description = description;
     }
 
 
     public ReaderIterable(BufferedReader reader, String description) {
-        iterator = new StringIterator(reader, description);
+        this.reader = reader;
+        this.description = description;
     }
 
 
     @Override
-    public Iterator<String> iterator() {
-        if (!iteratorReturned) {
-            iteratorReturned = true;
-            return iterator;
-        } else {
-            throw new UnsupportedOperationException("Iterator can be returned only once !");
+    protected String readNextEntry() {
+        try {
+            String nextLine = reader.readLine();
+            if (nextLine == null) {
+                reader.close();
+            }
+            return nextLine;
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read " + description, ex);
         }
     }
 
 
     public void close() {
-        iterator.close();
-    }
-
-
-    private static class StringIterator implements Iterator<String> {
-        private final BufferedReader reader;
-        private String nextLine;
-        private String description;
-
-
-        public StringIterator(BufferedReader reader, String description) {
-            this.reader = reader;
-            this.description = description;
-            readNextLine();
-        }
-
-
-        private void readNextLine() {
-            try {
-                this.nextLine = reader.readLine();
-                if (nextLine == null) {
-                    reader.close();
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException("Failed to read " + description, ex);
+        try {
+            if (reader != null) {
+                reader.close();
             }
-
+        } catch (IOException ex) {
+            logger.error("Failed to close " + description, ex);
         }
 
-
-        @Override
-        public boolean hasNext() {
-            return (nextLine != null);
-        }
-
-
-        @Override
-        public String next() {
-            if (hasNext()) {
-                // Read next line
-                String result = nextLine;
-                readNextLine();
-                return result;
-            } else {
-                // No next elements - throw exception as per spec !
-                throw new NoSuchElementException("There are no more lines !");
-            }
-
-        }
-
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Remove is not supported !");
-        }
-
-
-        public void close() {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Failed to close " + description, ex);
-            }
-        }
     }
 }

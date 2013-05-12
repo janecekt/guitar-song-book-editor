@@ -30,6 +30,7 @@
                                 </goals>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
+                                    <classifier>release</classifier>
                                     <finalName>${artifactId}-latest</finalName>
                                     <descriptorRefs>
                                         <descriptorRef>jar-with-dependencies</descriptorRef>
