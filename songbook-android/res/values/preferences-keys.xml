@@ -14,8 +14,10 @@
     <string name="prefs.pagingAnimationActiveAreaPercentage.key">prefs.pagingAnimationActiveAreaPercentage.key</string>
     <string name="prefs.pagingAnimationMaxFps.key">pref.animationMaxFps.key</string>
 
+    <string name="prefs.songBookUrl.key">prefs.songBookUrl</string>
     <string name="prefs.songBookLocation.key">prefs.songBookLocation</string>
     <string name="prefs.fileEncoding.key">prefs.fileEncoding</string>
     <string name="prefs.downloadSongbook.key">prefs.downloadSongbook</string>
+    <string name="prefs.applicationApkUrl.key">prefs.applicationApkUrl</string>
     <string name="prefs.updateApk.key">prefs.updateApk</string>
 </resources>

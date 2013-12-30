@@ -71,7 +71,7 @@ public class EventAppender<E> extends AppenderBase<E> {
     public void start() {
         // Register instance
         String name = getName();
-        if (name != null && !name.isEmpty()) {
+        if (name != null && !"".equals(name)) {
             instances.put(name, this);
         }
         super.start();

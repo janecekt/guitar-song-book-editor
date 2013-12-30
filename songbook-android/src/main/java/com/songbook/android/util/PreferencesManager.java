@@ -53,75 +53,122 @@ public class PreferencesManager {
     @InjectResource(R.string.prefs_chordsOn_key)
     private String chordsOnKey;
 
+    @InjectResource(R.string.prefs_chordsOn_default)
+    private String chordsOnDefault;
+
     @InjectResource(R.string.prefs_fontSize_key)
     private String fontSizeKey;
+
+    @InjectResource(R.string.prefs_fontSize_default)
+    private String fontSizeDefault;
 
     @InjectResource(R.string.prefs_searchBoxEnabled_key)
     private String searchBoxEnabledKey;
 
+    @InjectResource(R.string.prefs_searchBoxEnabled_default)
+    private String searchBoxEnabledDefault;
+
     @InjectResource(R.string.prefs_groupingEnabled_key)
     private String groupingEnabledKey;
+
+    @InjectResource(R.string.prefs_groupingEnabled_default)
+    private String groupingEnabledDefault;
 
     @InjectResource(R.string.prefs_lineSpacing_key)
     private String lineSpacingKey;
 
+    @InjectResource(R.string.prefs_lineSpacing_default)
+    private String lineSpacingDefault;
+
     @InjectResource(R.string.prefs_ordering_key)
     private String orderingKey;
+
+    @InjectResource(R.string.prefs_ordering_default)
+    private String orderingDefault;
 
     @InjectResource(R.string.prefs_orderingLocale_key)
     private String orderingLocaleKey;
 
     @InjectResource(R.string.prefs_verseSpacing_key)
     private String verseSpacingKey;
-    
+
+    @InjectResource(R.string.prefs_verseSpacing_default)
+    private String verseSpacingDefault;
+
+    @InjectResource(R.string.prefs_songBookUrl_key)
+    private String songBookUrlKey;
+
+    @InjectResource(R.string.prefs_songBookUrl_default)
+    private String songBookUrlDefault;
+
     @InjectResource(R.string.prefs_songBookLocation_key)
     private String songBookLocationKey;
-    
+
+    @InjectResource(R.string.prefs_songBookLocation_default)
+    private String songBookLocationDefault;
+
     @InjectResource(R.string.prefs_fileEncoding_key)
     private String fileEncodingKey;
+
+    @InjectResource(R.string.prefs_fileEncoding_default)
+    private String fileEncodingDefault;
 
     @InjectResource(R.string.prefs_pagingAnimationEnabled_key)
     private String pagingAnimationEnabledKey;
 
+    @InjectResource(R.string.prefs_pagingAnimationEnabled_default)
+    private String pagingAnimationEnabledDefault;
+
     @InjectResource(R.string.prefs_pagingAnimationActiveAreaPercentage_key)
     private String pagingAnimationActiveAreaPercentageKey;
+
+    @InjectResource(R.string.prefs_pagingAnimationActiveAreaPercentage_default)
+    private String pagingAnimationActiveAreaPercentageDefault;
 
     @InjectResource(R.string.prefs_pagingAnimationMaxFps_key)
     private String pagingAnimationMaxFpsKey;
 
+    @InjectResource(R.string.prefs_pagingAnimationMaxFps_default)
+    private String pagingAnimationMaxFpsDefault;
+
+    @InjectResource(R.string.prefs_applicationApkUrl_key)
+    private String applicationApkUrlKey;
+
+    @InjectResource(R.string.prefs_applicationApkUrl_default)
+    private String applicationApkUrlDefault;
 
     public boolean isChordsOn() {
-        return sharedPreferences.getBoolean(chordsOnKey, false);
+        return sharedPreferences.getBoolean(chordsOnKey, Boolean.parseBoolean(chordsOnDefault));
     }
 
 
     public int getFontSize() {
-        return Integer.parseInt(sharedPreferences.getString(fontSizeKey, "0"));
+        return Integer.parseInt(sharedPreferences.getString(fontSizeKey, fontSizeDefault));
     }
 
     public boolean isPagingAnimationEnabled() {
-        return sharedPreferences.getBoolean(pagingAnimationEnabledKey, false);
+        return sharedPreferences.getBoolean(pagingAnimationEnabledKey, Boolean.parseBoolean(pagingAnimationEnabledDefault));
     }
 
     public int getPagingAnimationActiveAreaSizePercentage() {
-        return Integer.parseInt(sharedPreferences.getString(pagingAnimationActiveAreaPercentageKey, "10"));
+        return Integer.parseInt(sharedPreferences.getString(pagingAnimationActiveAreaPercentageKey, pagingAnimationActiveAreaPercentageDefault));
     }
 
     public int getPagingAnimationMaxFps() {
-        return Integer.parseInt(sharedPreferences.getString(pagingAnimationMaxFpsKey, "60"));
+        return Integer.parseInt(sharedPreferences.getString(pagingAnimationMaxFpsKey, pagingAnimationMaxFpsDefault));
     }
 
 
     public boolean isGroupingEnabled() {
-        return sharedPreferences.getBoolean(groupingEnabledKey, false);
+        return sharedPreferences.getBoolean(groupingEnabledKey, Boolean.parseBoolean(groupingEnabledDefault));
     }
 
     public boolean isSearchBoxEnabled() {
-        return sharedPreferences.getBoolean(searchBoxEnabledKey, false);
+        return sharedPreferences.getBoolean(searchBoxEnabledKey, Boolean.parseBoolean(searchBoxEnabledDefault));
     }
 
     public int getLineSpacing() {
-        return Integer.parseInt(sharedPreferences.getString(lineSpacingKey, "0"));
+        return Integer.parseInt(sharedPreferences.getString(lineSpacingKey, lineSpacingDefault));
     }
 
 
@@ -142,16 +189,29 @@ public class PreferencesManager {
 
 
     public int getVerseSpacing() {
-        return Integer.parseInt(sharedPreferences.getString(verseSpacingKey, "0"));
+        return Integer.parseInt(sharedPreferences.getString(verseSpacingKey, verseSpacingDefault));
     }
-    
+
+
+    public String getSongBookUrl() {
+        return sharedPreferences.getString(songBookUrlKey, songBookUrlDefault);
+    }
+
     
     public String getSongBookLocation() {
-        return sharedPreferences.getString(songBookLocationKey, "/sdcard/songbook");
+        return sharedPreferences.getString(songBookLocationKey, songBookLocationDefault);
     }
-    
+
+    public String getSongBookLocationDefault() {
+        return songBookLocationDefault;
+    }
+
     public Charset getFileEncoding() {
-        return Charset.forName(sharedPreferences.getString(fileEncodingKey, "CP1250"));
+        return Charset.forName(sharedPreferences.getString(fileEncodingKey, fileEncodingDefault));
+    }
+
+    public String getApplicationApkUrl() {
+        return sharedPreferences.getString(applicationApkUrlKey, applicationApkUrlDefault);
     }
 
 

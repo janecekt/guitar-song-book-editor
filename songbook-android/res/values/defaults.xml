@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="prefs.groupingEnabled.default">true</string>
+    <string name="prefs.searchBoxEnabled.default">true</string>
+    <string name="prefs.ordering.default">BY_TITLE</string>
+
+    <string name="prefs.chordsOn.default">true</string>
+    <string name="prefs.fontSize.default">10</string>
+    <string name="prefs.lineSpacing.default">10</string>
+    <string name="prefs.verseSpacing.default">10</string>
+
+    <string name="prefs.pagingAnimationEnabled.default">true</string>
+    <string name="prefs.pagingAnimationActiveAreaPercentage.default">10</string>
+    <string name="prefs.pagingAnimationMaxFps.default">10</string>
+
+    <string name="prefs.songBookUrl.default">https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-latest.zip?1</string>
+    <string name="prefs.songBookLocation.default">internal://songbook-latest.zip</string>
+    <string name="prefs.fileEncoding.default">CP1250</string>
+
+    <string name="prefs.applicationApkUrl.default">https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-android-latest.apk?1</string>
+</resources>

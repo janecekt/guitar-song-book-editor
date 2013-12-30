@@ -9,9 +9,9 @@
     <!-- Messages -->
     <string name="prefs.message.locationDoesNotExit">Cesta %1$s neexistuje.</string>
     <string name="prefs.message.fileExistsButDoesNotEndWithZip">Soubor %1$s existuje ale nemá koncovku ZIP.</string>
-    <string name="prefs.message.downloadingStarted">Stahování ZAHÁJENO.</string>
+    <string name="prefs.message.downloadingStarted">Stahování ZAHÁJENO:\nZ %1$s\nDo %2$s.</string>
     <string name="prefs.message.downloadingCompleted">Stahovaní DOKONČENO.</string>
-    <string name="prefs.message.downloadingFailed">Downloading SELHALO - %1$s.</string>
+    <string name="prefs.message.downloadingFailed">Stahovaní SELHALO - %1$s.</string>
 
     <!-- Menus -->
     <string name="menu.preferences">Nastavení</string>
@@ -32,10 +32,10 @@
     <string name="prefs.orderingLocale.title">Locale pro řazení</string>
 
     <!-- Paging animation preferences -->
-    <string name="prefs.category.pagingAnimationSettings">Nastavení animace stánkování</string>
+    <string name="prefs.category.pagingAnimationSettings">Nastavení animace stránkování</string>
 
     <string name="prefs.pagingAnimationEnabled.title">Animované stránkování</string>
-    <string name="prefs.pagingAnimationActiveAreaPercentage.title">Aktivnní plocha %</string>
+    <string name="prefs.pagingAnimationActiveAreaPercentage.title">Aktivní plocha %</string>
     <string name="prefs.pagingAnimationMaxFps.title">Max FPS animací</string>
 
     <!-- Song display preferences -->
@@ -44,19 +44,21 @@
     <string name="prefs.chordsOn.title">Zobrazit akordy</string>
     <string name="prefs.fontSize.title">Velikost písma</string>
     <string name="prefs.lineSpacing.title">Mezera mezi řádky</string>
-    <string name="prefs.verseSpacing.title">Mezara mezi slokami</string>
+    <string name="prefs.verseSpacing.title">Mezera mezi slokami</string>
 
     <!-- Location preferences -->
     <string name="prefs.category.songBookFileSettings">Nastavení zpěvníku</string>
 
+    <string name="prefs.songBookUrl.title">URL zpěvníku</string>
     <string name="prefs.songBookLocation.title">Cesta ke zpěvníku</string>
     <string name="prefs.fileEncoding.title">Kódování zpěvníku</string>
-    <string name="prefs.downloadSongbook.title">Stáhout nejnovějsí zpěvník</string>
+    <string name="prefs.downloadSongbook.title">Stáhout nejnovější zpěvník</string>
     <string name="prefs.downloadSongbook.summary">Stiskněte a podržte pro zahájení stahování</string>
 
     <!-- Other Settings -->
     <string name="prefs.category.otherSettings">Ostatní nastavení</string>
 
+    <string name="prefs.applicationApkUrl.title">URL aplikace</string>
     <string name="prefs.updateApk.title">Aktualizovat aplikaci</string>
     <string name="prefs.updateApk.summary">Stiskněte a podržte pro zahájení aktualizace</string>
 

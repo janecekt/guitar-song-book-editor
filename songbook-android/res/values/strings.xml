@@ -9,7 +9,8 @@
     <!-- Messages -->
     <string name="prefs.message.locationDoesNotExit">Location %1$s does not exist.</string>
     <string name="prefs.message.fileExistsButDoesNotEndWithZip">File %1$s exists but does not end with ZIP.</string>
-    <string name="prefs.message.downloadingStarted">Downloading STARTED.</string>
+    <string name="prefs.message.downloadingStarted">Downloading STARTED:\nFrom %1$s\nTo %2$s.</string>
+
     <string name="prefs.message.downloadingCompleted">Downloading COMPLETED.</string>
     <string name="prefs.message.downloadingFailed">Downloading FAILED - %1$s.</string>
 
@@ -49,6 +50,7 @@
     <!-- Location preferences -->
     <string name="prefs.category.songBookFileSettings">Songbook File Settings</string>
 
+    <string name="prefs.songBookUrl.title">Song book URL</string>
     <string name="prefs.songBookLocation.title">Song book location</string>
     <string name="prefs.fileEncoding.title">File encoding</string>
     <string name="prefs.downloadSongbook.title">Download latest songbook</string>
@@ -57,6 +59,7 @@
     <!-- Other Settings -->
     <string name="prefs.category.otherSettings">Other Settings</string>
 
+    <string name="prefs.applicationApkUrl.title">Application APK URL</string>
     <string name="prefs.updateApk.title">Update application</string>
     <string name="prefs.updateApk.summary">Press and hold to start update</string>
 

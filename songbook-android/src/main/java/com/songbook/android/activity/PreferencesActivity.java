@@ -31,7 +31,6 @@ import java.util.Locale;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.view.View;
@@ -39,13 +38,22 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.google.inject.Inject;
 import com.songbook.android.R;
+import com.songbook.android.event.OnSongBookDataChanged;
+import com.songbook.android.util.EventBroker;
 import com.songbook.android.util.PreferencesManager;
 import com.songbook.core.util.FileIO;
 import roboguice.activity.RoboPreferenceActivity;
 import roboguice.inject.InjectResource;
 
 public class PreferencesActivity extends RoboPreferenceActivity {
+    @Inject
+    PreferencesManager preferencesManager;
+
+    @Inject
+    EventBroker eventBroker;
+
     @InjectResource(R.string.prefs_orderingLocale_key)
     private String orderingLocaleKey;
 
@@ -162,13 +170,23 @@ public class PreferencesActivity extends RoboPreferenceActivity {
 
 
     public void onDownloadSongBook() {
-        Toast.makeText(PreferencesActivity.this,
-                downloadingStartedMessage,
-                Toast.LENGTH_LONG).show();
-
         try {
-            URL url = new URL("http://guitar-song-book-editor.googlecode.com/files/songbook-latest.zip");
-            FileOutputStream outputStream = openFileOutput("songbook-latest.zip", MODE_WORLD_READABLE);
+            // Change songbook location to default (if not set to internal)
+            String songBookLocation = (!preferencesManager.getSongBookLocation().startsWith("internal://"))
+                    ? preferencesManager.getSongBookLocationDefault()
+                    : preferencesManager.getSongBookLocation();
+
+            String actualSongBookLocation = songBookLocation.replace("internal://", "");
+
+            // Display toaster popup
+            Toast.makeText(PreferencesActivity.this,
+                    String.format(downloadingStartedMessage, preferencesManager.getSongBookUrl(), songBookLocation),
+                    Toast.LENGTH_LONG).show();
+
+            // TODO: Do this asynchronously
+            // Start download
+            URL url = new URL(preferencesManager.getSongBookUrl());
+            FileOutputStream outputStream = openFileOutput(actualSongBookLocation, MODE_WORLD_READABLE);
 
             // Create InputStream from connection
             URLConnection urlConnection = url.openConnection();
@@ -177,14 +195,13 @@ public class PreferencesActivity extends RoboPreferenceActivity {
             // Append input stream to output stream
             FileIO.appendInputStreamToOutputStream(inputStream, outputStream);
 
-            // Change the preference
-            EditTextPreference editTextPreference = (EditTextPreference) findPreference(songBookLocationKey);
-            editTextPreference.setText("internal://songbook-latest.zip");
-
+            // Display toaster popup
             Toast.makeText(PreferencesActivity.this,
                     downloadingCompletedMessage,
                     Toast.LENGTH_LONG).show();
 
+            // Publish event
+            eventBroker.publish(new OnSongBookDataChanged());
         } catch (IOException ex) {
             Toast.makeText(PreferencesActivity.this,
                     String.format(downloadingFailedMessage, ex.getMessage()),
@@ -195,11 +212,11 @@ public class PreferencesActivity extends RoboPreferenceActivity {
 
     public void onUpdateApk() {
         Toast.makeText(PreferencesActivity.this,
-                downloadingStartedMessage,
+                String.format(downloadingStartedMessage, preferencesManager.getApplicationApkUrl(), "internal://songbook-android-latest.apk"),
                 Toast.LENGTH_LONG).show();
 
         try {
-            URL url = new URL("http://guitar-song-book-editor.googlecode.com/files/songbook-android-latest.apk");
+            URL url = new URL(preferencesManager.getApplicationApkUrl());
             FileOutputStream outputStream = openFileOutput("songbook-android-latest.apk", MODE_WORLD_READABLE);
 
             // Create InputStream from connection

@@ -7,5 +7,5 @@
     
     <item android:id="@+id/itemTranspose"
           android:title="@string/menu.transpose"
-          android:icon="@android:drawable/ic_menu_manage"/>
+          android:icon="@android:drawable/ic_menu_edit"/>
 </menu>

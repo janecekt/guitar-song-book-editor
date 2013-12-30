@@ -4,80 +4,112 @@
     <PreferenceCategory android:title="@string/prefs.category.songListSettings">
         <CheckBoxPreference android:key="@string/prefs.groupingEnabled.key"
                             android:title="@string/prefs.groupingEnabled.title"
-                            android:defaultValue="true" />
+                            android:defaultValue="@string/prefs.groupingEnabled.default"/>
 
         <CheckBoxPreference android:key="@string/prefs.searchBoxEnabled.key"
                             android:title="@string/prefs.searchBoxEnabled.title"
-                            android:defaultValue="true" />
+                            android:defaultValue="@string/prefs.searchBoxEnabled.default"/>
 
-        <ListPreference android:key="@string/prefs.ordering.key"
-                        android:title="@string/prefs.ordering.title"
-                        android:entries="@array/prefsOrderingEntries"
-                        android:defaultValue="BY_TITLE" />
+        <com.songbook.android.framework.SummaryListPreference
+                android:key="@string/prefs.ordering.key"
+                android:title="@string/prefs.ordering.title"
+                android:entries="@array/prefsOrderingEntries"
+                android:defaultValue="@string/prefs.ordering.default"
+                android:summary="%s" />
 
-        <ListPreference android:key="@string/prefs.orderingLocale.key"
-                        android:title="@string/prefs.orderingLocale.title" />
+        <com.songbook.android.framework.SummaryListPreference
+                android:key="@string/prefs.orderingLocale.key"
+                android:title="@string/prefs.orderingLocale.title"
+                android:summary="%s"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/prefs.category.songViewSettings">
         <CheckBoxPreference android:key="@string/prefs.chordsOn.key"
                             android:title="@string/prefs.chordsOn.title"
-                            android:defaultValue="true" />
+                            android:defaultValue="@string/prefs.chordsOn.default"/>
 
-        <EditTextPreference android:key="@string/prefs.fontSize.key"
-                            android:title="@string/prefs.fontSize.title"
-                            android:inputType="number"
-                            android:defaultValue="10" />
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.fontSize.key"
+                android:title="@string/prefs.fontSize.title"
+                android:summary="%spt"
+                android:inputType="number"
+                android:defaultValue="@string/prefs.fontSize.default"/>
 
-        <EditTextPreference android:key="@string/prefs.lineSpacing.key"
-                            android:title="@string/prefs.lineSpacing.title"
-                            android:inputType="number"
-                            android:defaultValue="10" />
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.lineSpacing.key"
+                android:title="@string/prefs.lineSpacing.title"
+                android:summary="%spx"
+                android:inputType="number"
+                android:defaultValue="@string/prefs.lineSpacing.default"/>
 
-        <EditTextPreference android:key="@string/prefs.verseSpacing.key"
-                            android:title="@string/prefs.verseSpacing.title"
-                            android:inputType="number"
-                            android:defaultValue="10" />
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.verseSpacing.key"
+                android:title="@string/prefs.verseSpacing.title"
+                android:summary="%spx"
+                android:inputType="number"
+                android:defaultValue="@string/prefs.verseSpacing.default"/>
     </PreferenceCategory>
 
 
     <PreferenceCategory android:title="@string/prefs.category.pagingAnimationSettings">
         <CheckBoxPreference android:key="@string/prefs.pagingAnimationEnabled.key"
                             android:title="@string/prefs.pagingAnimationEnabled.title"
-                            android:defaultValue="true" />
+                            android:defaultValue="@string/prefs.pagingAnimationEnabled.default"/>
 
-        <EditTextPreference android:key="@string/prefs.pagingAnimationActiveAreaPercentage.key"
-                            android:title="@string/prefs.pagingAnimationActiveAreaPercentage.title"
-                            android:inputType="number"
-                            android:defaultValue="10" />
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.pagingAnimationActiveAreaPercentage.key"
+                android:title="@string/prefs.pagingAnimationActiveAreaPercentage.title"
+                android:summary="%1$s%%"
+                android:inputType="number"
+                android:defaultValue="@string/prefs.pagingAnimationActiveAreaPercentage.default"/>
 
-        <EditTextPreference android:key="@string/prefs.pagingAnimationMaxFps.key"
-                            android:title="@string/prefs.pagingAnimationMaxFps.title"
-                            android:inputType="number"
-                            android:defaultValue="10" />
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.pagingAnimationMaxFps.key"
+                android:title="@string/prefs.pagingAnimationMaxFps.title"
+                android:summary="%sfps"
+                android:inputType="number"
+                android:defaultValue="@string/prefs.pagingAnimationMaxFps.default"/>
     </PreferenceCategory>
 
 
     <PreferenceCategory android:title="@string/prefs.category.songBookFileSettings">
-        <EditTextPreference android:key="@string/prefs.songBookLocation.key"
-                            android:title="@string/prefs.songBookLocation.title"
-                            android:inputType="text"
-                            android:defaultValue="/songbook" />
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.songBookUrl.key"
+                android:title="@string/prefs.songBookUrl.title"
+                android:summary="%s"
+                android:inputType="text"
+                android:defaultValue="@string/prefs.songBookUrl.default"/>
 
-        <ListPreference android:key="@string/prefs.fileEncoding.key"
-                        android:title="@string/prefs.fileEncoding.title"
-                        android:entries="@array/prefsFileEncodingEntries"
-                        android:entryValues="@array/prefsFileEncodingEntries"
-                        android:defaultValue="CP1250" />
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.songBookLocation.key"
+                android:title="@string/prefs.songBookLocation.title"
+                android:summary="%s"
+                android:inputType="text"
+                android:defaultValue="@string/prefs.songBookLocation.default"/>
+
+        <com.songbook.android.framework.SummaryListPreference
+                android:key="@string/prefs.fileEncoding.key"
+                android:title="@string/prefs.fileEncoding.title"
+                android:entries="@array/prefsFileEncodingEntries"
+                android:entryValues="@array/prefsFileEncodingEntries"
+                android:defaultValue="@string/prefs.fileEncoding.default"
+                android:summary="%s" />
 
         <Preference android:key="@string/prefs.downloadSongbook.key"
                     android:title="@string/prefs.downloadSongbook.title"
-                    android:summary="@string/prefs.downloadSongbook.summary"  />
+                    android:summary="@string/prefs.downloadSongbook.summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/prefs.category.otherSettings">
+        <com.songbook.android.framework.ResetableEditTextPreference
+                android:key="@string/prefs.applicationApkUrl.key"
+                android:title="@string/prefs.applicationApkUrl.title"
+                android:summary="%s"
+                android:inputType="text"
+                android:defaultValue="@string/prefs.applicationApkUrl.default"/>
+
         <Preference android:key="@string/prefs.updateApk.key"
                     android:title="@string/prefs.updateApk.title"
-                    android:summary="@string/prefs.updateApk.summary"  />
+                    android:summary="@string/prefs.updateApk.summary"/>
     </PreferenceCategory>
 </PreferenceScreen>

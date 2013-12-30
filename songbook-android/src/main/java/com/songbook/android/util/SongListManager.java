@@ -34,6 +34,7 @@ import java.util.Map;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.google.inject.Inject;
+import com.songbook.android.event.OnSongBookDataChanged;
 import com.songbook.core.comparator.SongNodeIndexComparator;
 import com.songbook.core.comparator.SongNodeSubTitleComparator;
 import com.songbook.core.comparator.SongNodeTitleComparator;
@@ -44,6 +45,8 @@ public class SongListManager {
     public enum Status { LOCATION_DOES_NOT_EXIST_OR_IS_INVALID, LOADED, LOADING }
 
     private final Context context;
+
+    private final EventBroker eventBroker;
     
     private final PreferencesManager preferencesManager;
 
@@ -58,9 +61,6 @@ public class SongListManager {
     private String transposeMapFileName;
     private final Map<String,Integer> transposeMap = new HashMap<String, Integer>();
 
-
-
-   
     @SuppressWarnings("FieldCanBeLocal")
     private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -76,14 +76,24 @@ public class SongListManager {
             }
         }
     };
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private EventBroker.EventListener<OnSongBookDataChanged> songBookDataChangedListener = new EventBroker.EventListener<OnSongBookDataChanged>() {
+        @Override
+        public void onEvent(OnSongBookDataChanged event) {
+            initialize();
+        }
+    };
     
 
     @Inject
-    public SongListManager(Context context, PreferencesManager preferencesManager, SongNodeLoader songNodeLoader) {
+    public SongListManager(Context context, EventBroker eventBroker, PreferencesManager preferencesManager, SongNodeLoader songNodeLoader) {
         this.context = context;
+        this.eventBroker = eventBroker;
         this.preferencesManager = preferencesManager;
         this.songNodeLoader = songNodeLoader;
         preferencesManager.getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
+        eventBroker.subscribe(OnSongBookDataChanged.class, songBookDataChangedListener);
         initialize();
     }
     
