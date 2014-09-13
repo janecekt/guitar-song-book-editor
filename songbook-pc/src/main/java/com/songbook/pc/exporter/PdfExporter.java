@@ -18,7 +18,6 @@
 package com.songbook.pc.exporter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,13 +34,20 @@ import com.lowagie.text.Chapter;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.codec.PngImage;
+import com.lowagie.text.pdf.draw.LineSeparator;
 import com.songbook.core.comparator.SongNodeIndexComparator;
 import com.songbook.core.model.ChordNode;
 import com.songbook.core.model.LineNode;
@@ -141,7 +147,7 @@ public class PdfExporter implements Exporter {
     }
 
 
-    private PageStats generatePDF(List<SongNode> songList, File outputFile) throws FileNotFoundException, DocumentException {
+    private PageStats generatePDF(List<SongNode> songList, File outputFile) throws IOException, DocumentException {
         logger.info("Starting export to PDF file {}.", outputFile.getAbsolutePath());
 
         // Initialize Writer
@@ -156,6 +162,15 @@ public class PdfExporter implements Exporter {
         document.setMarginMirroring(true);
 
         document.open();
+
+        // Add QR codes
+        Element qrCodeSection = buildQrCodeSection();
+        document.add(qrCodeSection);
+
+        // Line separator
+        document.add(verseSpacing);
+        document.add(new LineSeparator());
+        document.add(verseSpacing);
 
         // Build TOC
         Chunk tocTitle = new Chunk("SONG BOOK - TABLE OF CONTENTS", songTitleFont);
@@ -242,6 +257,44 @@ public class PdfExporter implements Exporter {
         } catch (Exception ex) {
             logger.warn("Failed to open PDF !", ex);
         }
+    }
+
+
+    private Element buildQrCodeSection() throws IOException, DocumentException {
+        // Load images
+        Image qrApkImage = PngImage.getImage(PdfExporter.class.getResourceAsStream("/export/qr/songbook_apk_qr.png"));
+        Image qrPdfImage = PngImage.getImage(PdfExporter.class.getResourceAsStream("/export/qr/songbook_pdf_qr.png"));
+
+        PdfPCell cell = new PdfPCell((Phrase)null);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setVerticalAlignment(PdfPCell.ALIGN_CENTER);
+        cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.setWidths(new float[]{1,2,1});
+
+        cell.setImage(qrApkImage);
+        table.addCell(cell);
+        cell.setImage(null);
+
+        table.addCell(cell);
+
+        cell.setImage(qrPdfImage);
+        table.addCell(cell);
+        cell.setImage(null);
+
+        cell.setPhrase(new Phrase("APP"));
+        table.addCell(cell);
+        cell.setPhrase(null);
+
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("PDF"));
+        table.addCell(cell);
+        cell.setPhrase(null);
+
+        return table;
     }
 
 
