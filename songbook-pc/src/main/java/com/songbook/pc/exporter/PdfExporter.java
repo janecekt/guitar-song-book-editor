@@ -272,7 +272,7 @@ public class PdfExporter implements Exporter {
 
         PdfPTable table = new PdfPTable(3);
         table.setWidthPercentage(100);
-        table.setWidths(new float[]{1,2,1});
+        table.setWidths(new float[]{1,4,1});
 
         cell.setImage(qrApkImage);
         table.addCell(cell);
