@@ -129,7 +129,8 @@ public class PdfExporter implements Exporter {
             PageStats pageStats = generatePDF(orderedList, outputFile);
 
             // Reorder songs so that 2-page song always starts on even page number
-            List<SongNode> reorderedList = reorderList(orderedList, pageStats);
+            List<SongNode> reorderedList = orderedList;
+                    //reorderList(orderedList, pageStats);
 
             // Generate PDF - pass 2
             generatePDF(reorderedList, outputFile);
@@ -185,6 +186,10 @@ public class PdfExporter implements Exporter {
         }
         document.newPage();
         pageStats.setSectionLength("TOC", pageStats.getCurrentPage() - 1);
+
+        //document.add(buildChapter(songList.get(0), 0));
+        document.add(new Paragraph("."));
+        document.newPage();
 
         // Build document
         for (int i = 0; i < songList.size(); i++) {
