@@ -20,6 +20,7 @@
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
+                <version>3.5.3</version>
                 <configuration>
                     <!-- Default locations -->
                     <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>

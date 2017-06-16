@@ -13,9 +13,9 @@
     <string name="prefs.pagingAnimationActiveAreaPercentage.default">10</string>
     <string name="prefs.pagingAnimationMaxFps.default">10</string>
 
-    <string name="prefs.songBookUrl.default">https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-latest.zip?1</string>
+    <string name="prefs.songBookUrl.default">https://github.com/janecekt/guitar-song-book-editor-songs/releases/download/latest/songbook.zip?1</string>
     <string name="prefs.songBookLocation.default">internal://songbook-latest.zip</string>
     <string name="prefs.fileEncoding.default">CP1250</string>
 
-    <string name="prefs.applicationApkUrl.default">https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-android-latest.apk?1</string>
+    <string name="prefs.applicationApkUrl.default">https://github.com/janecekt/guitar-song-book-editor-songs/releases/download/latest/songbook-android.apk?1</string>
 </resources>

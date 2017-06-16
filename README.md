@@ -33,10 +33,10 @@ When I [E]find myself in [H]times of trouble<br>
 # Downloads #
 | **Filename** | **Description** |
 |:-------------|:----------------|
-| [songbook-android-latest.apk](https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-android-latest.apk?1) | Songbook viewer for Android |
-| [songbook-pc-latest.jar](https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-pc-latest.jar?1) | Songbook viewer and editor for PC |
-| [songbook-latest.zip](https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-latest.zip?1) | Songbook in zip format. |
-| [songbook-latest.pdf](https://googledrive.com/host/0BznOrrT91QSMOUxSUXBlN2YxRXc/songbook-latest.pdf?1) | Songbook in PDF format (optimized for 2-sided printing) |
+| [songbook-android.apk](https://github.com/janecekt/guitar-song-book-editor/releases/download/latest/songbook-android.apk?1) | Songbook viewer for Android |
+| [songbook-pc.jar](https://github.com/janecekt/guitar-song-book-editor/releases/download/latest/songbook-pc.jar?1) | Songbook viewer and editor for PC |
+| [songbook.zip](https://github.com/janecekt/guitar-song-book-editor-songs/releases/download/latest/songbook.zip?1) | Songbook in zip format. |
+| [songbook.pdf](https://github.com/janecekt/guitar-song-book-editor-songs/releases/download/latest/songbook.pdf?1) | Songbook in PDF format (optimized for 2-sided printing) |
 
 
 # Licence #
