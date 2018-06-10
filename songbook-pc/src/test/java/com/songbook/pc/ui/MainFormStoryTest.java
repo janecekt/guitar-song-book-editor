@@ -17,8 +17,6 @@
  */
 package com.songbook.pc.ui;
 
-import java.io.IOException;
-
 import com.songbook.core.util.FileIO;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +33,7 @@ public class MainFormStoryTest extends MainFormSteps {
 
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         // Delete directory
         FileIO.deleteDirectory(TEST_BASEDIR);
     }
@@ -225,5 +223,17 @@ public class MainFormStoryTest extends MainFormSteps {
         thenSongSelectedIs(SongData.SONG1);
 
         whenExportToPdfPressed();
+    }
+
+    @Test
+    public void exportToJSONScenario() throws Exception {
+        givenSong("song1.txt", SongData.SONG1);
+        givenSong("song2.txt", SongData.SONG2);
+
+        whenApplicationStarted();
+        thenSongDisplayedIs(SongData.SONG1, DisplayMode.HTML);
+        thenSongSelectedIs(SongData.SONG1);
+
+        whenExportToJsonPressed();
     }
 }

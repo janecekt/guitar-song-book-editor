@@ -27,6 +27,7 @@ import com.songbook.core.parser.Parser;
 import com.songbook.core.util.SongNodeLoader;
 import com.songbook.pc.exporter.EPubExporter;
 import com.songbook.pc.exporter.HtmlExporter;
+import com.songbook.pc.exporter.JSONExporter;
 import com.songbook.pc.exporter.LaTexExporter;
 import com.songbook.pc.exporter.PdfExporter;
 import com.songbook.pc.ui.UIDialog;
@@ -82,7 +83,8 @@ public class Main {
                     new HtmlExporter(),
                     new LaTexExporter(),
                     new PdfExporter(loader),
-                    new EPubExporter());
+                    new EPubExporter(),
+                    new JSONExporter());
 
             MainFormView mainFormView = new MainFormView(mainPM);
             mainFormView.setVisible(true);

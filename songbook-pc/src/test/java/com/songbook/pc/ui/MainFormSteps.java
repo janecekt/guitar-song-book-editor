@@ -31,6 +31,7 @@ import com.songbook.core.util.SongNodeLoader;
 import com.songbook.core.visitor.HtmlBuilderVisitor;
 import com.songbook.pc.exporter.EPubExporter;
 import com.songbook.pc.exporter.HtmlExporter;
+import com.songbook.pc.exporter.JSONExporter;
 import com.songbook.pc.exporter.LaTexExporter;
 import com.songbook.pc.exporter.PdfExporter;
 import com.songbook.pc.ui.presentationmodel.EditorPanePresentationModel;
@@ -113,7 +114,8 @@ public class MainFormSteps {
                 new HtmlExporter(),
                 new LaTexExporter(),
                 new PdfExporter(loader),
-                new EPubExporter());
+                new EPubExporter(),
+                new JSONExporter());
         mainPM.setPropagateErrors(true);
     }
 
@@ -152,6 +154,11 @@ public class MainFormSteps {
 
     public void whenExportToPdfPressed() {
         mainPM.getExportPdfAction().actionPerformed(null);
+    }
+
+
+    public void whenExportToJsonPressed() {
+        mainPM.getExportJsonAction().actionPerformed(null);
     }
 
 

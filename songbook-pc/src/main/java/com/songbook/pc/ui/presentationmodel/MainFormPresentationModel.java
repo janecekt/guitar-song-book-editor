@@ -52,6 +52,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private Action exportLatexAction;
     private Action exportPdfAction;
     private Action exportEPubAction;
+    private Action exportJsonAction;
     private final SelectionInList<String> encodingModel = new SelectionInList<String>(new String[]{"CP1250", "UTF8"});
     private final EditorPanePresentationModel editorModel = new EditorPanePresentationModel();
     private final LogObservingPresentationModel logObservingPresentationModel;
@@ -63,6 +64,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
     private final Exporter latexExporter;
     private final Exporter pdfExporter;
     private final Exporter ePubExporter;
+    private final Exporter jsonExporter;
     private final Parser<SongNode> parser;
 
     // State
@@ -77,7 +79,8 @@ public class MainFormPresentationModel extends BasePresentationModel {
             Exporter htmlExporter,
             Exporter latexExporter,
             Exporter pdfExporter,
-            Exporter ePubExporter) {
+            Exporter ePubExporter,
+            Exporter jsonExporter) {
         this.parser = parser;
         this.songListPresentationModel = songListPresentationModel;
         this.newFilenameDialog = newFilenameDialog;
@@ -85,6 +88,7 @@ public class MainFormPresentationModel extends BasePresentationModel {
         this.latexExporter = latexExporter;
         this.pdfExporter = pdfExporter;
         this.ePubExporter = ePubExporter;
+        this.jsonExporter = jsonExporter;
 
         // Initialize
         encodingModel.setSelectionIndex(0);
@@ -211,9 +215,8 @@ public class MainFormPresentationModel extends BasePresentationModel {
         }
     }
 
-
-    private void onExportHtmlActionPerformed() {
-        logger.info("Export HTML Pressed");
+    private void exportUsingExporter(String formatDesc, Exporter exporter) {
+        logger.info("Export " + formatDesc + " Pressed");
 
         try {
             // Allow save only in view mode.
@@ -222,58 +225,10 @@ public class MainFormPresentationModel extends BasePresentationModel {
                 return;
             }
 
-            // Export to HTML files
-            htmlExporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
+            // Export to given format using exporter
+            exporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
         } catch (RuntimeException ex) {
-            handleError("EXPORT TO HTML FAILED !", ex);
-        }
-    }
-
-
-    private void onExportLatexActionPerformed() {
-        logger.info("Export-Latex Pressed");
-
-        try {
-            // Allow save only in view mode.
-            if (!viewModeModel.booleanValue()) {
-                logger.error("Exporting is only supported in VIEW MODE !");
-                return;
-            }
-
-            latexExporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
-        } catch (RuntimeException ex) {
-            handleError("EXPORT TO LATEX FAILED !", ex);
-        }
-    }
-
-
-    private void onExportPdfActionPerformed() {
-        logger.info("Export PDF pressed !");
-        try {
-            // Allow save only in view mode.
-            if (!viewModeModel.booleanValue()) {
-                logger.error("Exporting is only supported in VIEW MODE !");
-                return;
-            }
-
-            pdfExporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
-        } catch (Exception ex) {
-            handleError("EXPORT TO PDF FAILED !", ex);
-        }
-    }
-
-
-    private void onExportEPubActionPerformed() {
-        logger.info("Export EPub pressed !");
-        try {
-            // Allow save only in view mode.
-            if (!viewModeModel.booleanValue()) {
-                logger.error("Exporting is only supported in VIEW MODE !");
-                return;
-            }
-            ePubExporter.export(songListPresentationModel.getBaseDir(), songListPresentationModel.buildSongBook());
-        } catch (Exception ex) {
-            handleError("EXPORT TO EPub FAILED !", ex);
+            handleError("EXPORT TO " + formatDesc + " FAILED !", ex);
         }
     }
 
@@ -320,6 +275,10 @@ public class MainFormPresentationModel extends BasePresentationModel {
 
     public Action getExportEPubAction() {
         return exportEPubAction;
+    }
+
+    public Action getExportJsonAction() {
+        return exportJsonAction;
     }
 
 
@@ -391,28 +350,35 @@ public class MainFormPresentationModel extends BasePresentationModel {
         exportHtmlAction = new AbstractAction("Export HTML") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onExportHtmlActionPerformed();
+                exportUsingExporter("HTML", htmlExporter);
             }
         };
 
         exportLatexAction = new AbstractAction("Export LaTex") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onExportLatexActionPerformed();
+                exportUsingExporter("LaTex", latexExporter);
             }
         };
 
         exportPdfAction = new AbstractAction("Export PDF") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onExportPdfActionPerformed();
+                exportUsingExporter("PDF", pdfExporter);
             }
         };
 
         exportEPubAction = new AbstractAction("Export EPUB") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onExportEPubActionPerformed();
+                exportUsingExporter("EPub", ePubExporter);
+            }
+        };
+
+        exportJsonAction = new AbstractAction("Export JSON") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exportUsingExporter("JSON", jsonExporter);
             }
         };
     }

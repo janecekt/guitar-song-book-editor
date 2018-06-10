@@ -23,7 +23,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -62,6 +62,7 @@ public class MainFormView extends JFrame {
     private final JButton exportLatexButton;
     private final JButton exportPDFButton;
     private final JButton exportEPubButton;
+    private final JButton exportJsonButton;
     private final JComboBox encodingComboBox;
 
     private final JEditorPane editorPane;
@@ -90,6 +91,7 @@ public class MainFormView extends JFrame {
         exportLatexButton = new JButton(presentationModel.getExportLatexAction());
         exportPDFButton = new JButton(presentationModel.getExportPdfAction());
         exportEPubButton = new JButton(presentationModel.getExportEPubAction());
+        exportJsonButton = new JButton(presentationModel.getExportJsonAction());
         encodingComboBox = BasicComponentFactory.createComboBox(presentationModel.getEncodingModel());
 
         // == MODEL ==
@@ -118,7 +120,7 @@ public class MainFormView extends JFrame {
         TableModel tableModel = new SongListTableAdapter(presentationModel.getSongListPresentationModel().getSongListModel());
         songSelectionTable = new JTable(tableModel);
         songSelectionTable.setRowSorter(new TableRowSorter<TableModel>(tableModel));
-        songSelectionTable.getRowSorter().setSortKeys(Arrays.asList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
+        songSelectionTable.getRowSorter().setSortKeys(Collections.singletonList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
         bind2Way(songSelectionTable, presentationModel.getSongListPresentationModel().getSongListModel());
         if (!presentationModel.getSongListPresentationModel().getSongListModel().isEmpty()) {
             songSelectionTable.getSelectionModel().setSelectionInterval(0,0);
@@ -174,6 +176,7 @@ public class MainFormView extends JFrame {
         toolbarPanel.add(exportLatexButton);
         toolbarPanel.add(exportPDFButton);
         toolbarPanel.add(exportEPubButton);
+        toolbarPanel.add(exportJsonButton);
         toolbarPanel.add(encodingComboBox);
 
         // CENTER PANE
@@ -199,7 +202,7 @@ public class MainFormView extends JFrame {
         contentPanel.add(toolbarPanel);
         contentPanel.add(Box.createRigidArea(new Dimension(10, 10)));
         contentPanel.add(mainPane);
-        this.setMinimumSize(new Dimension(900, 600));
+        this.setMinimumSize(new Dimension(1024, 700));
 
         setContentPane(contentPanel);
     }
