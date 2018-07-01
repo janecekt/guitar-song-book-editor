@@ -1,0 +1,15 @@
+{
+  "short_name": "Song Book Mobile",
+  "name": "Song Book Mobile",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#3F51B5",
+  "theme_color": "#3F51B5",
+  "description": "Song Book mobile application",
+  "icons": [{
+    "src": "images/songbook_icon.png",
+    "sizes": "96x96",
+    "type": "image/png"
+  }]
+}

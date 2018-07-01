@@ -1,0 +1,22 @@
+## Enable Deflate
+AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+
+## No Cache
+<FilesMatch "index.html|sw.js">
+  Header set Cache-Control "no-cache, no-store, must-revalidate"
+</FilesMatch>
+
+## Images - cache control (1 week)
+<FilesMatch "\.(png|gif)$">
+  Header set Cache-Control "public, max-age=604800, must-revalidate"
+</FilesMatch>
+
+## Fonts - cache forever (1 year)
+<FilesMatch "\.(woff|woff2|ttf|eot)$">
+  Header set Cache-Control "public, max-age=31556926, must-revalidate"
+</FilesMatch>
+
+## Main artifacts - cache forever (1 year)
+<FilesMatch "sw-main|bundle|shell|manifest|songbook">
+  Header set Cache-Control "public, max-age=31556926, must-revalidate"
+</FilesMatch>

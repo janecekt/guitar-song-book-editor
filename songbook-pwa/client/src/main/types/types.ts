@@ -1,0 +1,1 @@
+export type LoadDataFn = <T>(loader : () => Promise<any>) => void;

@@ -4,3 +4,5 @@
 .idea
 classes
 target
+node_modules
+songbook-*.json

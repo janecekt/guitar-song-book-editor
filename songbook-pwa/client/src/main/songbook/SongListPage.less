@@ -1,0 +1,48 @@
+@GREY: rgba(0, 0, 0, 0.54);
+
+.songListPage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .song-filter-container {
+    margin: 0 1em 0 1em;
+
+    .clear-button {
+      color: @GREY;
+    }
+  }
+
+  .song-list {
+    overflow: auto;
+    flex-grow: 1;
+
+    .song-item {
+      border-bottom: 1px solid lightgrey;
+      padding: 10px;
+      display: flex;
+      flex-direction: row;
+
+      .song-title-block {
+        flex-grow: 1;
+        flex-direction: column;
+
+        .song-title {
+          font-size: 1em;
+        }
+      }
+
+      .song-index {
+        padding-left: 20px;
+        font-size: 1.2em;
+        color: #3F51B5;
+      }
+      .song-chevron {
+        padding-left: 20px;
+        font-size: 1.5em;
+        color: @GREY
+      }
+    }
+  }
+}

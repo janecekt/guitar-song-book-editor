@@ -1,0 +1,53 @@
+@RED900: #b71c1c;
+@RED100: #ffcdd2;
+
+.server-status-overlay {
+  position: absolute;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #808080cc;
+
+
+  .server-busy-pane {
+    display: flex;
+    justify-content: center;
+  }
+
+
+  .server-error-pane {
+    padding: 15px;
+
+    .server-error-card {
+      width: 100%;
+
+      .app-header {
+        .toolbar {
+          background-color: @RED900;
+        }
+      }
+
+      .server-error-content {
+        padding: 15px;
+        background-color: @RED100;
+
+        .server-error-message {
+          font-weight: bold;
+        }
+
+        .buttons {
+          padding-top: 25px;
+          text-align: center;
+
+          .ok-button {
+            color: white;
+            background-color: @RED900;
+          }
+        }
+      }
+    }
+  }
+}
