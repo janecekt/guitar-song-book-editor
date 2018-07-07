@@ -31,7 +31,9 @@ export type FontAwesomeIconName =
 
     | 'solid-angle-double-up'
     | 'solid-angle-double-down'
-    | 'solid-music';
+    | 'solid-music'
+    | 'solid-info-circle'
+    | 'solid-share-alt';
 
 
 export class FontAwesomeIconProps {

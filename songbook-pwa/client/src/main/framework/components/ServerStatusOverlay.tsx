@@ -6,9 +6,9 @@ import Typography from "material-ui/Typography";
 import Button from "material-ui/Button";
 import {CircularProgress} from "material-ui/Progress";
 
-import {AppHeader} from "main/components/AppHeader";
+import {AppHeader} from "main/framework/components/AppHeader";
 
-import {ServerState} from "main/logic/State";
+import {ServerState} from "main/framework/actions/LoadingDataAction";
 
 import './ServerStatusOverlay.less';
 

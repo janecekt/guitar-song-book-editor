@@ -3,15 +3,15 @@ import * as _ from "lodash";
 
 import Typography from "material-ui/Typography";
 
-import {AppHeader} from "main/components/AppHeader";
-import {Swipeable} from "main/components/Swipeable";
+import {AppHeader} from "main/framework/components/AppHeader";
+import {Swipeable} from "main/framework/components/Swipeable";
 
-import {Action} from "main/logic/Action";
+import {Action} from "main/framework/actions/Action";
 
-import {ChordFragment, Fragment, Line, SongBook, TextFragment, Verse} from "main/songbook/model/SongBook";
-import {SongDetailPageState} from "main/songbook/SongDetailPageState";
-import {songDetailPageChangedAction} from "main/songbook/actions/SongDetailPageChangedAction";
-import {transposeChord} from "main/songbook/SongUtils";
+import {ChordFragment, Fragment, Line, SongBook, TextFragment, Verse} from "main/application/songbook/model/SongBook";
+import {SongDetailPageState} from "main/application/songbook/SongDetailPageState";
+import {songDetailPageChangedAction} from "main/application/songbook/actions/SongDetailPageChangedAction";
+import {transposeChord} from "main/application/songbook/SongUtils";
 
 import './SongDetailPage.less';
 
@@ -20,8 +20,9 @@ export interface SongDetailPageProps extends SongDetailPageState {
     songIndex: number,
     songBook: SongBook,
     onRefresh: (force: boolean) => void,
-    changeRoute: (newRoute : string) => void
-    dispatch: (action : Action) => void;
+    goToHome: () => void,
+    goToSong: (index : number) => void,
+    dispatch: (action : Action<any>) => void;
 }
 
 export class SongDetailPage extends React.Component<SongDetailPageProps,{}> {
@@ -39,7 +40,7 @@ export class SongDetailPage extends React.Component<SongDetailPageProps,{}> {
     private renderHeader() {
         return <AppHeader title="SongBook"
                           leftButtonIcon={'solid-home'}
-                          onLeftButtonClick={() => this.props.changeRoute("/")}
+                          onLeftButtonClick={() => this.props.goToHome()}
                           rightButtonIcon='solid-music'
                           onRightButtonClick={() => this.toggleChords()}
                           rightButton2Icon='solid-angle-double-up'
@@ -138,7 +139,7 @@ export class SongDetailPage extends React.Component<SongDetailPageProps,{}> {
     private goToSong(delta: number) {
         const maxSongIdx = this.props.songBook.songs.length;
         let songIdx = 1 + ((this.props.songIndex - 1 + delta + maxSongIdx) % maxSongIdx);
-        this.props.changeRoute("/song/" + songIdx);
+        this.props.goToSong(songIdx);
         this.props.dispatch(songDetailPageChangedAction('transposeBy', 0));
     }
 }

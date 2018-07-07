@@ -1,4 +1,4 @@
-import {IndexedList} from "main/utils/IndexedList";
+import {IndexedList} from "main/framework/utils/IndexedList";
 
 export interface SongBook {
     songs: Song[];

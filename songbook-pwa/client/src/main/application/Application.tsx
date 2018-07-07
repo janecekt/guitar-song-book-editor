@@ -11,24 +11,25 @@ import createMuiTheme from 'material-ui/styles/createMuiTheme';
 
 
 // Routing
-import {Router} from "main/utils/Router";
+import {Router} from "main/framework/utils/Router";
 
 // Redux
-import {State} from "main/logic/State";
-import {Action} from "main/logic/Action";
-import {loadingDataAction} from "main/logic/LoadingData";
+import {State} from "main/application/State";
+import {Action} from "main/framework/actions/Action";
+import {loadingDataAction} from "main/framework/actions/LoadingDataAction";
+import {ServerError} from "main/framework/service/ServerError";
 
 // Services
-import {default as SongBookService} from "main/songbook/service/SongBookService";
-import {ServerError} from "main/service/ServerError";
-import {SongBook} from "main/songbook/model/SongBook";
-import {songBookLoadedAction} from "main/songbook/actions/SongBookLoadedAction";
+import {default as SongBookService} from "main/application/songbook/service/SongBookService";
+import {SongBook} from "main/application/songbook/model/SongBook";
+import {songBookLoadedAction} from "main/application/songbook/actions/SongBookLoadedAction";
 
 
 // Pages
-import {ServerStatusOverlay} from "main/components/ServerStatusOverlay";
-import {SongListPage} from "main/songbook/SongListPage";
-import {SongDetailPage} from "main/songbook/SongDetailPage";
+import {ServerStatusOverlay} from "main/framework/components/ServerStatusOverlay";
+import {SongListPage} from "main/application/songbook/SongListPage";
+import {SongDetailPage} from "main/application/songbook/SongDetailPage";
+import {InfoPage} from "main/application/infoPage/InfoPage";
 
 import './Application.less'
 
@@ -39,7 +40,7 @@ const pbtTheme = createMuiTheme({
 });
 
 export interface ApplicationProps {
-    dispatch: (action : Action) => void;
+    dispatch: (action : Action<any>) => void;
     changeRoute: (newRoute : string) => void;
     state: State
 }
@@ -58,14 +59,16 @@ export class Application extends React.Component<ApplicationProps, {}> {
 
     getComponentBasedOnRoute() : React.ReactNode {
         let route = Router.getRoute();
-
-        const version = (window as any).appVersion as string;
+        const songBookVersion = this.getSongbookUrl()
+            .replace(/.*songbook-/, '')
+            .replace(/\.json/, '');
 
         return Router
             .add('/',
                 () => <SongListPage {... this.props.state.songListPage}
                                             songBook={this.props.state.songBook}
                                             onRefresh={force => this.loadSongBook(force)}
+                                            goToInfo={() => this.props.changeRoute('/info')}
                                             goToSong={songIndex => this.goToSong(songIndex)}
                                             dispatch={this.props.dispatch} />)
 
@@ -74,43 +77,62 @@ export class Application extends React.Component<ApplicationProps, {}> {
                                         songIndex={parseInt(args[0])}
                                         songBook={this.props.state.songBook}
                                         onRefresh={force => this.loadSongBook(force)}
-                                        changeRoute={this.props.changeRoute}
+                                        goToHome={() => this.goToHome()}
+                                        goToSong={songIndex => this.goToSong(songIndex)}
                                         dispatch={this.props.dispatch} />)
+
+            .add('/info',
+                () => <InfoPage title="SongBook"
+                                appVersion={this.getAppVersion()}
+                                songBookVersion={songBookVersion}
+                                goToHome={() => this.goToHome()} />)
+
             .dispatch(route,
                 () => <div>Unknown route</div>);
     }
 
 
     private loadData(loader: () => Promise<any>) : void {
-        this.props.dispatch(loadingDataAction(true, null));
+        this.props.dispatch(loadingDataAction({isBusy : true, serverError: null}));
         loader()
             .then(() => {
-                this.props.dispatch(loadingDataAction(false, null));
+                this.props.dispatch(loadingDataAction({isBusy : false, serverError: null}));
             })
             .catch((error : ServerError) => this.onServerError(error));
     }
 
     private onServerError(error : ServerError) {
-        this.props.dispatch(loadingDataAction(false, error.message));
+        this.props.dispatch(loadingDataAction({isBusy : false, serverError: error.message}));
     }
 
     private onServerErrorDismiss() {
-        this.props.dispatch(loadingDataAction(this.props.state.server.isBusy, null));
+        this.props.dispatch(loadingDataAction({isBusy: this.props.state.server.isBusy, serverError: null}));
     }
 
     private async loadSongBook(force: boolean) : Promise<void> {
         if (force || this.props.state.songBook === null) {
-            const songBookUrl = (window as any).songBookUrl as string;
-
+            const songBookUrl = this.getSongbookUrl();
             return this.loadData(async () => {
                     let songBook : SongBook = await SongBookService.loadSongBook(songBookUrl);
-                    this.props.dispatch(songBookLoadedAction(songBook));
+                    this.props.dispatch(songBookLoadedAction({songBook: songBook}));
                 }
             );
         }
     }
 
+    private goToHome() : void {
+        this.props.changeRoute("/");
+    }
+
     private goToSong(songIndex: number) : void {
         this.props.changeRoute("/song/" + songIndex);
+    }
+
+    private getAppVersion() : string {
+        return (window as any).appVersion;
+    }
+
+    private getSongbookUrl() : string {
+        return (window as any).songBookUrl;
     }
 }

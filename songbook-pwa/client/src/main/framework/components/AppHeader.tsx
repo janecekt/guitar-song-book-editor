@@ -5,8 +5,8 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 
-import {IconButton} from "main/components/IconButton";
-import {FontAwesomeIconName} from "main/components/FontAwesomeIcon";
+import {IconButton} from "main/framework/components/IconButton";
+import {FontAwesomeIconName} from "main/framework/components/FontAwesomeIcon";
 
 import './AppHeader.less';
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import * as _ from "lodash";
 
 import {default as MuiIconButton} from 'material-ui/IconButton';
-import {FontAwesomeIcon, FontAwesomeIconName} from "main/components/FontAwesomeIcon";
+import {FontAwesomeIcon, FontAwesomeIconName} from "main/framework/components/FontAwesomeIcon";
 
 export class IconButtonProps {
     className?: string;

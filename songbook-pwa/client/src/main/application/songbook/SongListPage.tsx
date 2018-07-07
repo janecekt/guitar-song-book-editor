@@ -5,18 +5,18 @@ import List from "material-ui/List/List";
 import {ListItem} from "material-ui/List";
 import Typography from "material-ui/Typography";
 
-import {AppHeader} from "main/components/AppHeader";
-import {FontAwesomeIcon, FontAwesomeIconName} from "main/components/FontAwesomeIcon";
-import {TextField} from "main/components/TextField";
+import {AppHeader} from "main/framework/components/AppHeader";
+import {FontAwesomeIcon, FontAwesomeIconName} from "main/framework/components/FontAwesomeIcon";
+import {TextField} from "main/framework/components/TextField";
 
-import {Action} from "main/logic/Action";
+import {Action} from "main/framework/actions/Action";
 
-import {coalesce, sortBy, toSearchString} from "main/utils/Utils";
-import {PersistentIndexedList} from "main/utils/IndexedList";
+import {coalesce, sortBy, toSearchString} from "main/framework/utils/Utils";
+import {PersistentIndexedList} from "main/framework/utils/IndexedList";
 
-import {Song, SongBook} from "main/songbook/model/SongBook";
-import {SongListPageState, SongOrderingType} from "main/songbook/SongListPageState";
-import {songBookListPageChangedAction} from "main/songbook/actions/SongListPageChangedAction";
+import {Song, SongBook} from "main/application/songbook/model/SongBook";
+import {SongListPageState, SongOrderingType} from "main/application/songbook/SongListPageState";
+import {songBookListPageChangedAction} from "main/application/songbook/actions/SongListPageChangedAction";
 
 import './SongListPage.less';
 
@@ -24,7 +24,8 @@ export interface SongListPageProps extends SongListPageState {
     songBook: SongBook,
     onRefresh: (force: boolean) => void,
     goToSong: (songIndex : number) => void
-    dispatch: (action : Action) => void;
+    goToInfo: () => void
+    dispatch: (action : Action<any>) => void;
 }
 
 interface OrderingData {
@@ -77,10 +78,12 @@ export class SongListPage extends React.Component<SongListPageProps,{}> {
         return <AppHeader title="SongBook"
                           leftButtonIcon={'solid-sync-alt'}
                           onLeftButtonClick={() => this.props.onRefresh(true)}
-                          rightButtonIcon={'solid-search'}
-                          onRightButtonClick={() => this.toggleSearch()}
-                          rightButton2Icon={orderingData.icon}
-                          onRightButton2Click={() => this.props.dispatch(songBookListPageChangedAction("ordering", orderingData.next))}/>
+                          rightButtonIcon={'solid-info-circle'}
+                          onRightButtonClick={() => this.props.goToInfo()}
+                          rightButton2Icon={'solid-search'}
+                          onRightButton2Click={() => this.toggleSearch()}
+                          rightButton3Icon={orderingData.icon}
+                          onRightButton3Click={() => this.props.dispatch(songBookListPageChangedAction("ordering", orderingData.next))}/>
     }
 
     private renderFilter() {

@@ -3,7 +3,7 @@ import * as _ from "lodash";
 
 import {default as MuiTextField} from 'material-ui/TextField';
 import {InputProps, InputAdornment} from "material-ui/Input";
-import {IconButton} from "main/components/IconButton";
+import {IconButton} from "main/framework/components/IconButton";
 
 export interface TextFieldProps {
     id?: string,

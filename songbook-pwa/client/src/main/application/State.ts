@@ -1,7 +1,8 @@
-import {SongBook} from "main/songbook/model/SongBook";
-import {SongListPageState} from "main/songbook/SongListPageState";
-import {SongDetailPageState} from "main/songbook/SongDetailPageState";
+import {ServerState} from "main/framework/actions/LoadingDataAction";
 
+import {SongBook} from "main/application/songbook/model/SongBook";
+import {SongListPageState} from "main/application/songbook/SongListPageState";
+import {SongDetailPageState} from "main/application/songbook/SongDetailPageState";
 
 export interface State {
     route: string,
@@ -9,11 +10,6 @@ export interface State {
     songBook: SongBook
     songListPage: SongListPageState;
     songDetailPage: SongDetailPageState;
-}
-
-export interface ServerState {
-    isBusy: boolean,
-    serverError: string
 }
 
 export const INITIAL_STATE : State = {

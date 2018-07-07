@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-import {toMap} from "main/utils/Utils";
+import {toMap} from "main/framework/utils/Utils";
 
 export interface IndexedList<ID,T> {
     getItems() : T[];

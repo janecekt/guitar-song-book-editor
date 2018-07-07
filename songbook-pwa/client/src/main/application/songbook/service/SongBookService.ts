@@ -1,8 +1,8 @@
 import * as _ from "lodash";
-import {Song, SongBook, TextFragment} from "main/songbook/model/SongBook";
-import {ServerError} from "main/service/ServerError";
-import {toSearchString} from "main/utils/Utils";
-import {PersistentIndexedList} from "main/utils/IndexedList";
+import {Song, SongBook, TextFragment} from "main/application/songbook/model/SongBook";
+import {ServerError} from "main/framework/service/ServerError";
+import {toSearchString} from "main/framework/utils/Utils";
+import {PersistentIndexedList} from "main/framework/utils/IndexedList";
 
 class SongBookService {
     public async loadSongBook(url : string) : Promise<SongBook> {
