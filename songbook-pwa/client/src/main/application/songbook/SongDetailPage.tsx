@@ -96,10 +96,21 @@ export class SongDetailPage extends React.Component<SongDetailPageProps,{}> {
     }
 
     private renderLine(idx : number, line: Line) {
-        return <Typography className="songLine"
-                    key={"line-" + idx}>
-            {line.fragments.map((fragment, idx) => this.renderFragment(idx, fragment))}
-        </Typography>
+        if (this.props.showChords) {
+            return <Typography className="songLine" key={"line-" + idx}>
+                    {line.fragments.map((fragment, idx) => this.renderFragment(idx, fragment))}
+                </Typography>
+        } else {
+            const lineAsText = line.fragments
+                .filter(fragment => fragment.type === 'Text')
+                .map(fragment => (fragment as TextFragment).text)
+                .join(' ')
+                .replace(/ + /, ' ')
+                .replace(/ +\./, '.')
+                .replace(/ +,/, ',');
+
+            return <Typography className="songLine" key={"line-" + idx}>{lineAsText}</Typography>
+        }
     }
 
     private renderFragment(idx : number, fragment: Fragment) {
@@ -118,9 +129,6 @@ export class SongDetailPage extends React.Component<SongDetailPageProps,{}> {
     }
 
     private renderChordFragment(idx : number, chordFragment: ChordFragment) {
-        if (!this.props.showChords) {
-            return <span className="songText" key={"chord-placeholder"+idx}>{' '}</span>;
-        }
         const chord1 = transposeChord(chordFragment.chord1, this.props.transposeBy);
         const chord2 = transposeChord(chordFragment.chord2, this.props.transposeBy);
         const chordText = _.isNil(chord2) ? chord1 : chord1 + "/" + chord2;
