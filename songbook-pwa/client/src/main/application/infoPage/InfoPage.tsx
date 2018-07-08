@@ -61,7 +61,6 @@ export class InfoPage extends React.Component<SongDetailPageProps,{}> {
             try {
                 shareFn({
                     title: this.props.title,
-                    text: 'Link to SongBook',
                     url: this.getLink(),
                 })
                 .then(() => console.info("Shared successfully"))

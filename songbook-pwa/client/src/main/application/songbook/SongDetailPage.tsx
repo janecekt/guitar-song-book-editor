@@ -40,7 +40,7 @@ export class SongDetailPage extends React.Component<SongDetailPageProps,{}> {
     private renderHeader() {
         return <AppHeader title="SongBook"
                           leftButtonIcon={'solid-home'}
-                          onLeftButtonClick={() => this.props.goToHome()}
+                          onLeftButtonClick={() => this.goToHome()}
                           rightButtonIcon='solid-music'
                           onRightButtonClick={() => this.toggleChords()}
                           rightButton2Icon='solid-angle-double-up'
@@ -136,10 +136,16 @@ export class SongDetailPage extends React.Component<SongDetailPageProps,{}> {
         this.props.dispatch(songDetailPageChangedAction('transposeBy', this.props.transposeBy + number));
     }
 
+    private goToHome() {
+        this.props.dispatch(songDetailPageChangedAction('transposeBy', 0));
+        this.props.goToHome();
+    }
+
     private goToSong(delta: number) {
+        this.props.dispatch(songDetailPageChangedAction('transposeBy', 0));
+
         const maxSongIdx = this.props.songBook.songs.length;
         let songIdx = 1 + ((this.props.songIndex - 1 + delta + maxSongIdx) % maxSongIdx);
         this.props.goToSong(songIdx);
-        this.props.dispatch(songDetailPageChangedAction('transposeBy', 0));
     }
 }
