@@ -20,15 +20,7 @@ package com.songbook.pc.exporter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import com.lowagie.text.Chapter;
 import com.lowagie.text.Chunk;
@@ -80,8 +72,8 @@ public class PdfExporter implements Exporter {
         FontFactory.registerDirectories();
         BaseFont timesFont = null;
         try {
-            timesFont = BaseFont.createFont("C:/Windows/Fonts/times.ttf", BaseFont.CP1250, true);
-            logger.info("Embedded TTF fonts from C:/Windows/Fonts");
+            timesFont = BaseFont.createFont("fonts/times.ttf", BaseFont.CP1250, true);
+            logger.info("Embedded TTF fonts");
         } catch (Exception ex) {
             try {
                 timesFont = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1250, true);
@@ -111,7 +103,7 @@ public class PdfExporter implements Exporter {
     @Override
     public void export(File baseDir, SongBook songBook) {
         if (songTitleFont == null) {
-            throw new RuntimeException("Fonts not correcly loaded - cannot generate PDF !");
+            throw new RuntimeException("Fonts not correctly loaded - cannot generate PDF !");
         }
 
         // Output
@@ -122,8 +114,8 @@ public class PdfExporter implements Exporter {
 
         try {
             // Sort songs alphabetically
-            List<SongNode> orderedList = new ArrayList<SongNode>(songBook.getSongNodeList());
-            Collections.sort(orderedList, new SongNodeIndexComparator(Locale.getDefault()));
+            List<SongNode> orderedList = new ArrayList<>(songBook.getSongNodeList());
+            orderedList.sort(new SongNodeIndexComparator(Locale.getDefault()));
 
             // Generate PDF - pass 1 (collect page stats)
             PageStats pageStats = generatePDF(orderedList, outputFile);
@@ -218,8 +210,8 @@ public class PdfExporter implements Exporter {
 
     private List<SongNode> reorderList(List<SongNode> initialList, PageStats pageStats) {
         // Reorder songs so that 2-page song always starts on even page number
-        List<SongNode> reorderedList = new ArrayList<SongNode>();
-        Queue<SongNode> songQueue = new LinkedList<SongNode>(initialList);
+        List<SongNode> reorderedList = new ArrayList<>();
+        Queue<SongNode> songQueue = new LinkedList<>(initialList);
         int currentPage = 1 + pageStats.getSectionLength("TOC");
         while (!songQueue.isEmpty()) {
             // Find the first song that can be placed
@@ -346,7 +338,7 @@ public class PdfExporter implements Exporter {
 
     private static class PageStats extends PdfPageEventHelper {
         private int currentPage = 1;
-        private final Map<String, Integer> map = new HashMap<String, Integer>();
+        private final Map<String, Integer> map = new LinkedHashMap<>();
 
 
         public int getCurrentPage() {
