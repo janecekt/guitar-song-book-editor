@@ -33,7 +33,8 @@ export type FontAwesomeIconName =
     | 'solid-angle-double-down'
     | 'solid-music'
     | 'solid-info-circle'
-    | 'solid-share-alt';
+    | 'solid-share-alt'
+    | 'solid-file-pdf';
 
 
 export class FontAwesomeIconProps {

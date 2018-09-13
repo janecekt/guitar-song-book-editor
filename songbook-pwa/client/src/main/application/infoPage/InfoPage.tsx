@@ -22,14 +22,16 @@ export class InfoPage extends React.Component<SongDetailPageProps,{}> {
 
     private renderHeader() {
         const onShare = this.getShareFn()
-            ? () => this.onShareLink()
+            ? () => this.onShareLink(this.props.title, this.getLink())
             : null;
 
         return <AppHeader title={this.props.title}
                           leftButtonIcon={'solid-home'}
                           onLeftButtonClick={() => this.props.goToHome()}
-                          rightButtonIcon={'solid-share-alt'}
-                          onRightButtonClick={onShare}/>
+                          rightButtonIcon={'solid-file-pdf'}
+                          onRightButtonClick={() => this.onDownloadPdf()}
+                          rightButton2Icon={'solid-share-alt'}
+                          onRightButton2Click={onShare}/>
     }
 
     private renderBody() {
@@ -51,17 +53,26 @@ export class InfoPage extends React.Component<SongDetailPageProps,{}> {
         </div>
     }
 
-    private getLink() {
-        return window.location.href.replace(/#.*/, '');
+    private onDownloadPdf() {
+        const songBookUrl = this.getLink('song-book.pdf');
+        if (this.getShareFn()) {
+            this.onShareLink('SongBook PDF', songBookUrl)
+        } else {
+            window.open(songBookUrl, '_blank');
+        }
     }
 
-    private onShareLink() {
+    private getLink(suffix : string = '') {
+        return window.location.href.replace(/#.*/, suffix);
+    }
+
+    private onShareLink(title : string, link : string) {
         const shareFn = this.getShareFn();
         if (shareFn) {
             try {
                 shareFn({
-                    title: this.props.title,
-                    url: this.getLink(),
+                    title: title,
+                    url: link,
                 })
                 .then(() => console.info("Shared successfully"))
                 .catch((error) => console.error(error));
