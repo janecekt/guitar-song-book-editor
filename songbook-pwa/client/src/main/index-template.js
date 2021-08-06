@@ -50,7 +50,7 @@ module.exports = function (templateParams) {
         + "     window.appVersion = '" + version + "';" + "\n"
         + "\n"
         + '     // Link to songbook' + "\n"
-        + "     window.songBookUrl= './songbook-777a102eb0bf2f17a28ee19ac7c7b11180563d0e.json';" + "\n"
+        + "     window.songBookUrl= './songbook-08e0a6bbc28045b790414c1f9881171fe2938d14.json';" + "\n"
         + "\n"
         + '     window.onload = function() {' + "\n"
         + "        if ('serviceWorker' in navigator) {" + "\n"
