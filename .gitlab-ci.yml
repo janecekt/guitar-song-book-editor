@@ -1,0 +1,68 @@
+stages:
+  - build
+  - release
+
+build java:
+  image: maven:3.8.1-openjdk-11
+  stage: build
+  cache:
+    key: mvn-cache
+    paths:
+    - .m2/repository
+  script:
+    # Build artifacts
+    - mvn clean install -Prelease -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository
+
+    # Create artifact songbook-pc
+    - mv -v ${CI_PROJECT_DIR}/songbook-pc/target/songbook-pc-latest.jar ${CI_PROJECT_DIR}/songbook-pc-latest.jar
+    - echo "${CI_COMMIT_SHA:0:8}" > ${CI_PROJECT_DIR}/.commit_sha
+  artifacts:
+    expire_in: 4 week
+    name: "songbook-pc-latest"
+    paths:
+      - 'songbook-pc-latest.jar'
+      - '.commit_sha'
+    reports:
+      junit: '**/target/surefire-reports/TEST-*.xml'
+
+build pwa:
+  image: registry.gitlab.com/janecekt/docker-alpine-php7-mysql-node-chromium:20210807-e3227d41-release
+  stage: build
+  cache:
+    key: node-cache
+    paths:
+    - songbook-pwa/client/node_modules
+  script:
+    # Build mobile app with node
+    - cd songbook-pwa/client
+    - yarn install --frozen-lockfile --no-progress
+    - yarn run build
+
+    # Create artifact songbook-pwa-core
+    - echo "${CI_COMMIT_SHA:0:8}" > ${CI_PROJECT_DIR}/songbook-pwa/client/target/.commit_sha
+    - mv -v ${CI_PROJECT_DIR}/songbook-pwa/client/target ${CI_PROJECT_DIR}/songbook-pwa/client/songbook-pwa
+    - cd ${CI_PROJECT_DIR}/songbook-pwa/client
+    - zip -r songbook-pwa.zip songbook-pwa
+    - mv -v ${CI_PROJECT_DIR}/songbook-pwa/client/songbook-pwa.zip ${CI_PROJECT_DIR}/songbook-pwa.zip
+  artifacts:
+    expire_in: 4 week
+    name: "songbook-pwa"
+    paths:
+      - 'songbook-pwa.zip'
+
+release:
+  image: registry.gitlab.com/janecekt/docker-alpine-php7-mysql-node-chromium:20210807-e3227d41-release
+  stage: release
+  when: manual
+  script:
+    # Determine tag
+    - export DATE=`date '+%Y%m%d'`
+    - export TAG="${DATE}-${CI_COMMIT_SHA:0:8}-release"
+
+    # Upload artifacts songbook-pc.jar
+    - 'curl -v --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${CI_PROJECT_DIR}/songbook-pc-latest.jar "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/songbook-pc/${TAG}/songbook-pc-${TAG}.jar"'
+    - 'curl -v --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${CI_PROJECT_DIR}/songbook-pc-latest.jar "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/songbook-pc/latest/songbook-pc.jar"'
+
+    # Upload artifacts songbook-pwa.zip
+    - 'curl -v --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${CI_PROJECT_DIR}/songbook-pwa.zip "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/songbook-pwa/${TAG}/songbook-pwa-${TAG}.jar"'
+    - 'curl -v --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${CI_PROJECT_DIR}/songbook-pwa.zip "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/songbook-pwa/latest/songbook-pwa.zip"'
