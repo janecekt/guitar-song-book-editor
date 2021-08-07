@@ -1,8 +1,13 @@
 // Template for creating HTML
 
 module.exports = function (templateParams) {
-    let assets = templateParams.webpack.assets
+    let assets = templateParams.compilation.getAssets()
         .map(obj => obj.name);
+
+    let vendorName = assets.find(name => name.startsWith('vendor-') && name.endsWith('.js'));
+    if (vendorName === undefined) {
+        vendorName = 'vendor.js';
+    }
 
     let bundleName = assets.find(name => name.startsWith('bundle-') && name.endsWith('.js'));
     if (bundleName === undefined) {
@@ -50,7 +55,8 @@ module.exports = function (templateParams) {
         + "     window.appVersion = '" + version + "';" + "\n"
         + "\n"
         + '     // Link to songbook' + "\n"
-        + "     window.songBookUrl= './songbook-08e0a6bbc28045b790414c1f9881171fe2938d14.json';" + "\n"
+        + "     window.songBookJsonUrl= './songbook-sample.json';" + "\n"
+        + "     window.songBookPdfUrl= './songbook-sample.pdf';" + "\n"
         + "\n"
         + '     window.onload = function() {' + "\n"
         + "        if ('serviceWorker' in navigator) {" + "\n"
@@ -68,11 +74,16 @@ module.exports = function (templateParams) {
         + "           console.log('Service workers are not supported.')" + "\n"
         + "        }" + "\n"
         + "\n"
-                   // Add bundle script - this is done from JavaScript to avoid blocking
-        + "        let script = document.createElement('script');" + "\n"
-        + "        script.type = 'text/javascript';" + "\n"
-        + "        script.src = '" + bundleName  + "';" + "\n"
-        + "        document.body.appendChild(script);" + "\n"
+        + '        // Add bundle script - this is done from JavaScript to avoid blocking' + "\n"
+        + "        let scriptVendor = document.createElement('script');" + "\n"
+        + "        scriptVendor.type = 'text/javascript';" + "\n"
+        + "        scriptVendor.src = '" + vendorName  + "';" + "\n"
+        + "        document.body.appendChild(scriptVendor);" + "\n"
+        + "\n"
+        + "        let scriptBundle = document.createElement('script');" + "\n"
+        + "        scriptBundle.type = 'text/javascript';" + "\n"
+        + "        scriptBundle.src = '" + bundleName  + "';" + "\n"
+        + "        document.body.appendChild(scriptBundle);" + "\n"
         + "      }" + "\n"
         + '  </script>' + "\n"
         + '</body>' + "\n"

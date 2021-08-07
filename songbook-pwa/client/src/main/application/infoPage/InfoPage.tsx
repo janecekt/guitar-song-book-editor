@@ -9,7 +9,8 @@ export interface SongDetailPageProps {
     title: string,
     goToHome: () => void,
     songBookVersion: string
-    appVersion: string
+    appVersion: string,
+    songbookPdfUrl: string;
 }
 
 export class InfoPage extends React.Component<SongDetailPageProps,{}> {
@@ -54,7 +55,7 @@ export class InfoPage extends React.Component<SongDetailPageProps,{}> {
     }
 
     private onDownloadPdf() {
-        const songBookUrl = this.getLink('song-book.pdf');
+        const songBookUrl = this.getLink(this.props.songbookPdfUrl);
         if (this.getShareFn()) {
             this.onShareLink('SongBook PDF', songBookUrl)
         } else {

@@ -1,7 +1,7 @@
 // Template for creating HTML
 
 module.exports = function (templateParams) {
-    let assets = templateParams.webpack.assets
+    let assets = templateParams.compilation.getAssets()
         .map(obj => obj.name)
         .filter(name => !name.endsWith('.map'))
         .filter(name => !name.endsWith('.htaccess'))

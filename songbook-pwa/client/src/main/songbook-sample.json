@@ -1,0 +1,952 @@
+{
+    "type": "SongBook",
+    "generatedOn": "2021-08-07T20:30:47+0200",
+    "songs": [
+        {
+            "type": "Song",
+            "title": "99 Luftballons",
+            "subTitle": "Nena",
+            "index": 105,
+            "verses": [
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Hast Du etwas"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Zeit für mich.  Dann"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "singe ich ein"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Lied für Dich."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Von"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "99"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Luftballons. Auf"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "ihrem Weg zum"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Horizont."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Denkst Du vielleicht"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "grad' an mich.  Dann"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "singe ich ein"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Lied für Dich."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Von"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "99"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Luftballons. Und"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "dass sowas von"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "sowas kommt."
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "99 Luftballons. Auf ihrem Weg zum Horizont."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Hielt man für UFOs aus dem All. Darum schickte ein General."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Eine Fliegerstaffel hinterher. Alarm zu geben, wenn es so war."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Dabei war da am Horizont. Nur 99 Luftballons."
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "99 Düsenjäger. Jeder war ein großer Krieger."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Hielten sich für Captain Kirk. Das gab ein großes Feuerwerk."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Die Nachbarn haben nichts gerafft. Und fühlten sich gleich angemacht."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Dabei schoss man am Horizont. Auf 99 Luftballons."
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "99 Kriegsminister. Streichholz und Benzinkanister."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Hielten sich für schlaue Leute. Witterten schon fette Beute."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Riefen, Krieg und wollten Macht. Mann, wer hätte das gedacht."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Dass es einmal soweit kommt. Wegen 99 Luftballons."
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "99 Jahre Krieg. Ließen keinen Platz für Sieger."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Kriegsminister gibt es nicht mehr. Und auch keine Düsenflieger."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Heute zieh ich meine Runden. Seh die Welt in Trümmern liegen."
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Hab' nen Luftballon gefunden. Denk' an Dich und lass' ihn fliegen…"
+                                        }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Song",
+            "title": "Everything I do",
+            "subTitle": "Bryan Adams",
+            "index": 18,
+            "verses": [
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "Look into my eyes,"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "you will see"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "what you mean to"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "me"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Search your"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "heart, search your"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "soul and when you"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "find me there"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "you’ll"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "search no"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "more"
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "®: Don’t"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "tell me it’s not worth"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "trying"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "for"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "You can’t"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "tell me it’s not worth"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "dying"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "for"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "You know it’s"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "true, everything I"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "do, I do it"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "for you"
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Look into your heart, you will find, there’s nothing there to hide"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Take me as I am, take my life, I would give it all,"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "I would sacrifice"
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "®: Don’t"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "tell me it’s not worth"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "fighting"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "for"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "I can’t"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "help it, there’s nothing"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "I want"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Em"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "more"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "You know it’s"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "true, everything I"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "do, I do it"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "for you"
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "There’s"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "C"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "no love like"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "F"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "your love, and no"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "C"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "other"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "could give"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "more love"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "There’s no"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "where unless"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "you’re there, all the"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "E"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "time,"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "all the"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "way"
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "solo:"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": ","
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": ","
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": ","
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "®: Oh you can’t tell me it’s not worth trying for"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "I can’t help it, there’s nothing I want more"
+                                        }
+                            ]
+                        },
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "Yeah I would"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "fight for you, I’d"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "lie for you, walk the"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "wire for you, Yeah I’d"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "Gm"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "die for you"
+                                        }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Verse",
+                    "lines": [
+                        {
+                            "type": "Line",
+                            "fragments": [
+                                        {
+                                            "type": "Text",
+                                            "text": "You know it’s"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "true, everything I"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "A"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "do, oh"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "G"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": ", I do it"
+                                        },
+                                        {
+                                            "type": "Chord",
+                                            "chord1": "D"
+                                        },
+                                        {
+                                            "type": "Text",
+                                            "text": "for you"
+                                        }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

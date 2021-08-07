@@ -41,8 +41,8 @@ public class MainFormStoryTest extends MainFormSteps {
 
     @Test
     public void songSelectionScenario() throws Exception {
-        givenSong("song1.txt", SongData.SONG1);
         givenSong("song2.txt", SongData.SONG2);
+        givenSong("song1.txt", SongData.SONG1);
 
         whenApplicationStarted();
         thenTitleIs("Guitar Song Book Editor - song1.txt");

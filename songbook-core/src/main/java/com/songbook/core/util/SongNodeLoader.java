@@ -31,10 +31,16 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.songbook.core.model.SongNode;
 import com.songbook.core.parser.Parser;
@@ -44,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 public class SongNodeLoader {
     public static String SONG_INDEX_FILE_NAME = "_song-index.txt";
-    private static Logger logger = LoggerFactory.getLogger(SongNodeLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(SongNodeLoader.class);
     private final Parser<SongNode> parser;
 
 
@@ -68,33 +74,31 @@ public class SongNodeLoader {
 
     
     public List<SongNode> loadSongNodesFromDirectory(File directory, Charset encoding) {
-        List<SongNode> newSongList = new ArrayList<SongNode>();
-        HashMap<String, Integer> songIndexMap = null;
-        for (File file : directory.listFiles()) {
-            if (file.isFile() && file.getName().endsWith(".txt")) {
-                if (SONG_INDEX_FILE_NAME.equals(file.getName())) {
-                    try {
-                        Reader reader = new InputStreamReader(new FileInputStream(file), encoding);
-                        songIndexMap = loadSongIndexMap(reader);
-                    } catch (FileNotFoundException ex) {
-                        logger.error("File {} was not found", file.getAbsolutePath());
-                    }
-                } else {
-                    SongNode songNode = loadSongNodeFromFile(file, encoding);
-                    if (songNode != null) {
-                        newSongList.add(songNode);
-                    }
-                }
-            }
-        }
+        Map<String, Integer> songIndexMap = Stream.of(directory.listFiles())
+                .filter(File::isFile)
+                .filter(file -> file.getName().equals(SONG_INDEX_FILE_NAME))
+                .findFirst()
+                .map(file -> loadSongIndexMap(file, encoding))
+                .orElse(null);
+
+        List<SongNode> newSongList = Stream.of(directory.listFiles())
+                .filter(File::isFile)
+                .filter(file -> file.getName().endsWith(".txt"))
+                .filter(file -> !file.getName().equals(SONG_INDEX_FILE_NAME))
+                .sorted(Comparator.comparing(File::getName))
+                .map(file -> loadSongNodeFromFile(file, encoding))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
         enrichSongsWithIndex(newSongList, songIndexMap);
+
         return newSongList;
     }
 
 
     public List<SongNode> loadSongNodesFromZip(InputStream zipStream, Charset encoding) {
-        List<SongNode> songList = new ArrayList<SongNode>();
-        HashMap<String,Integer> songIndexMap = null;
+        List<SongNode> songList = new ArrayList<>();
+        Map<String,Integer> songIndexMap = null;
 
         // Load data from zip stream into SongList
         ZipInputStreamIterable zipIterable = new ZipInputStreamIterable(zipStream, "Songbook ZIP");
@@ -126,11 +130,11 @@ public class SongNodeLoader {
 
 
     public Map<String,Integer> loadTransposeMap(InputStream stream) {
-        ReaderIterable readerIterable = new ReaderIterable(stream, Charset.forName("UTF8"), "transpose map");
+        ReaderIterable readerIterable = new ReaderIterable(stream, StandardCharsets.UTF_8, "transpose map");
         try {
-            Map<String, Integer> transposeMap = new HashMap<String, Integer>();
+            Map<String, Integer> transposeMap = new HashMap<>();
             for (String line : readerIterable) {
-                String[] parts = line.split("|");
+                String[] parts = line.split("\\|");
                 if (parts.length >= 2) {
                     transposeMap.put(parts[0], Integer.parseInt(parts[1]));
                 }
@@ -142,7 +146,7 @@ public class SongNodeLoader {
     }
 
     public void saveTransposeMap(OutputStream stream, Map<String,Integer> transposeMap) {
-        Writer writer = new BufferedWriter(new OutputStreamWriter(stream, Charset.forName("UTF8")));
+        Writer writer = new BufferedWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8));
         try {
             for (Map.Entry<String,Integer> entry : transposeMap.entrySet()) {
                 writer.append(entry.getKey())
@@ -162,7 +166,7 @@ public class SongNodeLoader {
     }
 
 
-    private void enrichSongsWithIndex(List<SongNode> songList, HashMap<String,Integer> songIndexMap) {
+    private void enrichSongsWithIndex(List<SongNode> songList, Map<String,Integer> songIndexMap) {
         if (songIndexMap == null) {
             logger.warn("No " + SONG_INDEX_FILE_NAME + " file defined !");
             return;
@@ -185,11 +189,20 @@ public class SongNodeLoader {
         }
     }
 
+    private Map<String,Integer> loadSongIndexMap(File indexFile, Charset encoding) {
+        try {
+            Reader reader = new InputStreamReader(new FileInputStream(indexFile), encoding);
+            return loadSongIndexMap(reader);
+        } catch (FileNotFoundException ex) {
+            logger.error("File {} was not found", indexFile.getAbsolutePath());
+            return Collections.emptyMap();
+        }
+    }
 
-    private HashMap<String,Integer> loadSongIndexMap(Reader reader) {
+    private Map<String,Integer> loadSongIndexMap(Reader reader) {
         ReaderIterable readerIterable = null;
         try {
-            HashMap<String,Integer> result = new HashMap<String, Integer>();
+            HashMap<String,Integer> result = new HashMap<>();
             int lineNumber = 1;
             readerIterable = new ReaderIterable(new BufferedReader(reader), "song order file !");
             for (String line : readerIterable) {
@@ -211,6 +224,6 @@ public class SongNodeLoader {
             sb.append(songNode.getSourceFile().getName());
             sb.append("\n");
         }
-        FileIO.writeStringToFile(outputFile.getAbsolutePath(), Charset.forName("ISO-8859-1"), sb.toString());
+        FileIO.writeStringToFile(outputFile.getAbsolutePath(), StandardCharsets.ISO_8859_1, sb.toString());
     }
 }

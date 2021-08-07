@@ -59,7 +59,7 @@ export class Application extends React.Component<ApplicationProps, {}> {
 
     getComponentBasedOnRoute() : React.ReactNode {
         let route = Router.getRoute();
-        const songBookVersion = this.getSongbookUrl()
+        const songBookVersion = this.getSongbookJsonUrl()
             .replace(/.*songbook-/, '')
             .replace(/\.json/, '');
 
@@ -83,6 +83,7 @@ export class Application extends React.Component<ApplicationProps, {}> {
 
             .add('/info',
                 () => <InfoPage title="SongBook"
+                                songbookPdfUrl={this.getSongbookPdfUrl()}
                                 appVersion={this.getAppVersion()}
                                 songBookVersion={songBookVersion}
                                 goToHome={() => this.goToHome()} />)
@@ -111,9 +112,9 @@ export class Application extends React.Component<ApplicationProps, {}> {
 
     private async loadSongBook(force: boolean) : Promise<void> {
         if (force || this.props.state.songBook === null) {
-            const songBookUrl = this.getSongbookUrl();
+            const songBookJsonUrl = this.getSongbookJsonUrl();
             return this.loadData(async () => {
-                    let songBook : SongBook = await SongBookService.loadSongBook(songBookUrl);
+                    let songBook : SongBook = await SongBookService.loadSongBook(songBookJsonUrl);
                     this.props.dispatch(songBookLoadedAction({songBook: songBook}));
                 }
             );
@@ -132,7 +133,11 @@ export class Application extends React.Component<ApplicationProps, {}> {
         return (window as any).appVersion;
     }
 
-    private getSongbookUrl() : string {
-        return (window as any).songBookUrl;
+    private getSongbookJsonUrl() : string {
+        return (window as any).songBookJsonUrl;
+    }
+
+    private getSongbookPdfUrl() : string {
+        return (window as any).songBookPdfUrl;
     }
 }
