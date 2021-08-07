@@ -77,7 +77,7 @@
                                         <!-- Set keystore -->
                                         <argument>-keystore</argument>
                                         <argument>../release-key.keystore</argument>
-                                        <argument>${project.build.directory}/${artifactId}-${version}.apk</argument>
+                                        <argument>${project.build.directory}/${project.artifactId}-${version}.apk</argument>
                                         <argument>release-key</argument>
                                     </arguments>
                                 </configuration>
@@ -99,8 +99,8 @@
                                     <zipalign>
                                         <verbose>true</verbose>
                                         <skip>false</skip>
-                                        <inputApk>${project.build.directory}/${artifactId}-${version}.apk</inputApk>
-                                        <outputApk>${project.build.directory}/${artifactId}-latest.apk</outputApk>
+                                        <inputApk>${project.build.directory}/${project.artifactId}-${version}.apk</inputApk>
+                                        <outputApk>${project.build.directory}/${project.artifactId}-latest.apk</outputApk>
                                     </zipalign>
                                 </configuration>
                             </execution>

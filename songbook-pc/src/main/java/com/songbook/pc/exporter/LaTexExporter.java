@@ -18,9 +18,8 @@
 package com.songbook.pc.exporter;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,7 +38,7 @@ public class LaTexExporter implements Exporter {
 
 
     @Override
-    public void export(File baseDir, SongBook songBook) {
+    public File export(File baseDir, SongBook songBook) {
         // Output
         File outputDir = new File(baseDir, "latex");
         File outputFile = new File(outputDir, "allsongs.tex");
@@ -49,15 +48,17 @@ public class LaTexExporter implements Exporter {
         FileIO.createDirectory(outputDir);
 
         // Sort songs
-        List<SongNode> sortedArrayList = new ArrayList<SongNode>(songBook.getSongNodeList());
-        Collections.sort(sortedArrayList, new SongNodeIndexComparator(Locale.getDefault()));
+        List<SongNode> sortedArrayList = new ArrayList<>(songBook.getSongNodeList());
+        sortedArrayList.sort(new SongNodeIndexComparator(Locale.getDefault()));
 
         // Build document
         String output = FreeMakerUtil.processTemplate(new SongBook(sortedArrayList), SONGBOOK_LATEX_ALLSONGS_TEMPLATE);
 
         // Write to file
-        FileIO.writeStringToFile(outputFile.getAbsolutePath(), Charset.forName("UTF8"), output);
+        FileIO.writeStringToFile(outputFile.getAbsolutePath(), StandardCharsets.UTF_8, output);
 
         logger.info("COMPLETED export to latex file {}.", outputFile.getAbsolutePath());
+
+        return outputFile;
     }
 }

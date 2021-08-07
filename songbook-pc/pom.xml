@@ -31,7 +31,7 @@
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
                                     <classifier>release</classifier>
-                                    <finalName>${artifactId}-latest</finalName>
+                                    <finalName>${project.artifactId}-latest</finalName>
                                     <descriptorRefs>
                                         <descriptorRef>jar-with-dependencies</descriptorRef>
                                     </descriptorRefs>
@@ -47,28 +47,23 @@
 
                     <!-- Sign -->
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jarsigner-plugin</artifactId>
+                        <version>3.0.0</version>
                         <executions>
                             <execution>
-                                <id>sign-jar</id>
-                                <phase>package</phase>
+                                <id>package</id>
                                 <goals>
-                                    <goal>exec</goal>
+                                    <goal>sign</goal>
                                 </goals>
-                                <configuration>
-                                    <executable>${jarsigner.path}</executable>
-                                    <workingDirectory>${project.basedir}</workingDirectory>
-                                    <arguments>
-                                        <argument>-keystore</argument>
-                                        <argument>../release-key.keystore</argument>
-                                        <argument>${project.build.directory}/${artifactId}-latest.jar</argument>
-                                        <argument>release-key</argument>
-                                    </arguments>
-                                </configuration>
                             </execution>
                         </executions>
+                        <configuration>
+                            <keystore>../release-key.keystore</keystore>
+                            <alias>release-key</alias>
+                            <storepass>password</storepass>
+                            <keypass>password</keypass>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

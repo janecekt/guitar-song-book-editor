@@ -18,7 +18,7 @@
 package com.songbook.pc.exporter;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -37,7 +37,7 @@ public class JSONExporter implements Exporter {
     private static final String SONGBOOK_JSON_SONG_TEMPLATE = "/export/json/json.ftl";
 
     @Override
-    public void export(File baseDir, SongBook songBook) {
+    public File export(File baseDir, SongBook songBook) {
         logger.info("Starting export to JSON.");
 
         // Create directory
@@ -51,13 +51,15 @@ public class JSONExporter implements Exporter {
         String contentWithDate = exportJson(songBook, new Date());
 
         File outputFileName = new File(outputDir, "songbook-" + hash + ".json");
-        FileIO.writeStringToFile(outputFileName.getAbsolutePath(), Charset.forName("UTF8"), contentWithDate);
+        FileIO.writeStringToFile(outputFileName.getAbsolutePath(), StandardCharsets.UTF_8, contentWithDate);
 
         logger.info("COMPLETED export to JSON");
+
+        return outputFileName;
     }
 
     private String exportJson(SongBook songBook, Date generatedOn) {
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("songNodes", songBook.getSongNodeList());
         model.put("generatedOn", generatedOn);
         return FreeMakerUtil.processTemplate(model, SONGBOOK_JSON_SONG_TEMPLATE);

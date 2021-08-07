@@ -23,5 +23,5 @@ import java.io.File;
 import com.songbook.core.model.SongBook;
 
 public interface Exporter {
-    void export(File baseDir, SongBook songBook);
+    File export(File baseDir, SongBook songBook);
 }

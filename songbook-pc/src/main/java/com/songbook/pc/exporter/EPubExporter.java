@@ -18,6 +18,7 @@
 package com.songbook.pc.exporter;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import com.songbook.core.model.SongBook;
 import com.songbook.core.model.SongNode;
@@ -33,7 +34,7 @@ public class EPubExporter implements Exporter {
     private static final String SONGBOOK_EPUB_STYLESHEET = "/export/epub/epub-stylesheet.css";
 
     @Override
-    public void export(File baseDir, SongBook songBook) {
+    public File export(File baseDir, SongBook songBook) {
         // Output file
         File outputDir = new File(baseDir, "epub");
         FileIO.createDirectory(outputDir);
@@ -52,7 +53,7 @@ public class EPubExporter implements Exporter {
                         songNode.getSourceFile().getName().replace(".txt",".xhtml"),
                         "application/xhtml+xml",
                         true,
-                        songXHTML.getBytes("UTF8"));
+                        songXHTML.getBytes(StandardCharsets.UTF_8));
             }
 
             // Add stylesheet
@@ -61,12 +62,14 @@ public class EPubExporter implements Exporter {
                     "epub-stylesheet.css",
                     "text/css",
                     false,
-                    FileIO.readResourceToString(SONGBOOK_EPUB_STYLESHEET).getBytes("UTF8"));
+                    FileIO.readResourceToString(SONGBOOK_EPUB_STYLESHEET).getBytes(StandardCharsets.UTF_8));
 
             // Build EPUB into file
             ePubBuilder.build(outputFile);
 
             logger.info("COMPLETED export to EPub {}.", outputFile.getAbsolutePath());
+
+            return outputFile;
         } catch (Exception ex) {
             throw new RuntimeException("Export to EPUB failed !", ex);
         }

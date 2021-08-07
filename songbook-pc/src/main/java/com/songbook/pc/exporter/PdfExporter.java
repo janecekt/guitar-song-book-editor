@@ -63,10 +63,11 @@ public class PdfExporter implements Exporter {
     private final Font chordFont;
     private final Paragraph verseSpacing;
     private final SongNodeLoader loader;
+    private final boolean openPdfWhenCreated;
 
-
-    public PdfExporter(SongNodeLoader loader) {
+    public PdfExporter(SongNodeLoader loader, boolean openPdfWhenCreated) {
         this.loader = loader;
+        this.openPdfWhenCreated = openPdfWhenCreated;
 
         // Load fonts
         FontFactory.registerDirectories();
@@ -101,7 +102,7 @@ public class PdfExporter implements Exporter {
 
 
     @Override
-    public void export(File baseDir, SongBook songBook) {
+    public File export(File baseDir, SongBook songBook) {
         if (songTitleFont == null) {
             throw new RuntimeException("Fonts not correctly loaded - cannot generate PDF !");
         }
@@ -131,7 +132,11 @@ public class PdfExporter implements Exporter {
             loader.saveSongIndexFile(songIndexFile, reorderedList);
 
             // Open document
-            openPDF(outputFile);
+            if (openPdfWhenCreated) {
+                openPDF(outputFile);
+            }
+
+            return outputFile;
         } catch (IOException ex) {
             throw new RuntimeException("Failed to write to file " + outputFile.getName(), ex);
         } catch (DocumentException ex) {

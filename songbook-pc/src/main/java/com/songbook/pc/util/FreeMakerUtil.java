@@ -20,8 +20,8 @@ package com.songbook.pc.util;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
-import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
 
 public final class FreeMakerUtil {
@@ -31,9 +31,9 @@ public final class FreeMakerUtil {
     // N.B. It should not be change later as it not thread-safe.
     private static final Configuration configuration;
     static {
-        configuration = new Configuration();
+        configuration = new Configuration(Configuration.VERSION_2_3_23);
         configuration.setClassForTemplateLoading(FreeMakerUtil.class, "/");
-        configuration.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
+        configuration.setObjectWrapper(new BeansWrapper(Configuration.VERSION_2_3_23));
     }
 
     public static void processTemplate(Object model, String template, Writer output) {

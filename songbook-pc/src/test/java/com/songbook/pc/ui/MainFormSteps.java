@@ -46,9 +46,9 @@ public class MainFormSteps {
 
 
 
-    public static enum DisplayMode {TEXT, HTML}
+    public enum DisplayMode {TEXT, HTML}
 
-    public static enum SongData {
+    public enum SongData {
         SONG1("Song1 - Author",
                 "[G/C]la [F]la",
                 "[G]la",
@@ -66,11 +66,11 @@ public class MainFormSteps {
         SONG2("Song2 - Author",
                 "[Em]aa [Dm]aa [G]aa");
 
-        private String title;
+        private final String title;
         private final String songData;
 
 
-        private SongData(String title, String... lines) {
+        SongData(String title, String... lines) {
             this.title = title;
             StringBuilder builder = new StringBuilder();
             builder.append(title).append("\n");
@@ -113,7 +113,7 @@ public class MainFormSteps {
                 null,
                 new HtmlExporter(),
                 new LaTexExporter(),
-                new PdfExporter(loader),
+                new PdfExporter(loader, true),
                 new EPubExporter(),
                 new JSONExporter());
         mainPM.setPropagateErrors(true);
