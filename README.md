@@ -26,6 +26,31 @@ When I [E]find myself in [H]times of trouble<br>
   * Customize the UI and ordering
   * Download songbook directly form internet
 
+## Usage: SongBook PC (song editing) ##
+ * Download and install java 11
+ * Download [songbook-pc.jar](https://gitlab.com/api/v4/projects/7109318/packages/generic/songbook-pc/latest/songbook-pc.jar?1)
+ * Run
+
+   
+    java -jar songbook-pc.jar <path-to-song-directory>
+
+
+## Usage: SongBook PWA (song sharing) ##
+ * Using SongBook PC create your songbook
+ * Export PDF and check that it looks good
+ * Export JSON
+ * Download [songbook-pwa-base.zip](https://gitlab.com/api/v4/projects/7109318/packages/generic/songbook-pwa-base/latest/songbook-pwa-base.zip?1)
+ * Unzip the archive
+ * Add the generated pdf and json to the root directory (preferably add hash at the end of the names)
+ * Edit index.html and replace songbook-sample.json and songbook-sample.pdf with the names of your songbook files 
+ * Put the directory to the internet
+   
+ * To do all of these steps automatically (optional)
+    * Clone a repository with my songs [guitar-song-book-editor-songs](https://gitlab.com/janecekt/guitar-song-book-editor-songs)
+    * Replace my songs with your songs
+    * Push the changes into your own gitlab repository where you'll manage your songbook
+    * Gitlab will automatically build a pdf and pwa-songbook for you and put them into packages
+    * NOTE: Take a look at the .gitlab-ci.yaml and tweak it as necessary
 
 ---
 
@@ -33,10 +58,10 @@ When I [E]find myself in [H]times of trouble<br>
 # Downloads #
 | **Filename** | **Description** |
 |:-------------|:----------------|
-| [songbook-android.apk](https://github.com/janecekt/guitar-song-book-editor/releases/download/latest/songbook-android.apk?1) | Songbook viewer for Android |
-| [songbook-pc.jar](https://github.com/janecekt/guitar-song-book-editor/releases/download/latest/songbook-pc.jar?1) | Songbook viewer and editor for PC |
-| [songbook.zip](https://github.com/janecekt/guitar-song-book-editor-songs/releases/download/latest/songbook.zip?1) | Songbook in zip format. |
-| [songbook.pdf](https://github.com/janecekt/guitar-song-book-editor-songs/releases/download/latest/songbook.pdf?1) | Songbook in PDF format (optimized for 2-sided printing) |
+| [songbook-pc.jar](https://gitlab.com/api/v4/projects/7109318/packages/generic/songbook-pc/latest/songbook-pc.jar?1) | Songbook viewer and editor for PC |
+| [songbook.pdf](https://gitlab.com/api/v4/projects/7109320/packages/generic/songbook-pdf/latest/songbook.pdf?1) | Songbook in PDF format with my favourite songs (optimized for 2-sided printing) |
+| [songbook-pwa.zip](https://gitlab.com/api/v4/projects/7109320/packages/generic/songbook-pwa/latest/songbook-pwa.zip?1) | Songbook in PDF format with my favourite songs (optimized for 2-sided printing) |
+| [songbook-pwa-base.zip](https://gitlab.com/api/v4/projects/7109318/packages/generic/songbook-pwa-base/latest/songbook-pwa-base.zip?1) | Base songbook PWA phone/tablet app (contains no songs) |
 
 
 # Licence #
