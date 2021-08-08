@@ -10,7 +10,7 @@
     "@types/react": "16.3.16",
     "@types/react-dom": "16.0.5",
     "bluebird": "3.5.1",
-    "lodash": "4.17.10",
+    "lodash": "4.17.21",
     "@fortawesome/fontawesome-free-webfonts": "1.0.9",
     "material-ui": "1.0.0-beta.35",
     "react": "16.4.0",
